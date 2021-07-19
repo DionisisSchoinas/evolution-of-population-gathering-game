@@ -4,6 +4,6 @@ using UnityEngine;
 
 public abstract class WorldObject : MonoBehaviour
 {
-    public abstract void tick();
+    public abstract void Tick();
 
 }

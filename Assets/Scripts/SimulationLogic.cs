@@ -20,7 +20,7 @@ public class SimulationLogic : MonoBehaviour
         {
             ticks += 1;
             foreach (WorldObject obj in worldObjects) {
-                obj.tick();
+                obj.Tick();
             }
         }
     }

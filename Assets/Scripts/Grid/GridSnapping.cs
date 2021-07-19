@@ -210,6 +210,11 @@ public class GridSnapping : MonoBehaviour
         return result;
     }
 
+    public Vector3 GetNearestGridPoint(Vector3 position)
+    {
+        return GetNearestGridPoint(position, blockSize);
+    }
+
     private Vector3 ClampPlaceableOnGrid(Vector3 position, Placeable placeable)
     {
         /*

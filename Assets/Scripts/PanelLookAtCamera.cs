@@ -4,10 +4,8 @@ using UnityEngine;
 
 public class PanelLookAtCamera : MonoBehaviour
 {
-    public Transform cam;
-
     public void LateUpdate()
     {
-        transform.LookAt(transform.position + cam.forward);
+        transform.LookAt(transform.position + Camera.main.transform.forward);
     }
 }

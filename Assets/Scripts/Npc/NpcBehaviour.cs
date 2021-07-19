@@ -5,12 +5,16 @@ using UnityEngine;
 using UnityEngine.UI;
 public class NpcBehaviour : WorldObject
 {
+    private GridSnapping grid;
+
     NpcData npcData;
     public Text displayText;
     public GameObject statusDeathImage;
     // Start is called before the first frame update
     void Start()
     {
+        grid = FindObjectOfType<GridSnapping>();
+
         npcData = GetComponent<NpcData>();
         Debug.Log(npcData.genome.Length);
         if (npcData.genome.Length == 11) {
@@ -133,16 +137,16 @@ public class NpcBehaviour : WorldObject
         }
     }
 
-    public void move(int x, int z) {
-        transform.position = new Vector3(x,0,z);
+    public void Move(int x, int z) {
+        transform.position = grid.GetNearestGridPoint(new Vector3(x,0,z));
     }
 
-    public override void tick()
+    public override void Tick()
     {
         if (npcData.alive) {
             for (int i = 0; i < npcData.moveLength; i++ )
             {
-                move((int)transform.position.x + UnityEngine.Random.Range(-1, 2), (int)transform.position.z + UnityEngine.Random.Range(-1, 2));
+                Move((int)transform.position.x + UnityEngine.Random.Range(-1, 2), (int)transform.position.z + UnityEngine.Random.Range(-1, 2));
 
             }
             npcData.energy--;
