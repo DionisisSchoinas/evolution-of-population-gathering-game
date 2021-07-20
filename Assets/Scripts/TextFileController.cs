@@ -10,7 +10,7 @@ public class TextFileController : MonoBehaviour
     {
         string path = Application.persistentDataPath + "/"+ filename+".txt";
 
-        Debug.Log("Save location : " + path);
+        //Debug.Log("Save location : " + path);
 
         //Write some text to the map.txt file
         StreamWriter writer = new StreamWriter(path, false);
@@ -32,6 +32,7 @@ public class TextFileController : MonoBehaviour
             writer.Close();
         }
     }
+
     public static void WriteMapData(string[,] mapData)
     {
         WriteMapData(mapData, "map");

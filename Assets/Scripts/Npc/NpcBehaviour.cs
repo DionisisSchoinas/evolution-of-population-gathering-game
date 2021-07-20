@@ -12,7 +12,7 @@ public class NpcBehaviour : WorldObject
     NpcData npcData;
     public Text displayText;
     public GameObject statusDeathImage;
-    private Vector2Int mapPosition =new Vector2Int(10,10);
+    private Vector2Int mapPosition = new Vector2Int(10,10);
     
     private string[,] localmMapData;
     private float[,] weightMap;
@@ -21,14 +21,18 @@ public class NpcBehaviour : WorldObject
     {
         localmMapData = new string[100, 100];
         weightMap= new float[100, 100];
+
         for (int i = 0; i < localmMapData.GetLength(0); i++)
         {
             for (int j = 0; j < localmMapData.GetLength(1); j++)
             {
-                if (j == 0 || i ==0 || i == localmMapData.GetLength(0) - 1 || j == localmMapData.GetLength(1) - 1) {
+                if (j == 0 || i ==0 || i == localmMapData.GetLength(0) - 1 || j == localmMapData.GetLength(1) - 1)
+                {
+                    localmMapData[i, j] = "e";
                     weightMap[i, j] = -1f;
                 }
-                else{
+                else
+                {
                     localmMapData[i, j] = "u";
                     weightMap[i, j] = 1f;
                 }
@@ -165,8 +169,11 @@ public class NpcBehaviour : WorldObject
     }
 
     public void Move(int x, int z) {
-        //Debug.Log(grid.GetNearestGridPoint(new Vector3(x, 0, z)));
+        Debug.Log(new Vector3Int(x, 0, z) + " -> " + grid.GetNearestGridPoint(new Vector3(x, 0, z)));
         //transform.position = grid.GetNearestGridPoint(new Vector3(x,0,z));
+
+
+
         weightMap[x, z] = 0.5f;
         mapPosition = new Vector2Int(x, z);
         moveOnWorldMap(x, z);
@@ -190,9 +197,8 @@ public class NpcBehaviour : WorldObject
                 Vector2Int[] possiblePositions = new Vector2Int[8];
                 int counter = 0;
                 float maxWeight=0;
-                for (int i = -1; i <=1; i++) {
+                for (int i = -1; i <= 1; i++) {
                     for (int j = -1; j <= 1; j++){
-
                         if (!(i == 0 && j == 0))
                         {
                             localmMapData[mapPosition.x + i, mapPosition.y + j] = map.mapData[mapPosition.x + i, mapPosition.y + j];
@@ -202,7 +208,6 @@ public class NpcBehaviour : WorldObject
                         }
                         else {
                             localmMapData[mapPosition.x + i, mapPosition.y + j] = "x";
-
                         }
                     }
                 }
@@ -219,6 +224,7 @@ public class NpcBehaviour : WorldObject
                 //Move((int)mapPosition.x + UnityEngine.Random.Range(-1, 2), (int)mapPosition.y + UnityEngine.Random.Range(-1, 2));
 
             }
+
             npcData.energy--;
             if (npcData.energy == 0)
             {
