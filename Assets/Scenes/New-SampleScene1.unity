@@ -449,8 +449,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 2
-  gridSpace: 3
   buildingColor: {r: 0.33962262, g: 0.21366401, b: 0.05286579, a: 1}
+  gridSpace: 1
 --- !u!1 &377715321
 GameObject:
   m_ObjectHideFlags: 0
@@ -586,8 +586,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 4
-  gridSpace: 7
   buildingColor: {r: 0.78983116, g: 0, b: 1, a: 1}
+  gridSpace: 1
 --- !u!1 &438036434
 GameObject:
   m_ObjectHideFlags: 0
@@ -896,8 +896,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 1
-  gridSpace: 3
   buildingColor: {r: 0.2264151, g: 0.2264151, b: 0.2264151, a: 1}
+  gridSpace: 1
 --- !u!1 &767326977
 GameObject:
   m_ObjectHideFlags: 0
@@ -2226,8 +2226,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 3
-  gridSpace: 3
   buildingColor: {r: 4, g: 3.9843137, b: 0, a: 1}
+  gridSpace: 1
 --- !u!1 &1913170630
 GameObject:
   m_ObjectHideFlags: 0
@@ -2484,8 +2484,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 0
-  gridSpace: 3
   buildingColor: {r: 1, g: 0.9780377, b: 0, a: 1}
+  gridSpace: 1
 --- !u!1 &2138677391
 GameObject:
   m_ObjectHideFlags: 0

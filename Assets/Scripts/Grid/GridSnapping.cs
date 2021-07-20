@@ -50,6 +50,12 @@ public class GridSnapping : MonoBehaviour
                 case KeyCode.Mouse0:
                     if (showingPlaceable != null)
                     {
+                        if (!mapController.hasSpace(GetGetNearestGridPointIndex(showingPlaceable.transform.position, blockSize), placeable))
+                        {
+                            Debug.Log("Colliding");
+                            return;
+                        }
+
                         // Add to map data
                         mapController.AddBuilding(GetGetNearestGridPointIndex(showingPlaceable.transform.position, blockSize), placeable);
                         // Enable collider
@@ -189,10 +195,11 @@ public class GridSnapping : MonoBehaviour
     {
         position -= transform.position;
 
-        int x = Mathf.RoundToInt(position.x / blockSize);
-        int z = Mathf.RoundToInt(position.z / blockSize);
+        // Changed from RoundToInt because of rouding errors (49.5 -> 50, 48.5 -> 48)
+        int x = Mathf.CeilToInt(position.x / blockSize);
+        int z = Mathf.CeilToInt(position.z / blockSize);
 
-        return new Vector3Int(x, 0, z);
+        return ClampGridIndex(new Vector3Int(x, 0, z));
     }
 
     private Vector3 GetNearestGridPoint(Vector3 position, float blockSize)
@@ -227,15 +234,30 @@ public class GridSnapping : MonoBehaviour
         return result;
     }
 
+    public Vector3 GetNearestWorldPoint(Vector3 position, Vector3Int gridPosition)
+    {
+        Vector3 result = new Vector3(
+            ((float)gridPosition.x - 49) * blockSize - blockSize / 2f,
+            position.y,
+            ((float)gridPosition.z - 49) * blockSize - blockSize / 2f
+        );
+
+        result += transform.position;
+
+        return result;
+    }
+
+    private Vector3Int ClampGridIndex(Vector3Int index)
+    {
+        index.x = Mathf.Clamp(index.x, -49, 50);
+        index.z = Mathf.Clamp(index.z, -49, 50);
+
+        return index;
+    }
+
+
     private Vector3 ClampPlaceableOnGrid(Vector3 position, Placeable placeable)
     {
-        /*
-        float leftEdge = transform.position.x - transform.localScale.x / 2f + blockSize / 2f + (float)placeable.gridSpace / 2f;
-        float rightEdge = transform.position.x + transform.localScale.x / 2f - blockSize / 2f - (float)placeable.gridSpace / 2f;
-        float downEdge = transform.position.z - transform.localScale.z / 2f + blockSize / 2f + (float)placeable.gridSpace / 2f;
-        float upEdge = transform.position.z + transform.localScale.z / 2f - blockSize / 2f - (float)placeable.gridSpace / 2f;
-        */
-
         float leftEdge = transform.position.x - transform.localScale.x / 2f + (float)placeable.gridSpace / 2f;
         float rightEdge = transform.position.x + transform.localScale.x / 2f - (float)placeable.gridSpace / 2f;
         float downEdge = transform.position.z - transform.localScale.z / 2f + (float)placeable.gridSpace / 2f;

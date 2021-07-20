@@ -14,40 +14,57 @@ public class MapController : MonoBehaviour
         {
             for (int j = 0; j < mapData.GetLength(1); j++)
             {
-                mapData[i,j] = "-";
+                mapData[i,j] = MapBuildingToString(Placeable.Type.Ground);
             }
         }
+    }
+
+    public bool hasSpace(Vector3Int index, Placeable placeable)
+    {
+        index = NormalizeIndex(index);
+        int blockSize = Mathf.FloorToInt(placeable.gridSpace / 2f);
+        for (int i = (index.x - blockSize); i <= (index.x + blockSize); i++)
+        {
+            for (int j = (index.z - blockSize); j <= (index.z + blockSize); j++)
+            {
+                if (!MapBuildingToEnum(mapData[i, j]).Equals(Placeable.Type.Ground))
+                    return false;
+            }
+        }
+        return true;
     }
 
     public void AddBuilding(Vector3Int index, Placeable placeable)
     {
         index = NormalizeIndex(index);
         int blockSize = Mathf.FloorToInt(placeable.gridSpace / 2f);
-        for (int i = (index.x - blockSize); i < (index.x + blockSize); i++)
+        for (int i = (index.x - blockSize); i <= (index.x + blockSize); i++)
         {
-            for (int j = (index.z - blockSize); j < (index.z + blockSize); j++)
+            for (int j = (index.z - blockSize); j <= (index.z + blockSize); j++)
             {
                 mapData[i, j] = MapBuildingToString(placeable.type);
             }
         }
+        TextFileController.WriteMapData(mapData);
     }
 
     public void DeleteBuilding(Vector3Int index, Placeable placeable)
     {
         index = NormalizeIndex(index);
         int blockSize = Mathf.FloorToInt(placeable.gridSpace / 2f);
-        for (int i = (index.x - blockSize); i < (index.x + blockSize); i++)
+        for (int i = (index.x - blockSize); i <= (index.x + blockSize); i++)
         {
-            for (int j = (index.z - blockSize); j < (index.z + blockSize); j++)
+            for (int j = (index.z - blockSize); j <= (index.z + blockSize); j++)
             {
                 mapData[i, j] = MapBuildingToString(Placeable.Type.Ground);
             }
         }
+        TextFileController.WriteMapData(mapData);
     }
 
     private Vector3Int NormalizeIndex(Vector3Int index)
     {
-        return index + new Vector3Int(50, 0, 50);
+        return index + new Vector3Int(49, 0, 49);
     }
 
     public string MapBuildingToString(Placeable.Type placeable)
