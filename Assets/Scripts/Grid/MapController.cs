@@ -1,7 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEditor;
+using System.IO;
 public class MapController : MonoBehaviour
 {
     public string[,] mapData;
@@ -86,4 +87,5 @@ public class MapController : MonoBehaviour
                 return Placeable.Type.Ground;
         }
     }
+
 }

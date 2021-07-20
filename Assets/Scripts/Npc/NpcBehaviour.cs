@@ -1,20 +1,45 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 public class NpcBehaviour : WorldObject
 {
     private GridSnapping grid;
-
+    private MapController map;
     NpcData npcData;
     public Text displayText;
     public GameObject statusDeathImage;
+    private Vector2Int mapPosition =new Vector2Int(10,10);
+    
+    private string[,] localmMapData;
+    private float[,] weightMap;
+
+    private void Awake()
+    {
+        localmMapData = new string[100, 100];
+        weightMap= new float[100, 100];
+        for (int i = 0; i < localmMapData.GetLength(0); i++)
+        {
+            for (int j = 0; j < localmMapData.GetLength(1); j++)
+            {
+                if (j == 0 || i ==0 || i == localmMapData.GetLength(0) - 1 || j == localmMapData.GetLength(1) - 1) {
+                    weightMap[i, j] = -1f;
+                }
+                else{
+                    localmMapData[i, j] = "u";
+                    weightMap[i, j] = 1f;
+                }
+            }
+        }
+    }
     // Start is called before the first frame update
     void Start()
     {
         grid = FindObjectOfType<GridSnapping>();
-
+        map= FindObjectOfType<MapController>();
         npcData = GetComponent<NpcData>();
         Debug.Log(npcData.genome.Length);
         if (npcData.genome.Length == 11) {
@@ -135,18 +160,63 @@ public class NpcBehaviour : WorldObject
                 npcData.energy = 400;
             }
         }
+        Move(mapPosition.x, mapPosition.y);
+
     }
 
     public void Move(int x, int z) {
-        transform.position = grid.GetNearestGridPoint(new Vector3(x,0,z));
+        //Debug.Log(grid.GetNearestGridPoint(new Vector3(x, 0, z)));
+        //transform.position = grid.GetNearestGridPoint(new Vector3(x,0,z));
+        weightMap[x, z] = 0.5f;
+        mapPosition = new Vector2Int(x, z);
+        moveOnWorldMap(x, z);
+        localmMapData[x,z] = map.mapData[x,z];
+        TextFileController.WriteMapData(localmMapData,"localMap");
+
+        string[,] weightMapTemp = new string[100, 100];
+        for (int i = 0; i < weightMap.GetLength(0); i++){
+            for (int j = 0; j < weightMap.GetLength(1); j++) {
+                weightMapTemp[i, j] = weightMap[i, j]+"";
+            }
+        }
+        TextFileController.WriteMapData(weightMapTemp, "weightMap");
+
     }
 
-    public override void Tick()
-    {
+    public override void Tick(){
         if (npcData.alive) {
-            for (int i = 0; i < npcData.moveLength; i++ )
-            {
-                Move((int)transform.position.x + UnityEngine.Random.Range(-1, 2), (int)transform.position.z + UnityEngine.Random.Range(-1, 2));
+            for (int step = 0; step < npcData.moveLength; step++ ){
+                //find all possible possitions for each step
+                Vector2Int[] possiblePositions = new Vector2Int[8];
+                int counter = 0;
+                float maxWeight=0;
+                for (int i = -1; i <=1; i++) {
+                    for (int j = -1; j <= 1; j++){
+
+                        if (!(i == 0 && j == 0))
+                        {
+                            localmMapData[mapPosition.x + i, mapPosition.y + j] = map.mapData[mapPosition.x + i, mapPosition.y + j];
+                            possiblePositions[counter] = new Vector2Int(mapPosition.x + i, mapPosition.y + j);
+                            if (maxWeight < weightMap[mapPosition.x + i, mapPosition.y + j]) maxWeight = weightMap[mapPosition.x + i, mapPosition.y + j];
+                            counter++;
+                        }
+                        else {
+                            localmMapData[mapPosition.x + i, mapPosition.y + j] = "x";
+
+                        }
+                    }
+                }
+                List<Vector2Int> profitablePositions = new List<Vector2Int>();
+                //find the most profitable possitions in the possible possitions
+                for (int position = 0; position < possiblePositions.Length; position++) {
+                    if (weightMap[possiblePositions[position].x, possiblePositions[position].y]==maxWeight){
+                        profitablePositions.Add(possiblePositions[position]);
+                    }
+                }
+                Vector2Int nextPosition = profitablePositions[UnityEngine.Random.Range(0, profitablePositions.Count)];
+                Move(nextPosition.x,nextPosition.y);
+
+                //Move((int)mapPosition.x + UnityEngine.Random.Range(-1, 2), (int)mapPosition.y + UnityEngine.Random.Range(-1, 2));
 
             }
             npcData.energy--;
@@ -159,6 +229,9 @@ public class NpcBehaviour : WorldObject
         else {
             Destroy(gameObject);
         }
+    }
+    public void moveOnWorldMap(int x , int z) {
+        transform.position = grid.GetNearestWorldPoint(transform.position, new Vector3Int(mapPosition.x,0,mapPosition.y));
     }
 
 }
