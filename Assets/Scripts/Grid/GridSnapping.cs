@@ -221,18 +221,7 @@ public class GridSnapping : MonoBehaviour
     {
         return GetNearestGridPoint(position, blockSize);
     }
-    public Vector3 GetNearestWorldPoint(Vector3 position, Vector3Int gridPosition)
-    {
-        Vector3 result = new Vector3(
-            ((float)gridPosition.x-50) * blockSize - blockSize / 2f,
-            position.y,
-            ((float)gridPosition.z-50) * blockSize - blockSize / 2f
-        );
 
-        result += transform.position;
-
-        return result;
-    }
 
     public Vector3 GetNearestWorldPoint(Vector3 position, Vector3Int gridPosition)
     {

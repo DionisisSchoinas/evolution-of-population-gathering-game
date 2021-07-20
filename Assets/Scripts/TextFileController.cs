@@ -32,4 +32,8 @@ public class TextFileController : MonoBehaviour
             writer.Close();
         }
     }
+    public static void WriteMapData(string[,] mapData)
+    {
+        WriteMapData(mapData, "map");
+    }
 }
