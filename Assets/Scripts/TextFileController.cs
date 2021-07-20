@@ -4,7 +4,7 @@ using System.IO;
 using UnityEngine;
 
 public class TextFileController : MonoBehaviour
-{    
+{   
     public static void WriteMapData(string[,] mapData)
     {
         string path = Application.persistentDataPath + "/map.txt";
