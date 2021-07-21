@@ -1573,8 +1573,8 @@ MonoBehaviour:
   maxBirthChance: {fileID: 293660563}
   maxDnaMutationChance: {fileID: 828921193}
   amountOfVillages: {fileID: 1819395898}
-  amountOfGold: {fileID: 375328614}
-  amountOfEnergyPots: {fileID: 784549332}
+  amountOfGold: {fileID: 784549332}
+  amountOfEnergyPots: {fileID: 375328614}
   amountOfStone: {fileID: 1679584406}
   amountOfWood: {fileID: 1069244695}
   energyPotCost: {fileID: 1472864798}
