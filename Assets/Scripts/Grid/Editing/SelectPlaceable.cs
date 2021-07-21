@@ -9,7 +9,7 @@ public class SelectPlaceable : MonoBehaviour
     public GridSnapping grid;
     public Button deleteButton;
 
-    private List<Placeable> placeables;
+    public static List<Placeable> placeables;
 
     private void Awake()
     {

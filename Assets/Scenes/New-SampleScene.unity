@@ -2220,6 +2220,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   simulationSettingsEditorPanel: {fileID: 233176454}
+  mapRandomizer: {fileID: 1362816547}
 --- !u!1 &1224395599
 GameObject:
   m_ObjectHideFlags: 0
@@ -2645,6 +2646,7 @@ GameObject:
   - component: {fileID: 1362816541}
   - component: {fileID: 1362816545}
   - component: {fileID: 1362816546}
+  - component: {fileID: 1362816547}
   m_Layer: 0
   m_Name: Ground
   m_TagString: Untagged
@@ -2752,6 +2754,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c88c0f05e1e87644189893e3ce47426b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1362816547
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1362816540}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da198217129e2454aaaa454aed908dec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1406809665

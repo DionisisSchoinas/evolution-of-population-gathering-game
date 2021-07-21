@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class SimulationCreateControls : MonoBehaviour
 {
     public CanvasGroup simulationSettingsEditorPanel;
+    public MapRandomizer mapRandomizer;
 
     private CanvasGroup canvasGroup;
 
@@ -26,7 +27,7 @@ public class SimulationCreateControls : MonoBehaviour
 
     private void RandomizeMapClick()
     {
-
+        mapRandomizer.RandomizeMap();
     }
 
     private void StartSimClick()

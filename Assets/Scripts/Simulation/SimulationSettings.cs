@@ -13,9 +13,11 @@ public class SimulationSettings : MonoBehaviour
         public int mapRows = 100;
         public int mapColumns = 100;
         public int agentsPerVillage = 10;
+        public int totalResourcesRequired = 30;
         public float maxBirthChance = 25;
         public float maxDnaMutationChance = 1;
         // Resources settings
+        public int amountOfVillages = 2;
         public int amountOfGold = 50;
         public int amountOfEnergyPots = 30;
         public int amountOfStone = 50;
@@ -24,6 +26,8 @@ public class SimulationSettings : MonoBehaviour
         public int energyPotCost = 5;
         public int mapCost = 2;
     }
+
+    public static Settings simSettings;
 
     private CanvasGroup canvasGroup;
     private Scrollbar master;
@@ -75,12 +79,11 @@ public class SimulationSettings : MonoBehaviour
         try
         {
             string data = System.IO.File.ReadAllText(Application.persistentDataPath + "/SimulationSettings.json");
-            Settings settings = JsonUtility.FromJson<Settings>(data);
-
+            simSettings = JsonUtility.FromJson<Settings>(data);
         }
         catch
         {
-
+            simSettings = new Settings();
         }
 
         Debug.Log("Loaded from : " + Application.persistentDataPath);
