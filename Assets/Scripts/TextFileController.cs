@@ -1,15 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using UnityEngine;
+using System.IO;
+
 
 public class TextFileController : MonoBehaviour
-{   
-    public static void WriteMapData(string[,] mapData)
+    public static void WriteMapData(string[,] mapData,string filename)
     {
-        string path = Application.persistentDataPath + "/map.txt";
+        string path = Application.persistentDataPath + "/"+ filename+".txt";
 
-        // Write some text to the map.txt file
+        //Debug.Log("Save location : " + path);
+
+        //Write some text to the map.txt file
         StreamWriter writer = new StreamWriter(path, false);
 
         try
@@ -28,6 +30,11 @@ public class TextFileController : MonoBehaviour
         {
             writer.Close();
         }
+    }
+
+    public static void WriteMapData(string[,] mapData)
+    {
+        WriteMapData(mapData, "map");
     }
 
     public static string[,] ReadMapData()

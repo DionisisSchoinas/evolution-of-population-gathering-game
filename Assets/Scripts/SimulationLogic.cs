@@ -16,12 +16,11 @@ public class SimulationLogic : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.L))
-        {
-            ticks += 1;
-            foreach (WorldObject obj in worldObjects) {
-                obj.Tick();
-            }
+        
+        ticks += 1;
+        foreach (WorldObject obj in worldObjects) {
+            obj.Tick();
         }
+        
     }
 }
