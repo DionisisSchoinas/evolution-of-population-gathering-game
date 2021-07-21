@@ -23,7 +23,13 @@ public class MapController : MonoBehaviour
     private void Awake()
     {
         gridSnapping = gameObject.GetComponent<GridSnapping>();
+        mapData = TextFileController.ReadMapData();
         ClearMap();
+    }
+
+    private void Start()
+    {
+        PlaceEntireMap();
     }
 
     public bool hasSpace(Vector3Int index, Placeable placeable)
@@ -105,14 +111,45 @@ public class MapController : MonoBehaviour
         TextFileController.WriteMapData(mapData);
     }
 
-    public void ClearMap()
+    private void PlaceEntireMap()
     {
-        mapData = new string[100, 100];
+        Placeable.Type type;
         for (int i = 0; i < mapData.GetLength(0); i++)
         {
             for (int j = 0; j < mapData.GetLength(1); j++)
             {
-                mapData[i, j] = MapBuildingToString(Placeable.Type.Ground);
+                // Find building type
+                type = MapBuildingToEnum(mapData[i, j]);
+                if (type == Placeable.Type.Ground)
+                    continue;
+
+                if (type == Placeable.Type.Village)
+                    villages++;
+
+                // Create a building based on the string value on the map data
+                gridSnapping.PlaceBuildingFromMapData(new Vector2Int(i,j), FindPlaceableFromType(type));
+            }
+        }
+    }
+
+    public void ClearMap(bool resetAll)
+    {
+        if (resetAll)
+            mapData = null;
+        ClearMap();
+    }
+
+    public void ClearMap()
+    {
+        if (mapData == null)
+        {
+            mapData = new string[100, 100];
+            for (int i = 0; i < mapData.GetLength(0); i++)
+            {
+                for (int j = 0; j < mapData.GetLength(1); j++)
+                {
+                    mapData[i, j] = MapBuildingToString(Placeable.Type.Ground);
+                }
             }
         }
         villages = 0;
@@ -164,5 +201,15 @@ public class MapController : MonoBehaviour
             default:
                 return Placeable.Type.Ground;
         }
+    }
+
+    public static Placeable FindPlaceableFromType(Placeable.Type type)
+    {
+        foreach (Placeable placeable in SelectPlaceable.placeables)
+        {
+            if (placeable.type == type)
+                return placeable;
+        }
+        return null;
     }
 }

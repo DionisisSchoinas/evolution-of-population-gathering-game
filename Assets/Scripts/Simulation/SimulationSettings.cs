@@ -53,12 +53,8 @@ public class SimulationSettings : MonoBehaviour
         buttons = gameObject.GetComponentsInChildren<Button>();
         buttons[0].onClick.AddListener(CloseButtonClick);
         buttons[1].onClick.AddListener(SaveButtonClick);
-    }
 
-    private void Start()
-    {
         LoadSettings();
-
     }
 
     private void OnApplicationQuit()

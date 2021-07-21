@@ -17,7 +17,7 @@ public class MapRandomizer : MonoBehaviour
 
     public void RandomizeMap()
     {
-        mapController.ClearMap();
+        mapController.ClearMap(true);
 
         settings = SimulationSettings.simSettings;
 
@@ -29,11 +29,11 @@ public class MapRandomizer : MonoBehaviour
             PlaceBuilding(indexes, 1, Placeable.Type.Village);
         }
         */
-        PlaceBuilding(indexes, settings.amountOfVillages, FindPlaceableFromType(Placeable.Type.Village));
-        PlaceBuilding(indexes, settings.amountOfEnergyPots, FindPlaceableFromType(Placeable.Type.Energy));
-        PlaceBuilding(indexes, settings.amountOfGold, FindPlaceableFromType(Placeable.Type.Gold));
-        PlaceBuilding(indexes, settings.amountOfStone, FindPlaceableFromType(Placeable.Type.Stone));
-        PlaceBuilding(indexes, settings.amountOfWood, FindPlaceableFromType(Placeable.Type.Wood));
+        PlaceBuilding(indexes, settings.amountOfVillages, MapController.FindPlaceableFromType(Placeable.Type.Village));
+        PlaceBuilding(indexes, settings.amountOfEnergyPots, MapController.FindPlaceableFromType(Placeable.Type.Energy));
+        PlaceBuilding(indexes, settings.amountOfGold, MapController.FindPlaceableFromType(Placeable.Type.Gold));
+        PlaceBuilding(indexes, settings.amountOfStone, MapController.FindPlaceableFromType(Placeable.Type.Stone));
+        PlaceBuilding(indexes, settings.amountOfWood, MapController.FindPlaceableFromType(Placeable.Type.Wood));
     }
 
     private void PlaceBuilding(List<int> indexes, int amount, Placeable placeable)
@@ -60,15 +60,5 @@ public class MapRandomizer : MonoBehaviour
     private Vector2Int ChangeTo2dIndex(int index)
     {
         return new Vector2Int(index % settings.mapRows, index / settings.mapRows);
-    }
-
-    private Placeable FindPlaceableFromType(Placeable.Type type)
-    {
-        foreach (Placeable placeable in SelectPlaceable.placeables)
-        {
-            if (placeable.type == type)
-                return placeable;
-        }
-        return null;
     }
 }

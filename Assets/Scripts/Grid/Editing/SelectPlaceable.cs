@@ -7,6 +7,8 @@ using UnityEngine.UI;
 public class SelectPlaceable : MonoBehaviour
 {
     public GridSnapping grid;
+    public MapController mapController;
+    public Button clearButton;
     public Button deleteButton;
 
     public static List<Placeable> placeables;
@@ -24,17 +26,19 @@ public class SelectPlaceable : MonoBehaviour
             );
         }
 
-        deleteButton.onClick.AddListener(
-            delegate
-            {
-                Delete();
-            }
-        );
+        clearButton.onClick.AddListener(Clear);
+
+        deleteButton.onClick.AddListener(Delete);
     }
 
     private void PickedPlaceable(Placeable placeable)
     {
         grid.PickedPlaceable(placeable);
+    }
+
+    private void Clear()
+    {
+        mapController.ClearMap(true);
     }
 
     private void Delete()
