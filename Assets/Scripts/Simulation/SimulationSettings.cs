@@ -6,6 +6,8 @@ using UnityEngine.UI;
 
 public class SimulationSettings : MonoBehaviour
 {
+    private MapController mapController;
+
     [Serializable]
     public class Settings
     {
@@ -28,6 +30,10 @@ public class SimulationSettings : MonoBehaviour
     }
 
     public static Settings simSettings;
+    // Set at MapController.RedrawMap()
+    public static Vector3Int indexNormalizeVector;
+    public static Vector2Int gridRrowsIndexLimits; // [-sth, sth_else]
+    public static Vector2Int gridColumnsIndexLimits;
 
     // Map and population settings
     public InputField mapRows;
@@ -52,11 +58,15 @@ public class SimulationSettings : MonoBehaviour
     private void Awake()
     {
         canvasGroup = gameObject.GetComponent<CanvasGroup>();
+        mapController = FindObjectOfType<MapController>();
 
         buttons = gameObject.GetComponentsInChildren<Button>();
         buttons[0].onClick.AddListener(CloseButtonClick);
         buttons[1].onClick.AddListener(SaveButtonClick);
+    }
 
+    private void Start()
+    {
         LoadSettings();
     }
 
@@ -79,12 +89,18 @@ public class SimulationSettings : MonoBehaviour
         {
             string data = System.IO.File.ReadAllText(Application.persistentDataPath + "/SimulationSettings.json");
             simSettings = JsonUtility.FromJson<Settings>(data);
+
+            if (simSettings == null)
+                simSettings = new Settings();
         }
         catch
         {
             simSettings = new Settings();
         }
         SetSettingsToDisplay(simSettings);
+
+        mapController.RedrawMap();
+
         Debug.Log("Loaded from : " + Application.persistentDataPath);
     }
 
@@ -111,13 +127,21 @@ public class SimulationSettings : MonoBehaviour
 
         int i_val;
         float f_val;
-        // Map rows [100,500] and integer
+        // Map rows [100,500] and integer and even
         if (int.TryParse(mapRows.text, out i_val))
+        {
             new_settings.mapRows = Mathf.Clamp(i_val, 100, 500);
+            // If value is odd remove 1
+            new_settings.mapRows -= new_settings.mapRows % 2;
+        }
 
-        // Map columns [100,500] and integer
+        // Map columns [100,500] and integer and even
         if (int.TryParse(mapColumns.text, out i_val))
+        {
             new_settings.mapColumns = Mathf.Clamp(i_val, 100, 500);
+            // If value is odd remove 1
+            new_settings.mapColumns -= new_settings.mapColumns % 2;
+        }
 
         // Agents per village [4,10] and integer
         if (int.TryParse(agentsPerVillage.text, out i_val))
@@ -173,6 +197,8 @@ public class SimulationSettings : MonoBehaviour
         SetSettingsToDisplay(GetSettingsFromDisplay());
         // Saves new settings
         SaveSettings();
+        // Redraw map
+        mapController.RedrawMap();
         UIManager.SetCanvasState(canvasGroup, false);
     }
 

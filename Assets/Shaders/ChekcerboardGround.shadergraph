@@ -1809,15 +1809,15 @@
     },
     "m_Name": "Ground Scale",
     "m_DefaultReferenceName": "Vector2_87c58aa0879a4170a64ed25e7e347706",
-    "m_OverrideReferenceName": "",
+    "m_OverrideReferenceName": "_GroundScale",
     "m_GeneratePropertyBlock": true,
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
     "m_Hidden": false,
     "m_Value": {
-        "x": 10.0,
-        "y": 10.0,
+        "x": 100.0,
+        "y": 100.0,
         "z": 0.0,
         "w": 0.0
     }

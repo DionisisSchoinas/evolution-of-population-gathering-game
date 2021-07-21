@@ -167,7 +167,7 @@ public class NpcBehaviour : WorldObject
                 npcData.energy = 400;
             }
         }
-        Move(mapPosition.x, mapPosition.y);
+        //Move(mapPosition.x, mapPosition.y);
 
     }
 
@@ -176,7 +176,6 @@ public class NpcBehaviour : WorldObject
         moveOnWorldMap(x, z);
         localmMapData[x,z] = map.mapData[x,z];
         TextFileController.WriteMapData(localmMapData,"localMap");
-
     }
 
     public override void Tick(){

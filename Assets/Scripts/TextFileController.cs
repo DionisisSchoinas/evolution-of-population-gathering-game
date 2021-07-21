@@ -46,17 +46,24 @@ public class TextFileController : MonoBehaviour
         {
             using (StreamReader sr = new StreamReader(path))
             {
-                string[,] map = new string[100, 100];
+                string[,] map = new string[SimulationSettings.simSettings.mapRows, SimulationSettings.simSettings.mapColumns];
                 string line;
                 int i = 0;
                 while ((line = sr.ReadLine()) != null)
                 {
+                    if (line.Length != SimulationSettings.simSettings.mapColumns)
+                        return null;
+
                     for (int j = 0; j < line.Length; j++)
                     {
                         map[i, j] = line[j].ToString();
                     }
                     i++;
                 }
+
+                if (i != SimulationSettings.simSettings.mapRows)
+                    return null;
+
                 return map;
             }
         }

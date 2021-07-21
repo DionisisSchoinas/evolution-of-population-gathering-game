@@ -9,7 +9,9 @@ public class GridSnapping : MonoBehaviour
 
     private MapController mapController;
 
-    private float blockSize;
+    public float blockSize;
+
+
     private bool placing;
     private Placeable placeable;
     private GameObject showingPlaceable;
@@ -248,9 +250,9 @@ public class GridSnapping : MonoBehaviour
     public Vector3 GetNearestWorldPoint(Vector3 position, Vector3Int arrayPosition)
     {
         Vector3 result = new Vector3(
-            ((float)arrayPosition.x - 49) * blockSize - blockSize / 2f,
+            ((float)arrayPosition.x - SimulationSettings.indexNormalizeVector.x) * blockSize - blockSize / 2f,
             position.y,
-            ((float)arrayPosition.z - 49) * blockSize - blockSize / 2f
+            ((float)arrayPosition.z - SimulationSettings.indexNormalizeVector.z) * blockSize - blockSize / 2f
         );
 
         result += transform.position;
@@ -260,8 +262,8 @@ public class GridSnapping : MonoBehaviour
 
     private Vector3Int ClampGridIndex(Vector3Int index)
     {
-        index.x = Mathf.Clamp(index.x, -49, 50);
-        index.z = Mathf.Clamp(index.z, -49, 50);
+        index.x = Mathf.Clamp(index.x, SimulationSettings.gridRrowsIndexLimits.x, SimulationSettings.gridRrowsIndexLimits.y);
+        index.z = Mathf.Clamp(index.z, SimulationSettings.gridColumnsIndexLimits.x, SimulationSettings.gridColumnsIndexLimits.y);
 
         return index;
     }
@@ -277,5 +279,23 @@ public class GridSnapping : MonoBehaviour
         position.z = Mathf.Clamp(position.z, downEdge, upEdge);
 
         return position;
+    }
+
+    public void RedrawGrid()
+    {
+        placing = false;
+        deleting = false;
+        if (showingPlaceable != null)
+        {
+            Destroy(showingPlaceable);
+        }
+        // Reset grid
+        gridSize = new Vector2(SimulationSettings.simSettings.mapRows, SimulationSettings.simSettings.mapColumns);
+        // Rescale map
+        transform.localScale = new Vector3(gridSize.x, transform.localScale.y, gridSize.y);
+        blockSize = transform.localScale.x / gridSize.x;
+        // Reset checkerboard display
+        Material material = gameObject.GetComponent<MeshRenderer>().material;
+        material.SetVector("_GroundScale", new Vector4(gridSize.x, gridSize.y, 0, 0));
     }
 }

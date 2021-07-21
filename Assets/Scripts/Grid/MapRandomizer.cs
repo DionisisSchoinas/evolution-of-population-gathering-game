@@ -23,12 +23,6 @@ public class MapRandomizer : MonoBehaviour
 
         List<int> indexes = Enumerable.Range(0, settings.mapRows * settings.mapColumns).ToList();
 
-        /*
-        for (int i = 0; i < settings.amountOfVillages; i++)
-        {
-            PlaceBuilding(indexes, 1, Placeable.Type.Village);
-        }
-        */
         PlaceBuilding(indexes, settings.amountOfVillages, MapController.FindPlaceableFromType(Placeable.Type.Village));
         PlaceBuilding(indexes, settings.amountOfEnergyPots, MapController.FindPlaceableFromType(Placeable.Type.Energy));
         PlaceBuilding(indexes, settings.amountOfGold, MapController.FindPlaceableFromType(Placeable.Type.Gold));

@@ -24,13 +24,12 @@ public class MapController : MonoBehaviour
     private void Awake()
     {
         gridSnapping = gameObject.GetComponent<GridSnapping>();
-        mapData = TextFileController.ReadMapData();
-        ClearMap();
+        //ClearMap();
     }
 
     private void Start()
     {
-        PlaceEntireMap();
+        //PlaceEntireMap();
     }
 
     public bool hasSpace(Vector3Int index, Placeable placeable)
@@ -133,6 +132,25 @@ public class MapController : MonoBehaviour
         }
     }
 
+    public void RedrawMap()
+    {
+        // Reset normilization vectors
+        int i = Mathf.FloorToInt(SimulationSettings.simSettings.mapRows / 2f - 1);
+        int j = Mathf.FloorToInt(SimulationSettings.simSettings.mapColumns / 2f - 1);
+        SimulationSettings.indexNormalizeVector = new Vector3Int(i, 0, j);
+        SimulationSettings.gridRrowsIndexLimits = new Vector2Int(-i, Mathf.CeilToInt(SimulationSettings.simSettings.mapRows / 2f));
+        SimulationSettings.gridColumnsIndexLimits = new Vector2Int(-j, Mathf.CeilToInt(SimulationSettings.simSettings.mapColumns / 2f));
+
+        // Redraw grid
+        gridSnapping.RedrawGrid();
+
+        // Get map data if dimensions match
+        mapData = TextFileController.ReadMapData();
+
+        // If dims don't match mapData will be null and it will do a full reset
+        ClearMap();
+    }
+
     public void ClearMap(bool resetAll)
     {
         if (resetAll)
@@ -140,11 +158,11 @@ public class MapController : MonoBehaviour
         ClearMap();
     }
 
-    public void ClearMap()
+    private void ClearMap()
     {
         if (mapData == null)
         {
-            mapData = new string[100, 100];
+            mapData = new string[SimulationSettings.simSettings.mapRows, SimulationSettings.simSettings.mapColumns];
             for (int i = 0; i < mapData.GetLength(0); i++)
             {
                 for (int j = 0; j < mapData.GetLength(1); j++)
@@ -153,6 +171,7 @@ public class MapController : MonoBehaviour
                 }
             }
         }
+
         villages = 0;
         TextFileController.WriteMapData(mapData);
         Placeable[] children = gameObject.GetComponentsInChildren<Placeable>();
@@ -162,7 +181,7 @@ public class MapController : MonoBehaviour
 
     private Vector3Int NormalizeIndex(Vector3Int index)
     {
-        return index + new Vector3Int(49, 0, 49);
+        return index + SimulationSettings.indexNormalizeVector;
     }
 
     public static string MapBuildingToString(Placeable.Type placeable)
