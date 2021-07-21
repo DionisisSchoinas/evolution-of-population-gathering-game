@@ -5649,7 +5649,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Misc Settings
+  m_Text: Trading Cost Settings
 --- !u!222 &856022295
 CanvasRenderer:
   m_ObjectHideFlags: 0
