@@ -29,6 +29,23 @@ public class SimulationSettings : MonoBehaviour
 
     public static Settings simSettings;
 
+    // Map and population settings
+    public InputField mapRows;
+    public InputField mapColumns;
+    public InputField agentsPerVillage;
+    public InputField totalResourcesRequired;
+    public InputField maxBirthChance;
+    public InputField maxDnaMutationChance;
+    // Resources settings
+    public InputField amountOfVillages;
+    public InputField amountOfGold;
+    public InputField amountOfEnergyPots;
+    public InputField amountOfStone;
+    public InputField amountOfWood;
+    // Misc settings
+    public InputField energyPotCost;
+    public InputField mapCost;
+
     private CanvasGroup canvasGroup;
     private Scrollbar master;
     private Scrollbar music;

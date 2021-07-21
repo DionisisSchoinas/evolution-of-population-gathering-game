@@ -1566,6 +1566,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 170cbdc61ab0b8a44a81dc25138cb22f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mapRows: {fileID: 1642268142}
+  mapColumns: {fileID: 976153728}
+  agentsPerVillage: {fileID: 184706493}
+  totalResourcesRequired: {fileID: 1997604040}
+  maxBirthChance: {fileID: 293660563}
+  maxDnaMutationChance: {fileID: 828921193}
+  amountOfVillages: {fileID: 1819395898}
+  amountOfGold: {fileID: 375328614}
+  amountOfEnergyPots: {fileID: 784549332}
+  amountOfStone: {fileID: 1679584406}
+  amountOfWood: {fileID: 1069244695}
+  energyPotCost: {fileID: 1472864798}
+  mapCost: {fileID: 44820473}
 --- !u!1 &249288707
 GameObject:
   m_ObjectHideFlags: 0
