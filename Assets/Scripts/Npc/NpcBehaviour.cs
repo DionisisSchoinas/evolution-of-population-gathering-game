@@ -302,10 +302,11 @@ public class NpcBehaviour : WorldObject
 
                         int[] directionLenghts =new int[]{ up_counter, down_counter, left_counter, right_counter };
                         Vector2Int newPosition = mapPosition + directions[indexOfMinNotZero(directionLenghts)];
-                        for (int points = 0; points < 5; points++) {
-                            profitablePositions.Add(newPosition);
+                        if (directionLenghts[indexOfMinNotZero(directionLenghts)]!= 100){
+                            for (int points = 0; points < 5; points++) {
+                                profitablePositions.Add(newPosition);
+                            }
                         }
-                        Debug.Log(directions[indexOfMinNotZero(directionLenghts)]);
                     }
                     
                     Vector2Int nextPosition = profitablePositions[UnityEngine.Random.Range(0, profitablePositions.Count)];
