@@ -58,6 +58,8 @@ public class GridSnapping : MonoBehaviour
 
                         // Add to map data
                         mapController.AddBuilding(GetGetNearestGridPointIndex(showingPlaceable.transform.position, blockSize), placeable);
+                        // Set parent
+                        showingPlaceable.transform.parent = gameObject.transform;
                         // Enable collider
                         showingPlaceable.gameObject.GetComponent<BoxCollider>().enabled = true;
                         // Add extra building data
@@ -92,7 +94,7 @@ public class GridSnapping : MonoBehaviour
                     if (showingPlaceable != null && currentDelete != null)
                     {
                         // Add to map data
-                        mapController.DeleteBuilding(GetGetNearestGridPointIndex(showingPlaceable.transform.position, blockSize), placeable);
+                        mapController.DeleteBuilding(GetGetNearestGridPointIndex(showingPlaceable.transform.position, blockSize), currentDelete);
                         // Delete building
                         Destroy(currentDelete.transform.gameObject);
 
@@ -191,6 +193,27 @@ public class GridSnapping : MonoBehaviour
         showingPlaceable.gameObject.GetComponent<BoxCollider>().enabled = false;
     }
 
+    public void PlaceBuildingFromMapData(Vector2Int arrayIndex, Placeable placeable)
+    {
+        Vector3Int index = new Vector3Int(arrayIndex.x, 0, arrayIndex.y);
+        Vector3 worldPoint = GetNearestWorldPoint(Vector3.up * 0.5f, index);
+
+        showingPlaceable = Instantiate(placeableDisplay);
+        showingPlaceable.transform.position = worldPoint;
+        showingPlaceable.transform.localScale = new Vector3(placeable.gridSpace, 0.5f, placeable.gridSpace);
+        // Set parent
+        showingPlaceable.transform.parent = gameObject.transform;
+        // Set visible
+        Material mat = showingPlaceable.GetComponent<MeshRenderer>().material;
+        mat.SetFloat("_Alpha", 1f);
+        mat.SetColor("_Color", placeable.buildingColor);
+        // Enable collider
+        showingPlaceable.gameObject.GetComponent<BoxCollider>().enabled = true;
+        // Add extra building data
+        Placeable pl = showingPlaceable.gameObject.AddComponent<Placeable>();
+        pl.CopyData(placeable);
+    }
+
     private Vector3Int GetGetNearestGridPointIndex(Vector3 position, float blockSize)
     {
         position -= transform.position;
@@ -222,12 +245,12 @@ public class GridSnapping : MonoBehaviour
         return GetNearestGridPoint(position, blockSize);
     }
 
-    public Vector3 GetNearestWorldPoint(Vector3 position, Vector3Int gridPosition)
+    public Vector3 GetNearestWorldPoint(Vector3 position, Vector3Int arrayPosition)
     {
         Vector3 result = new Vector3(
-            ((float)gridPosition.x - 49) * blockSize - blockSize / 2f,
+            ((float)arrayPosition.x - 49) * blockSize - blockSize / 2f,
             position.y,
-            ((float)gridPosition.z - 49) * blockSize - blockSize / 2f
+            ((float)arrayPosition.z - 49) * blockSize - blockSize / 2f
         );
 
         result += transform.position;
@@ -242,7 +265,6 @@ public class GridSnapping : MonoBehaviour
 
         return index;
     }
-
 
     private Vector3 ClampPlaceableOnGrid(Vector3 position, Placeable placeable)
     {

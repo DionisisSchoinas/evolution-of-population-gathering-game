@@ -4,7 +4,7 @@ using System.IO;
 using UnityEngine;
 
 public class TextFileController : MonoBehaviour
-{    
+{   
     public static void WriteMapData(string[,] mapData)
     {
         string path = Application.persistentDataPath + "/map.txt";
@@ -27,6 +27,34 @@ public class TextFileController : MonoBehaviour
         finally
         {
             writer.Close();
+        }
+    }
+
+    public static string[,] ReadMapData()
+    {
+        string path = Application.persistentDataPath + "/map.txt";
+
+        try
+        {
+            using (StreamReader sr = new StreamReader(path))
+            {
+                string[,] map = new string[100, 100];
+                string line;
+                int i = 0;
+                while ((line = sr.ReadLine()) != null)
+                {
+                    for (int j = 0; j < line.Length; j++)
+                    {
+                        map[i, j] = line[j].ToString();
+                    }
+                    i++;
+                }
+                return map;
+            }
+        }
+        catch
+        {
+            return null;
         }
     }
 }
