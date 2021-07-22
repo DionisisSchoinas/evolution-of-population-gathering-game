@@ -61,7 +61,7 @@ public class GridSnapping : MonoBehaviour
                         }
 
                         // Add to map data
-                        mapController.AddBuilding(GetGetNearestGridPointIndex(showingPlaceable.transform.position, blockSize), placeable);
+                        Vector2Int arrayPosition = mapController.AddBuilding(GetGetNearestGridPointIndex(showingPlaceable.transform.position, blockSize), placeable);
                         // Set parent
                         showingPlaceable.transform.parent = gameObject.transform;
                         // Enable collider
@@ -77,6 +77,7 @@ public class GridSnapping : MonoBehaviour
                         {
                             VillageData villageData = showingPlaceable.gameObject.AddComponent<VillageData>();
                             villageData.number = MapController.villages;
+                            villageData.arrayPosition = arrayPosition;
 
                             simulationData.AddVillage(villageData);
                         }
@@ -211,9 +212,9 @@ public class GridSnapping : MonoBehaviour
         showingPlaceable.gameObject.GetComponent<BoxCollider>().enabled = false;
     }
 
-    public void PlaceBuildingFromMapData(Vector2Int arrayIndex, Placeable placeable)
+    public void PlaceBuildingFromMapData(Vector2Int arrayPosition, Placeable placeable)
     {
-        Vector3Int index = new Vector3Int(arrayIndex.x, 0, arrayIndex.y);
+        Vector3Int index = new Vector3Int(arrayPosition.x, 0, arrayPosition.y);
         Vector3 worldPoint = GetNearestWorldPoint(Vector3.up * 0.5f, index);
 
         showingPlaceable = Instantiate(placeableDisplay);
@@ -235,6 +236,7 @@ public class GridSnapping : MonoBehaviour
         {
             VillageData villageData = showingPlaceable.gameObject.AddComponent<VillageData>();
             villageData.number = MapController.villages;
+            villageData.arrayPosition = arrayPosition;
 
             simulationData.AddVillage(villageData);
         }

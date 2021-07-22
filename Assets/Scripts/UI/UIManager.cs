@@ -21,4 +21,11 @@ public class UIManager : MonoBehaviour
         canvasGroup.interactable = show;
         canvasGroup.blocksRaycasts = show;
     }
+
+    public void StartSimulation()
+    {
+        SetCanvasState(buildingPanel, false);
+        SetCanvasState(simSettingsPanel, false);
+        SetCanvasState(simSettingsEditorPanel, false);
+    }
 }

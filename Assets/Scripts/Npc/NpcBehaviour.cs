@@ -7,6 +7,8 @@ using UnityEngine;
 using UnityEngine.UI;
 public class NpcBehaviour : MonoBehaviour
 {
+    public VillageData myVillage;
+
     private GridSnapping grid;
     private MapController map;
     NpcData npcData;
@@ -23,7 +25,6 @@ public class NpcBehaviour : MonoBehaviour
     {
         localmMapData = new string[100, 100];
  
-
         for (int i = 0; i < localmMapData.GetLength(0); i++)
         {
             for (int j = 0; j < localmMapData.GetLength(1); j++)
@@ -49,6 +50,10 @@ public class NpcBehaviour : MonoBehaviour
     private void Start()
     {
         SimulationLogic.current.onTick += Tick;
+
+        myVillage = gameObject.GetComponentInParent<VillageData>();
+        homePosition = myVillage.arrayPosition;
+        mapPosition = myVillage.arrayPosition;
 
         returnHome = false;
         grid = FindObjectOfType<GridSnapping>();

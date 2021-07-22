@@ -5,6 +5,7 @@ using UnityEngine;
 public class VillageData : MonoBehaviour
 {
     public int number;
+    public Vector2Int arrayPosition;
     public List<NpcData> npcs;
     public List<NpcBehaviour> npcsBehaviour;
 
@@ -15,8 +16,13 @@ public class VillageData : MonoBehaviour
         npcsBehaviour = new List<NpcBehaviour>();
     }
 
-    private void SpawnNpcs()
+    public void SpawnNpcs(GameObject npcPrefab)
     {
-
+        GameObject gm;
+        for (int i = 0; i < SimulationSettings.simSettings.agentsPerVillage; i++)
+        {
+            gm = Instantiate(npcPrefab, gameObject.transform);
+            npcs.Add(gm.GetComponent<NpcData>());
+        }
     }
 }

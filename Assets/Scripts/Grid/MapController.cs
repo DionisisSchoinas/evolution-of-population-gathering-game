@@ -51,7 +51,7 @@ public class MapController : MonoBehaviour
         return true;
     }
 
-    public void AddBuilding(Vector3Int index, Placeable placeable)
+    public Vector2Int AddBuilding(Vector3Int index, Placeable placeable)
     {
         index = NormalizeIndex(index);
         int blockSize = Mathf.FloorToInt(placeable.gridSpace / 2f); // Always 0
@@ -70,6 +70,7 @@ public class MapController : MonoBehaviour
             }
         }
         TextFileController.WriteMapData(mapData);
+        return new Vector2Int(index.x, index.z);
     }
 
     public void AddBuilding(Vector2Int index, Placeable placeable, bool writeOut)
@@ -167,6 +168,9 @@ public class MapController : MonoBehaviour
 
         // If dims don't match mapData will be null and it will do a full reset
         ClearMap();
+
+        // Place map
+        PlaceEntireMap();
     }
 
     public void ClearMap(bool resetAll)

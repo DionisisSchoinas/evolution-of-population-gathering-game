@@ -202,7 +202,7 @@ public class SimulationSettings : MonoBehaviour
         UIManager.SetCanvasState(canvasGroup, false);
     }
 
-    private void CloseButtonClick()
+    public void CloseButtonClick()
     {
         // Reset display to current settings
         SetSettingsToDisplay(simSettings);

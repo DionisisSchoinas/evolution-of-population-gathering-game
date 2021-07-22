@@ -4,11 +4,20 @@ using UnityEngine;
 
 public class SimulationData : MonoBehaviour
 {
+    public GameObject npcPrefab;
     public List<VillageData> villages;
 
     private void Awake()
     {
         ClearVillages();
+    }
+
+    public void SpawnNpcs()
+    {
+        foreach (VillageData villageData in villages)
+        {
+            villageData.SpawnNpcs(npcPrefab);
+        }
     }
 
     public void AddVillage(VillageData villageData)
