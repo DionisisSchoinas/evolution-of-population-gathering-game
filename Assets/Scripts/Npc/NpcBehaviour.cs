@@ -218,9 +218,9 @@ public class NpcBehaviour : MonoBehaviour
                                     }
                                 }
                                 if (npcData.resources[npcData.carryType].Contains(localMapData[mapPosition.x + i, mapPosition.y + j])) {
-
                                     Debug.Log("Resource: "+ npcData.resources[npcData.carryType] + " Found");
-                                    map.mapData[mapPosition.x + i, mapPosition.y + j] = "O";
+
+                                    map.PickUpResource(new Vector2Int(mapPosition.x + i, mapPosition.y + j));
                                     localMapData[mapPosition.x + i, mapPosition.y + j] = "O";
                                     returnHome = true;
                                 } 

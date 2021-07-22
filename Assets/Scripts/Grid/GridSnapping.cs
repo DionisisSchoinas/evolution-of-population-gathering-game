@@ -12,6 +12,7 @@ public class GridSnapping : MonoBehaviour
 
     public float blockSize;
 
+    public Transform[,] mapDataTransforms;
 
     private bool placing;
     private Placeable placeable;
@@ -82,6 +83,8 @@ public class GridSnapping : MonoBehaviour
                             simulationData.AddVillage(villageData);
                         }
 
+                        mapDataTransforms[arrayPosition.x, arrayPosition.y] = showingPlaceable.transform;
+
                         // Spawn new building
                         showingPlaceable = null;
                         PickedPlaceable(placeable);
@@ -112,8 +115,9 @@ public class GridSnapping : MonoBehaviour
                             simulationData.RemoveVillage(villageData);
                             RenumberVillages();
                         }
-                        // Add to map data
-                        mapController.DeleteBuilding(GetGetNearestGridPointIndex(showingPlaceable.transform.position, blockSize), currentDelete);
+                        // Delete from map data
+                        Vector2Int index = mapController.DeleteBuilding(GetGetNearestGridPointIndex(showingPlaceable.transform.position, blockSize), currentDelete);
+                        mapDataTransforms[index.x, index.y] = null;
                         // Delete building
                         Destroy(currentDelete.transform.gameObject);
 
@@ -240,6 +244,8 @@ public class GridSnapping : MonoBehaviour
 
             simulationData.AddVillage(villageData);
         }
+
+        mapDataTransforms[arrayPosition.x, arrayPosition.y] = showingPlaceable.transform;
     }
 
     private Vector3Int GetGetNearestGridPointIndex(Vector3 position, float blockSize)
@@ -317,6 +323,7 @@ public class GridSnapping : MonoBehaviour
         }
         // Reset grid
         gridSize = new Vector2(SimulationSettings.simSettings.mapRows, SimulationSettings.simSettings.mapColumns);
+        mapDataTransforms = new Transform[SimulationSettings.simSettings.mapRows, SimulationSettings.simSettings.mapColumns];
         // Rescale map
         transform.localScale = new Vector3(gridSize.x, transform.localScale.y, gridSize.y);
         blockSize = transform.localScale.x / gridSize.x;

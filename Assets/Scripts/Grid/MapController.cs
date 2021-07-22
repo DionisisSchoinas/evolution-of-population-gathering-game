@@ -97,7 +97,7 @@ public class MapController : MonoBehaviour
             TextFileController.WriteMapData(mapData);
     }
 
-    public void DeleteBuilding(Vector3Int index, Placeable placeable)
+    public Vector2Int DeleteBuilding(Vector3Int index, Placeable placeable)
     {
         index = NormalizeIndex(index);
         int blockSize = Mathf.FloorToInt(placeable.gridSpace / 2f); // Always 0
@@ -114,6 +114,8 @@ public class MapController : MonoBehaviour
             }
         }
         TextFileController.WriteMapData(mapData);
+
+        return new Vector2Int(index.x, index.z);
     }
 
     public void RenumberVillage(Vector3Int index, VillageData villageData)
@@ -200,6 +202,16 @@ public class MapController : MonoBehaviour
         Placeable[] children = gameObject.GetComponentsInChildren<Placeable>();
         foreach (Placeable child in children)
             Destroy(child.gameObject);
+    }
+
+    public void PickUpResource(Vector2Int arrayPosition)
+    {
+        // Remove from map data
+        mapData[arrayPosition.x, arrayPosition.y] = MapBuildingToString(Placeable.Type.Ground);
+        // Remove from map display
+        Destroy(gridSnapping.mapDataTransforms[arrayPosition.x, arrayPosition.y].gameObject);
+        // Remove from map display data
+        gridSnapping.mapDataTransforms[arrayPosition.x, arrayPosition.y] = null;
     }
 
     private Vector3Int NormalizeIndex(Vector3Int index)
