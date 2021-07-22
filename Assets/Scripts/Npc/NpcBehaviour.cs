@@ -13,12 +13,15 @@ public class NpcBehaviour : WorldObject
     public Text displayText;
     public GameObject statusDeathImage;
     private Vector2Int mapPosition = new Vector2Int(10,10);
-    private Vector2Int homePosition = new Vector2Int(1, 1);
+    private Vector2Int homePosition = new Vector2Int(3, 3);
     [SerializeField]
     private bool returnHome;
     private string[,] localmMapData;
     private Vector2Int[] directions = new Vector2Int[] { new Vector2Int(1, 0), new Vector2Int(-1, 0), new Vector2Int(0, -1), new Vector2Int(0, 1) };
 
+    public List<Vector2Int> knownWoodOres = new List<Vector2Int>();
+    public List<Vector2Int> knownStoneOres = new List<Vector2Int>();
+    public List<Vector2Int> knownGoldOres = new List<Vector2Int>();
     private void Awake()
     {
         localmMapData = new string[100, 100];
@@ -40,6 +43,7 @@ public class NpcBehaviour : WorldObject
                 }
             }
         }
+        localmMapData[3, 3] = "V";
     }
     // Start is called before the first frame update
     void Start()
@@ -174,10 +178,10 @@ public class NpcBehaviour : WorldObject
     public void Move(int x, int z) {
         mapPosition = new Vector2Int(x, z);
         moveOnWorldMap(x, z);
-        localmMapData[x,z] = map.mapData[x,z];
+        //to be removed 
+        localmMapData[3, 3] = "V";
         TextFileController.WriteMapData(localmMapData,"localMap");
     }
-
     public override void Tick(){
         if (npcData.alive) {
             if (!returnHome){
@@ -186,15 +190,29 @@ public class NpcBehaviour : WorldObject
                     //find all possible possitions for each step
                     Vector2Int[] possiblePositions = new Vector2Int[8];
                     int[] possiblePositionsWeights = new int[8];
-
                     int counter = 0;
-                    for (int i = -1; i <= 1; i++)
-                    {
-                        for (int j = -1; j <= 1; j++)
-                        {
-                            if (!(i == 0 && j == 0))
-                            {
-                                if(localmMapData[mapPosition.x + i, mapPosition.y + j]!="e") localmMapData[mapPosition.x + i, mapPosition.y + j] = map.mapData[mapPosition.x + i, mapPosition.y + j];
+
+                    for (int i = -1; i <= 1; i++){
+                        for (int j = -1; j <= 1; j++){
+                            if (!(i == 0 && j == 0)){
+                                if (localmMapData[mapPosition.x + i, mapPosition.y + j] != "e") {
+                                    localmMapData[mapPosition.x + i, mapPosition.y + j] = map.mapData[mapPosition.x + i, mapPosition.y + j];
+                                    if (localmMapData[mapPosition.x + i, mapPosition.y + j] == "W" && !knownWoodOres.Contains(new Vector2Int(mapPosition.x + i, mapPosition.y + j))) {
+                                        knownWoodOres.Add(new Vector2Int(mapPosition.x + i, mapPosition.y + j));
+                                    }
+                                    else if (localmMapData[mapPosition.x + i, mapPosition.y + j] == "S" && !knownStoneOres.Contains(new Vector2Int(mapPosition.x + i, mapPosition.y + j))) {
+                                        knownStoneOres.Add(new Vector2Int(mapPosition.x + i, mapPosition.y + j));
+                                    }
+                                    else if (localmMapData[mapPosition.x + i, mapPosition.y + j] == "G" && !knownGoldOres.Contains(new Vector2Int(mapPosition.x + i, mapPosition.y + j))) {
+                                        knownGoldOres.Add(new Vector2Int(mapPosition.x + i, mapPosition.y + j));
+                                    }
+                                }
+                                if (npcData.resources[npcData.carryType].Contains(localmMapData[mapPosition.x + i, mapPosition.y + j])) {
+                                    Debug.Log("Resource: "+ npcData.resources[npcData.carryType] + " Found");
+                                    map.mapData[mapPosition.x + i, mapPosition.y + j] = "O";
+                                    localmMapData[mapPosition.x + i, mapPosition.y + j] = "O";
+                                    returnHome = true;
+                                } 
                                 possiblePositions[counter] = new Vector2Int(mapPosition.x + i, mapPosition.y + j);
 
                                 possiblePositionsWeights[counter] = 1;
@@ -243,8 +261,7 @@ public class NpcBehaviour : WorldObject
                     }
                     //if npc is lost
                     bool foundUnexplored = false;
-                    if (pointTotal <= 8) {
-                        Debug.Log("Lost");                                                                                                                                                                                                                              
+                    if (pointTotal <= 8) {                                                                                                                            
                         int up_counter = 0;
                         for (int i = mapPosition.x + 1; i < localmMapData.GetLength(0)-1; i++) {
                             if (localmMapData[i, mapPosition.y] == "u") {
@@ -296,9 +313,8 @@ public class NpcBehaviour : WorldObject
                             left_counter++;
                         }
                         if (!foundUnexplored) left_counter = 100;
+                      
                         foundUnexplored = false;
-
-
                         int[] directionLenghts =new int[]{ up_counter, down_counter, left_counter, right_counter };
                         Vector2Int newPosition = mapPosition + directions[indexOfMinNotZero(directionLenghts)];
                         if (directionLenghts[indexOfMinNotZero(directionLenghts)]!= 100){
@@ -314,61 +330,84 @@ public class NpcBehaviour : WorldObject
                 }
             }
             else {
-                //return home
-                for (int step = 0; step < npcData.moveLength; step++) {
-                    if (mapPosition.x < homePosition.x)
+                if (homePosition == mapPosition) returnHome = false;
+                else
+                {
+                    //return home
+                    for (int step = 0; step < npcData.moveLength; step++)
                     {
-                        if (mapPosition.y == homePosition.y)
+                        for (int i = -1; i <= 1; i++)
                         {
-                            Move(mapPosition.x + 1, mapPosition.y);
+                            for (int j = -1; j <= 1; j++)
+                            {
+                                if (!(i == 0 && j == 0))
+                                {
+                                    if (localmMapData[mapPosition.x + i, mapPosition.y + j] != "e" && localmMapData[mapPosition.x + i, mapPosition.y + j] != "V") localmMapData[mapPosition.x + i, mapPosition.y + j] = map.mapData[mapPosition.x + i, mapPosition.y + j];
+                                }
+                                else
+                                {
+                                    localmMapData[mapPosition.x, mapPosition.y] = "x";
+                                }
+                            }
                         }
-                        else if (mapPosition.y < homePosition.y)
-                        {
-                            Move(mapPosition.x + 1, mapPosition.y + 1);
-                        }
-                        else if (mapPosition.y > homePosition.y)
-                        {
-                            Move(mapPosition.x + 1, mapPosition.y - 1);
-                        }
-                    }
-                    else if (mapPosition.x > homePosition.x){
 
-                        if (mapPosition.y == homePosition.y)
+                        if (mapPosition.x < homePosition.x)
                         {
-                            Move(mapPosition.x - 1, mapPosition.y);
+                            if (mapPosition.y == homePosition.y)
+                            {
+                                Move(mapPosition.x + 1, mapPosition.y);
+                            }
+                            else if (mapPosition.y < homePosition.y)
+                            {
+                                Move(mapPosition.x + 1, mapPosition.y + 1);
+                            }
+                            else if (mapPosition.y > homePosition.y)
+                            {
+                                Move(mapPosition.x + 1, mapPosition.y - 1);
+                            }
                         }
-                        else if (mapPosition.y < homePosition.y)
+                        else if (mapPosition.x > homePosition.x)
                         {
-                            Move(mapPosition.x - 1, mapPosition.y + 1);
+
+                            if (mapPosition.y == homePosition.y)
+                            {
+                                Move(mapPosition.x - 1, mapPosition.y);
+                            }
+                            else if (mapPosition.y < homePosition.y)
+                            {
+                                Move(mapPosition.x - 1, mapPosition.y + 1);
+                            }
+                            else if (mapPosition.y > homePosition.y)
+                            {
+                                Move(mapPosition.x - 1, mapPosition.y - 1);
+                            }
                         }
-                        else if (mapPosition.y > homePosition.y)
+                        else if (mapPosition.x == homePosition.x)
                         {
-                            Move(mapPosition.x - 1, mapPosition.y - 1);
-                        }
-                    }
-                    else if (mapPosition.x == homePosition.x) {
-                     
-                        if (mapPosition.y == homePosition.y)
-                        {
-                            Move(mapPosition.x, mapPosition.y);
-                        }
-                        else if (mapPosition.y < homePosition.y)
-                        {
-                            Move(mapPosition.x, mapPosition.y + 1);
-                        }
-                        else if (mapPosition.y > homePosition.y)
-                        {
-                            Move(mapPosition.x, mapPosition.y - 1);
+                            if (mapPosition.y == homePosition.y)
+                            {
+                                Move(mapPosition.x, mapPosition.y);
+                            }
+                            else if (mapPosition.y < homePosition.y)
+                            {
+                                Move(mapPosition.x, mapPosition.y + 1);
+                            }
+                            else if (mapPosition.y > homePosition.y)
+                            {
+                                Move(mapPosition.x, mapPosition.y - 1);
+                            }
                         }
                     }
                 }
+
             }
+          
             npcData.energy--;
             if (npcData.energy == 0)
             {
                 npcData.alive = false;
                 statusDeathImage.SetActive(true);
-            }
+            }   
         }
         else {
             Destroy(gameObject);
@@ -377,7 +416,6 @@ public class NpcBehaviour : WorldObject
     public void moveOnWorldMap(int x , int z) {
         transform.position = grid.GetNearestWorldPoint(transform.position, new Vector3Int(mapPosition.x,0,mapPosition.y));
     }
-
     private int indexOfMinNotZero(int[] array) {
         int min = 100;
         int arrayIndex = 0;
@@ -388,7 +426,8 @@ public class NpcBehaviour : WorldObject
 
             }
         }
-        Debug.Log(array[arrayIndex]);
         return arrayIndex;
     }
+
+   
 }
