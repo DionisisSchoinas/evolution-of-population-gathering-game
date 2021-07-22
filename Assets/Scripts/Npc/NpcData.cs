@@ -13,6 +13,7 @@ public class NpcData : MonoBehaviour
     public int energyPots;
     public int energy;
     public bool alive;
+
     private void Awake()
     {
         generateGenome();

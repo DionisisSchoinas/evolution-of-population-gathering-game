@@ -5,7 +5,7 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
-public class NpcBehaviour : WorldObject
+public class NpcBehaviour : MonoBehaviour
 {
     private GridSnapping grid;
     private MapController map;
@@ -31,19 +31,25 @@ public class NpcBehaviour : WorldObject
                 if (j == 0 || i ==0 || i == localmMapData.GetLength(0) - 1 || j == localmMapData.GetLength(1) - 1)
                 {
                     localmMapData[i, j] = "e";
-                   
                 }
                 else
                 {
                     localmMapData[i, j] = "u";
-                    
                 }
             }
         }
     }
-    // Start is called before the first frame update
-    void Start()
+
+    private void OnDestroy()
     {
+        SimulationLogic.current.onTick -= Tick;
+    }
+
+    // Start is called before the first frame update
+    private void Start()
+    {
+        SimulationLogic.current.onTick += Tick;
+
         returnHome = false;
         grid = FindObjectOfType<GridSnapping>();
         map= FindObjectOfType<MapController>();
@@ -178,7 +184,7 @@ public class NpcBehaviour : WorldObject
         TextFileController.WriteMapData(localmMapData,"localMap");
     }
 
-    public override void Tick(){
+    public void Tick(){
         if (npcData.alive) {
             if (!returnHome){
                 //explore
@@ -301,7 +307,7 @@ public class NpcBehaviour : WorldObject
 
                         int[] directionLenghts =new int[]{ up_counter, down_counter, left_counter, right_counter };
                         Vector2Int newPosition = mapPosition + directions[indexOfMinNotZero(directionLenghts)];
-                        if (directionLenghts[indexOfMinNotZero(directionLenghts)]!= 100){
+                        if (directionLenghts[indexOfMinNotZero(directionLenghts)] != 100){
                             for (int points = 0; points < 5; points++) {
                                 profitablePositions.Add(newPosition);
                             }
@@ -385,7 +391,6 @@ public class NpcBehaviour : WorldObject
             if (min > array[i] && array[i]!=0) {
                 min = array[i];
                 arrayIndex = i;
-
             }
         }
         Debug.Log(array[arrayIndex]);

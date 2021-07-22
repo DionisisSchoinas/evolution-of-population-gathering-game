@@ -19,11 +19,15 @@ public class MapController : MonoBehaviour
             _villages = value;
         }
     }
+
     private GridSnapping gridSnapping;
+    private SimulationData simulationData;
+
 
     private void Awake()
     {
         gridSnapping = gameObject.GetComponent<GridSnapping>();
+        simulationData = FindObjectOfType<SimulationData>();
         //ClearMap();
     }
 
@@ -111,6 +115,20 @@ public class MapController : MonoBehaviour
         TextFileController.WriteMapData(mapData);
     }
 
+    public void RenumberVillage(Vector3Int index, VillageData villageData)
+    {
+        index = NormalizeIndex(index);
+        int blockSize = Mathf.FloorToInt(FindPlaceableFromType(Placeable.Type.Village).gridSpace / 2f); // Always 0
+        for (int i = (index.x - blockSize); i <= (index.x + blockSize); i++)
+        {
+            for (int j = (index.z - blockSize); j <= (index.z + blockSize); j++)
+            {
+                mapData[i, j] = villageData.number.ToString();
+            }
+        }
+        TextFileController.WriteMapData(mapData);
+    }
+
     private void PlaceEntireMap()
     {
         Placeable.Type type;
@@ -173,6 +191,7 @@ public class MapController : MonoBehaviour
         }
 
         villages = 0;
+        simulationData.ClearVillages();
         TextFileController.WriteMapData(mapData);
         Placeable[] children = gameObject.GetComponentsInChildren<Placeable>();
         foreach (Placeable child in children)
