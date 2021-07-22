@@ -11,7 +11,7 @@ public class NpcBehaviour : MonoBehaviour
 
     private GridSnapping grid;
     private MapController map;
-    NpcData npcData;
+    private NpcData npcData;
     public Text displayText;
     public GameObject statusDeathImage;
     private Vector2Int mapPosition = new Vector2Int(10,10);
@@ -221,6 +221,7 @@ public class NpcBehaviour : MonoBehaviour
                                     Debug.Log("Resource: "+ npcData.resources[npcData.carryType] + " Found");
 
                                     map.PickUpResource(new Vector2Int(mapPosition.x + i, mapPosition.y + j));
+                                    npcData.carryingResources.Add(localMapData[mapPosition.x + i, mapPosition.y + j]);
                                     localMapData[mapPosition.x + i, mapPosition.y + j] = "O";
                                     returnHome = true;
                                 } 
@@ -341,7 +342,11 @@ public class NpcBehaviour : MonoBehaviour
                 }
             }
             else {
-                if (homePosition == mapPosition) returnHome = false;
+                if (homePosition == mapPosition)
+                {
+                    myVillage.AddResource(npcData.carryingResources);
+                    returnHome = false;
+                }
                 else
                 {
                     //return home
