@@ -19,11 +19,15 @@ public class MapController : MonoBehaviour
             _villages = value;
         }
     }
+
     private GridSnapping gridSnapping;
+    private SimulationData simulationData;
+
 
     private void Awake()
     {
         gridSnapping = gameObject.GetComponent<GridSnapping>();
+        simulationData = FindObjectOfType<SimulationData>();
         //ClearMap();
     }
 
@@ -47,7 +51,7 @@ public class MapController : MonoBehaviour
         return true;
     }
 
-    public void AddBuilding(Vector3Int index, Placeable placeable)
+    public Vector2Int AddBuilding(Vector3Int index, Placeable placeable)
     {
         index = NormalizeIndex(index);
         int blockSize = Mathf.FloorToInt(placeable.gridSpace / 2f); // Always 0
@@ -66,6 +70,7 @@ public class MapController : MonoBehaviour
             }
         }
         TextFileController.WriteMapData(mapData);
+        return new Vector2Int(index.x, index.z);
     }
 
     public void AddBuilding(Vector2Int index, Placeable placeable, bool writeOut)
@@ -111,6 +116,20 @@ public class MapController : MonoBehaviour
         TextFileController.WriteMapData(mapData);
     }
 
+    public void RenumberVillage(Vector3Int index, VillageData villageData)
+    {
+        index = NormalizeIndex(index);
+        int blockSize = Mathf.FloorToInt(FindPlaceableFromType(Placeable.Type.Village).gridSpace / 2f); // Always 0
+        for (int i = (index.x - blockSize); i <= (index.x + blockSize); i++)
+        {
+            for (int j = (index.z - blockSize); j <= (index.z + blockSize); j++)
+            {
+                mapData[i, j] = villageData.number.ToString();
+            }
+        }
+        TextFileController.WriteMapData(mapData);
+    }
+
     private void PlaceEntireMap()
     {
         Placeable.Type type;
@@ -149,6 +168,9 @@ public class MapController : MonoBehaviour
 
         // If dims don't match mapData will be null and it will do a full reset
         ClearMap();
+
+        // Place map
+        PlaceEntireMap();
     }
 
     public void ClearMap(bool resetAll)
@@ -173,6 +195,7 @@ public class MapController : MonoBehaviour
         }
 
         villages = 0;
+        simulationData.ClearVillages();
         TextFileController.WriteMapData(mapData);
         Placeable[] children = gameObject.GetComponentsInChildren<Placeable>();
         foreach (Placeable child in children)

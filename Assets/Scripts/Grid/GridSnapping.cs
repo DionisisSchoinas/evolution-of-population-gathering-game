@@ -8,6 +8,7 @@ public class GridSnapping : MonoBehaviour
     public GameObject placeableDisplay;
 
     private MapController mapController;
+    private SimulationData simulationData;
 
     public float blockSize;
 
@@ -22,6 +23,7 @@ public class GridSnapping : MonoBehaviour
     private void Awake()
     {
         mapController = gameObject.GetComponent<MapController>();
+        simulationData = FindObjectOfType<SimulationData>();
 
         blockSize = transform.localScale.x / gridSize.x;
         placing = false;
@@ -59,7 +61,7 @@ public class GridSnapping : MonoBehaviour
                         }
 
                         // Add to map data
-                        mapController.AddBuilding(GetGetNearestGridPointIndex(showingPlaceable.transform.position, blockSize), placeable);
+                        Vector2Int arrayPosition = mapController.AddBuilding(GetGetNearestGridPointIndex(showingPlaceable.transform.position, blockSize), placeable);
                         // Set parent
                         showingPlaceable.transform.parent = gameObject.transform;
                         // Enable collider
@@ -70,6 +72,15 @@ public class GridSnapping : MonoBehaviour
                         // Disable transparency
                         Material mat = showingPlaceable.GetComponent<MeshRenderer>().material;
                         mat.SetFloat("_Alpha", 1f);
+
+                        if (placeable.type == Placeable.Type.Village)
+                        {
+                            VillageData villageData = showingPlaceable.gameObject.AddComponent<VillageData>();
+                            villageData.number = MapController.villages;
+                            villageData.arrayPosition = arrayPosition;
+
+                            simulationData.AddVillage(villageData);
+                        }
 
                         // Spawn new building
                         showingPlaceable = null;
@@ -95,6 +106,12 @@ public class GridSnapping : MonoBehaviour
                 case KeyCode.Mouse0:
                     if (showingPlaceable != null && currentDelete != null)
                     {
+                        if (currentDelete.type == Placeable.Type.Village)
+                        {
+                            VillageData villageData = currentDelete.gameObject.GetComponent<VillageData>();
+                            simulationData.RemoveVillage(villageData);
+                            RenumberVillages();
+                        }
                         // Add to map data
                         mapController.DeleteBuilding(GetGetNearestGridPointIndex(showingPlaceable.transform.position, blockSize), currentDelete);
                         // Delete building
@@ -195,9 +212,9 @@ public class GridSnapping : MonoBehaviour
         showingPlaceable.gameObject.GetComponent<BoxCollider>().enabled = false;
     }
 
-    public void PlaceBuildingFromMapData(Vector2Int arrayIndex, Placeable placeable)
+    public void PlaceBuildingFromMapData(Vector2Int arrayPosition, Placeable placeable)
     {
-        Vector3Int index = new Vector3Int(arrayIndex.x, 0, arrayIndex.y);
+        Vector3Int index = new Vector3Int(arrayPosition.x, 0, arrayPosition.y);
         Vector3 worldPoint = GetNearestWorldPoint(Vector3.up * 0.5f, index);
 
         showingPlaceable = Instantiate(placeableDisplay);
@@ -214,6 +231,15 @@ public class GridSnapping : MonoBehaviour
         // Add extra building data
         Placeable pl = showingPlaceable.gameObject.AddComponent<Placeable>();
         pl.CopyData(placeable);
+
+        if (placeable.type == Placeable.Type.Village)
+        {
+            VillageData villageData = showingPlaceable.gameObject.AddComponent<VillageData>();
+            villageData.number = MapController.villages;
+            villageData.arrayPosition = arrayPosition;
+
+            simulationData.AddVillage(villageData);
+        }
     }
 
     private Vector3Int GetGetNearestGridPointIndex(Vector3 position, float blockSize)
@@ -297,5 +323,14 @@ public class GridSnapping : MonoBehaviour
         // Reset checkerboard display
         Material material = gameObject.GetComponent<MeshRenderer>().material;
         material.SetVector("_GroundScale", new Vector4(gridSize.x, gridSize.y, 0, 0));
+    }
+
+    private void RenumberVillages()
+    {
+        foreach(VillageData vD in simulationData.villages)
+        {
+            Vector3Int gridIndex = GetGetNearestGridPointIndex(vD.transform.position, blockSize);
+            mapController.RenumberVillage(gridIndex, vD);
+        }
     }
 }
