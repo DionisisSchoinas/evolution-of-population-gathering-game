@@ -18,31 +18,31 @@ public class NpcBehaviour : MonoBehaviour
     private Vector2Int homePosition = new Vector2Int(3, 3);
     [SerializeField]
     private bool returnHome;
-    private string[,] localmMapData;
+    private string[,] localMapData;
     private Vector2Int[] directions = new Vector2Int[] { new Vector2Int(1, 0), new Vector2Int(-1, 0), new Vector2Int(0, -1), new Vector2Int(0, 1) };
 
     public List<Vector2Int> knownWoodOres = new List<Vector2Int>();
     public List<Vector2Int> knownStoneOres = new List<Vector2Int>();
     public List<Vector2Int> knownGoldOres = new List<Vector2Int>();
+
     private void Awake()
     {
-        localmMapData = new string[100, 100];
+        localMapData = new string[SimulationSettings.simSettings.mapRows, SimulationSettings.simSettings.mapColumns];
  
-        for (int i = 0; i < localmMapData.GetLength(0); i++)
+        for (int i = 0; i < localMapData.GetLength(0); i++)
         {
-            for (int j = 0; j < localmMapData.GetLength(1); j++)
+            for (int j = 0; j < localMapData.GetLength(1); j++)
             {
-                if (j == 0 || i ==0 || i == localmMapData.GetLength(0) - 1 || j == localmMapData.GetLength(1) - 1)
+                if (j == 0 || i ==0 || i == localMapData.GetLength(0) - 1 || j == localMapData.GetLength(1) - 1)
                 {
-                    localmMapData[i, j] = "e";
+                    localMapData[i, j] = "e";
                 }
                 else
                 {
-                    localmMapData[i, j] = "u";
+                    localMapData[i, j] = "u";
                 }
             }
         }
-        localmMapData[3, 3] = "V";
     }
 
     private void OnDestroy()
@@ -189,9 +189,7 @@ public class NpcBehaviour : MonoBehaviour
     public void Move(int x, int z) {
         mapPosition = new Vector2Int(x, z);
         moveOnWorldMap(x, z);
-        //to be removed 
-        localmMapData[3, 3] = "V";
-        TextFileController.WriteMapData(localmMapData,"localMap");
+        TextFileController.WriteMapData(localMapData,"localMap");
     }
     
     public void Tick(){
@@ -207,29 +205,30 @@ public class NpcBehaviour : MonoBehaviour
                     for (int i = -1; i <= 1; i++){
                         for (int j = -1; j <= 1; j++){
                             if (!(i == 0 && j == 0)){
-                                if (localmMapData[mapPosition.x + i, mapPosition.y + j] != "e") {
-                                    localmMapData[mapPosition.x + i, mapPosition.y + j] = map.mapData[mapPosition.x + i, mapPosition.y + j];
-                                    if (localmMapData[mapPosition.x + i, mapPosition.y + j] == "W" && !knownWoodOres.Contains(new Vector2Int(mapPosition.x + i, mapPosition.y + j))) {
+                                if (localMapData[mapPosition.x + i, mapPosition.y + j] != "e") {
+                                    localMapData[mapPosition.x + i, mapPosition.y + j] = map.mapData[mapPosition.x + i, mapPosition.y + j];
+                                    if (localMapData[mapPosition.x + i, mapPosition.y + j] == "W" && !knownWoodOres.Contains(new Vector2Int(mapPosition.x + i, mapPosition.y + j))) {
                                         knownWoodOres.Add(new Vector2Int(mapPosition.x + i, mapPosition.y + j));
                                     }
-                                    else if (localmMapData[mapPosition.x + i, mapPosition.y + j] == "S" && !knownStoneOres.Contains(new Vector2Int(mapPosition.x + i, mapPosition.y + j))) {
+                                    else if (localMapData[mapPosition.x + i, mapPosition.y + j] == "S" && !knownStoneOres.Contains(new Vector2Int(mapPosition.x + i, mapPosition.y + j))) {
                                         knownStoneOres.Add(new Vector2Int(mapPosition.x + i, mapPosition.y + j));
                                     }
-                                    else if (localmMapData[mapPosition.x + i, mapPosition.y + j] == "G" && !knownGoldOres.Contains(new Vector2Int(mapPosition.x + i, mapPosition.y + j))) {
+                                    else if (localMapData[mapPosition.x + i, mapPosition.y + j] == "G" && !knownGoldOres.Contains(new Vector2Int(mapPosition.x + i, mapPosition.y + j))) {
                                         knownGoldOres.Add(new Vector2Int(mapPosition.x + i, mapPosition.y + j));
                                     }
                                 }
-                                if (npcData.resources[npcData.carryType].Contains(localmMapData[mapPosition.x + i, mapPosition.y + j])) {
+                                if (npcData.resources[npcData.carryType].Contains(localMapData[mapPosition.x + i, mapPosition.y + j])) {
+
                                     Debug.Log("Resource: "+ npcData.resources[npcData.carryType] + " Found");
                                     map.mapData[mapPosition.x + i, mapPosition.y + j] = "O";
-                                    localmMapData[mapPosition.x + i, mapPosition.y + j] = "O";
+                                    localMapData[mapPosition.x + i, mapPosition.y + j] = "O";
                                     returnHome = true;
                                 } 
                                 possiblePositions[counter] = new Vector2Int(mapPosition.x + i, mapPosition.y + j);
 
                                 possiblePositionsWeights[counter] = 1;
                                 //calculate weight of each vertici 
-                                if (localmMapData[possiblePositions[counter].x, possiblePositions[counter].y] == "e")
+                                if (localMapData[possiblePositions[counter].x, possiblePositions[counter].y] == "e")
                                 {
                                     possiblePositionsWeights[counter] = 0;
                                 }
@@ -241,7 +240,7 @@ public class NpcBehaviour : MonoBehaviour
                                         {
                                             if (!(ii == 0 && jj == 0))
                                             {
-                                                if (localmMapData[possiblePositions[counter].x + ii, possiblePositions[counter].y + jj] == "u")
+                                                if (localMapData[possiblePositions[counter].x + ii, possiblePositions[counter].y + jj] == "u")
                                                 {
                                                     possiblePositionsWeights[counter] += 1;
                                                 }
@@ -252,7 +251,7 @@ public class NpcBehaviour : MonoBehaviour
                                 counter++;
                             }
                             else{
-                                localmMapData[mapPosition.x + i, mapPosition.y + j] = "x";
+                                localMapData[mapPosition.x + i, mapPosition.y + j] = "x";
                             }
                         }
                     }
@@ -275,21 +274,21 @@ public class NpcBehaviour : MonoBehaviour
                     bool foundUnexplored = false;
                     if (pointTotal <= 8) {                                                                                                                            
                         int up_counter = 0;
-                        for (int i = mapPosition.x + 1; i < localmMapData.GetLength(0)-1; i++) {
-                            if (localmMapData[i, mapPosition.y] == "u") {
+                        for (int i = mapPosition.x + 1; i < localMapData.GetLength(0)-1; i++) {
+                            if (localMapData[i, mapPosition.y] == "u") {
                                 foundUnexplored = true;
                                 break;
                             }
                             up_counter++;
                         }
                         //if there isnt land that way maximize distance
-                        if (!foundUnexplored) up_counter = 100;
+                        if (!foundUnexplored) up_counter = SimulationSettings.simSettings.mapColumns;
                         foundUnexplored = false;
 
                         int down_counter = 0;
                         for (int i = mapPosition.x - 1; i > 1; i--)
                         {
-                            if (localmMapData[i, mapPosition.y] == "u")
+                            if (localMapData[i, mapPosition.y] == "u")
                             {
                                 foundUnexplored = true;
                                 break;
@@ -297,13 +296,13 @@ public class NpcBehaviour : MonoBehaviour
                             down_counter++;
                         }
                         //if there isnt land that way maximize distance
-                        if (!foundUnexplored) down_counter = 100;
+                        if (!foundUnexplored) down_counter = SimulationSettings.simSettings.mapColumns;
                         foundUnexplored = false;
 
                         int right_counter = 0;
-                        for (int i = mapPosition.y + 1; i < localmMapData.GetLength(1)-1; i++)
+                        for (int i = mapPosition.y + 1; i < localMapData.GetLength(1)-1; i++)
                         {
-                            if (localmMapData[mapPosition.x, i] == "u")
+                            if (localMapData[mapPosition.x, i] == "u")
                             {
                                 foundUnexplored = true;
                                 break;
@@ -311,20 +310,20 @@ public class NpcBehaviour : MonoBehaviour
                             right_counter++;
                         }
                         //if there isnt land that way maximize distance
-                        if (!foundUnexplored) right_counter = 100;
+                        if (!foundUnexplored) right_counter = SimulationSettings.simSettings.mapRows;
                         foundUnexplored = false;
 
                         int left_counter = 0;
                         for (int i = mapPosition.y - 1; i > 1; i--)
                         {
-                            if (localmMapData[mapPosition.x, i] == "u")
+                            if (localMapData[mapPosition.x, i] == "u")
                             {
                                 foundUnexplored = true;
                                 break;
                             }
                             left_counter++;
                         }
-                        if (!foundUnexplored) left_counter = 100;
+                        if (!foundUnexplored) left_counter = SimulationSettings.simSettings.mapRows;
                       
                         foundUnexplored = false;
                         int[] directionLenghts =new int[]{ up_counter, down_counter, left_counter, right_counter };
@@ -354,11 +353,11 @@ public class NpcBehaviour : MonoBehaviour
                             {
                                 if (!(i == 0 && j == 0))
                                 {
-                                    if (localmMapData[mapPosition.x + i, mapPosition.y + j] != "e" && localmMapData[mapPosition.x + i, mapPosition.y + j] != "V") localmMapData[mapPosition.x + i, mapPosition.y + j] = map.mapData[mapPosition.x + i, mapPosition.y + j];
+                                    if (localMapData[mapPosition.x + i, mapPosition.y + j] != "e" && localMapData[mapPosition.x + i, mapPosition.y + j] != "V") localMapData[mapPosition.x + i, mapPosition.y + j] = map.mapData[mapPosition.x + i, mapPosition.y + j];
                                 }
                                 else
                                 {
-                                    localmMapData[mapPosition.x, mapPosition.y] = "x";
+                                    localMapData[mapPosition.x, mapPosition.y] = "x";
                                 }
                             }
                         }
@@ -425,14 +424,16 @@ public class NpcBehaviour : MonoBehaviour
             Destroy(gameObject);
         }
     }
+
     public void moveOnWorldMap(int x , int z) {
-        transform.position = grid.GetNearestWorldPoint(transform.position, new Vector3Int(mapPosition.x,0,mapPosition.y));
+        transform.position = grid.GetNearestWorldPoint(transform.position, new Vector3Int(mapPosition.x, 0, mapPosition.y));
     }
+
     private int indexOfMinNotZero(int[] array) {
         int min = 100;
         int arrayIndex = 0;
         for (int i = 0; i < array.Length; i++) {
-            if (min > array[i] && array[i]!=0) {
+            if (min > array[i] && array[i] != 0) {
                 min = array[i];
                 arrayIndex = i;
             }
