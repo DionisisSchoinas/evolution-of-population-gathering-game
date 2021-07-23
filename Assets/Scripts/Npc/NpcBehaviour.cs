@@ -331,5 +331,8 @@ public class NpcBehaviour : MonoBehaviour
         return arrayIndex;
     }
 
-   
+    public string[,] GetMap()
+    {
+        return localMapData;
+    }
 }

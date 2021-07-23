@@ -15,13 +15,14 @@ public class NpcDataDisplay : MonoBehaviour
     public NpcData npcData;
 
     private Button showMapButton;
-    private SimulationVillageDisplay simulationVillageDisplay;
+    private GridSnapping gridSnapping;
 
     private void Awake()
     {
-        simulationVillageDisplay = FindObjectOfType<SimulationVillageDisplay>();
         showMapButton = gameObject.GetComponentInChildren<Button>();
         showMapButton.onClick.AddListener(ShowMap);
+
+        gridSnapping = FindObjectOfType<GridSnapping>();
     }
 
     public void UpdateView()
@@ -44,6 +45,6 @@ public class NpcDataDisplay : MonoBehaviour
 
     private void ShowMap()
     {
-
+        gridSnapping.ShowMapOverlay(npcData);
     }
 }

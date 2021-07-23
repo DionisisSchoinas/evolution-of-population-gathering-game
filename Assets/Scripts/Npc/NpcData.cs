@@ -39,7 +39,8 @@ public class NpcData : MonoBehaviour
     public string genomeString;
 
     public NpcDataDisplay dataDisplay;
-
+    [HideInInspector]
+    public NpcBehaviour npcBehaviour;
 
     private void Awake()
     {
@@ -48,6 +49,7 @@ public class NpcData : MonoBehaviour
         carryingResources = new Dictionary<Placeable.Type, int>();
         totalItems = 0;
         alive = true;
+        npcBehaviour = GetComponent<NpcBehaviour>();
     }
 
     public void SetColor(Color color)

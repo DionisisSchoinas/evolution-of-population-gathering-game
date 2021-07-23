@@ -8,6 +8,17 @@ public class SimulationVillageDisplay : MonoBehaviour
     public Text villageName;
     public NpcDataDisplay npcDataDisplayPrefab;
     public Transform npcDisplayPanel;
+    [HideInInspector]
+    public Button hideOverlay;
+    private GridSnapping gridSnapping;
+
+    private void Awake()
+    {
+        gridSnapping = FindObjectOfType<GridSnapping>();
+        hideOverlay = gameObject.GetComponentInChildren<Button>();
+        hideOverlay.enabled = false;
+        hideOverlay.onClick.AddListener(HideOverlay);
+    }
 
     private void Start()
     {
@@ -33,5 +44,11 @@ public class SimulationVillageDisplay : MonoBehaviour
         NpcDataDisplay[] children = gameObject.GetComponentsInChildren<NpcDataDisplay>();
         foreach (NpcDataDisplay child in children)
             Destroy(child.gameObject);
+    }
+
+    private void HideOverlay()
+    {
+        if (gridSnapping.showingOverlay)
+            gridSnapping.HideMapOverlay();
     }
 }
