@@ -20,12 +20,12 @@ public class SimulationLogic : MonoBehaviour
         current = this;
     }
 
-    public Action onTick;
-    public void Tick()
+    public Action<int> onTick;
+    public void Tick(int ticks)
     {
         if (onTick != null)
         {
-            onTick();
+            onTick(ticks);
         }
     }
 
@@ -41,7 +41,7 @@ public class SimulationLogic : MonoBehaviour
         if (Input.GetKey(KeyCode.L) && simulationRunning)
         {
             ticks += 1;
-            current.Tick();
+            current.Tick(ticks);
         }
     }
 }

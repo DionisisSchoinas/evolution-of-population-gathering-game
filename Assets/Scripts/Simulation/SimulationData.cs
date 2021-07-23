@@ -5,6 +5,9 @@ using UnityEngine;
 public class SimulationData : MonoBehaviour
 {
     public GameObject npcPrefab;
+    public GameObject villageDisplayList;
+    public VillageDataDisplay villageDataDisplayPrefab;
+
     public List<VillageData> villages;
 
     private void Awake()
@@ -22,6 +25,10 @@ public class SimulationData : MonoBehaviour
 
     public void AddVillage(VillageData villageData)
     {
+        VillageDataDisplay dataDisplay = Instantiate(villageDataDisplayPrefab, villageDisplayList.transform);
+        villageData.villageDataDisplay = dataDisplay;
+        villageData.UpdateView();
+
         villages.Add(villageData);
     }
 

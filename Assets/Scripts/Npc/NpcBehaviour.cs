@@ -192,7 +192,7 @@ public class NpcBehaviour : MonoBehaviour
         TextFileController.WriteMapData(localMapData,"localMap");
     }
     
-    public void Tick(){
+    public void Tick(int ticks){
         if (npcData.alive) {
             if (!returnHome){
                 //explore
@@ -218,7 +218,7 @@ public class NpcBehaviour : MonoBehaviour
                                     }
                                 }
                                 if (npcData.resources[npcData.carryType].Contains(localMapData[mapPosition.x + i, mapPosition.y + j])) {
-                                    Debug.Log("Resource: "+ npcData.resources[npcData.carryType] + " Found");
+                                    //Debug.Log("Resource: "+ npcData.resources[npcData.carryType] + " Found");
 
                                     map.PickUpResource(new Vector2Int(mapPosition.x + i, mapPosition.y + j));
                                     npcData.carryingResources.Add(localMapData[mapPosition.x + i, mapPosition.y + j]);
@@ -422,6 +422,7 @@ public class NpcBehaviour : MonoBehaviour
             if (npcData.energy == 0)
             {
                 npcData.alive = false;
+                myVillage.NpcRemoved(gameObject);
                 statusDeathImage.SetActive(true);
             }   
         }
