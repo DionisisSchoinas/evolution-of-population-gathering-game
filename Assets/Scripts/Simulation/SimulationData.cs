@@ -38,6 +38,7 @@ public class SimulationData : MonoBehaviour
     public void AddVillage(VillageData villageData)
     {
         VillageDataDisplay dataDisplay = Instantiate(villageDataDisplayPrefab, villageDisplayList.transform);
+        dataDisplay.villageData = villageData;
         villageData.villageDataDisplay = dataDisplay;
         villageData.UpdateView();
 

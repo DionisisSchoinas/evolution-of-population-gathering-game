@@ -11,7 +11,20 @@ public class NpcData : MonoBehaviour
     public int maxCaringCapacity;
     public int gold;
     public int energyPots;
-    public int energy;
+    private int _energy;
+    public int energy
+    {
+        get
+        {
+            return _energy;
+        }
+        set
+        {
+            _energy = value;
+            if (dataDisplay != null)
+                dataDisplay.UpdateView();
+        }
+    }
     public bool alive;
     public string[] resources = new string[] 
     { 
@@ -21,20 +34,37 @@ public class NpcData : MonoBehaviour
         MapController.MapBuildingToString(Placeable.Type.Wood)+MapController.MapBuildingToString(Placeable.Type.Stone)+MapController.MapBuildingToString(Placeable.Type.Gold),
     };
 
-    public List<string> carryingResources;
+    public Dictionary<Placeable.Type, int> carryingResources;
+    public int totalItems;
     public string genomeString;
-    
+
+    public NpcDataDisplay dataDisplay;
+
+
     private void Awake()
     {
         GenerateGenome();
         ParseGenome();
-        carryingResources = new List<string>();
+        carryingResources = new Dictionary<Placeable.Type, int>();
+        totalItems = 0;
         alive = true;
     }
 
     public void SetColor(Color color)
     {
         gameObject.GetComponent<MeshRenderer>().material.SetColor("_Color", color);
+    }
+
+    public void AddResource(string s)
+    {
+        Placeable.Type type = MapController.MapBuildingToEnum(s);
+
+        if (carryingResources.ContainsKey(type))
+            carryingResources[type] += 1;
+        else
+            carryingResources.Add(type, 1);
+
+        totalItems++;
     }
    
     private void GenerateGenome()

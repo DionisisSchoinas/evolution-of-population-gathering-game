@@ -8,6 +8,7 @@ public class UIManager : MonoBehaviour
     public CanvasGroup simSettingsPanel;
     public CanvasGroup simSettingsEditorPanel;
     public CanvasGroup simulationStatusDisplay;
+    public CanvasGroup simulationVillageDetailsDisplay;
 
     private void Awake()
     {
@@ -15,6 +16,7 @@ public class UIManager : MonoBehaviour
         SetCanvasState(simSettingsPanel, true);
         SetCanvasState(simSettingsEditorPanel, false);
         SetCanvasState(simulationStatusDisplay, false);
+        SetCanvasState(simulationVillageDetailsDisplay, false);
     }
 
     public static void SetCanvasState(CanvasGroup canvasGroup, bool show)
@@ -31,5 +33,6 @@ public class UIManager : MonoBehaviour
         SetCanvasState(simSettingsEditorPanel, false);
 
         SetCanvasState(simulationStatusDisplay, true);
+        SetCanvasState(simulationVillageDetailsDisplay, true);
     }
 }

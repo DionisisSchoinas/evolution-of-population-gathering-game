@@ -12,12 +12,12 @@ public class VillageData : MonoBehaviour
 
         public int totalItems = 0;
 
-        public void AddItem(Placeable.Type type)
+        public void AddItem(Placeable.Type type, int count)
         {
             if (storedItems.ContainsKey(type))
-                storedItems[type] += 1;
+                storedItems[type] += count;
             else
-                storedItems.Add(type, 1);
+                storedItems.Add(type, count);
             
             totalItems++;
         }
@@ -76,20 +76,20 @@ public class VillageData : MonoBehaviour
         villageDataDisplay.npcCount.text = "Npcs : " + npcs.Count.ToString();
     }
 
-    public void AddResource(List<string> resources)
+    public void AddResource(Dictionary<Placeable.Type, int> resources)
     {
-        foreach (string res in resources)
+        foreach (KeyValuePair<Placeable.Type, int> resource in resources)
         {
-            storage.AddItem(MapController.MapBuildingToEnum(res));
+            storage.AddItem(resource.Key, resource.Value);
         }
         if (villageDataDisplay != null)
-            villageDataDisplay.UpdateCount(storage);
+            villageDataDisplay.UpdateCount();
     }
 
     public void UpdateView()
     {
         villageDataDisplay.villageName.text = "Village " + number;
-        villageDataDisplay.UpdateCount(storage);
+        villageDataDisplay.UpdateCount();
         villageDataDisplay.npcCount.text = "Npcs : " + npcs.Count.ToString();
         villageDataDisplay.villageColor.color = SimulationData.villagesColors[number - 1];
     }

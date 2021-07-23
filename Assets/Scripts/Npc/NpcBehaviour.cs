@@ -101,7 +101,7 @@ public class NpcBehaviour : MonoBehaviour
                                     //Debug.Log("Resource: "+ npcData.resources[npcData.carryType] + " Found");
 
                                     map.PickUpResource(new Vector2Int(mapPosition.x + i, mapPosition.y + j));
-                                    npcData.carryingResources.Add(localMapData[mapPosition.x + i, mapPosition.y + j]);
+                                    npcData.AddResource(localMapData[mapPosition.x + i, mapPosition.y + j]);
                                     localMapData[mapPosition.x + i, mapPosition.y + j] = "O";
                                     returnHome = true;
                                 } 
@@ -225,6 +225,7 @@ public class NpcBehaviour : MonoBehaviour
                 if (homePosition == mapPosition)
                 {
                     myVillage.AddResource(npcData.carryingResources);
+                    npcData.carryingResources.Clear();
                     returnHome = false;
                 }
                 else
@@ -303,10 +304,13 @@ public class NpcBehaviour : MonoBehaviour
             if (npcData.energy == 0)
             {
                 npcData.alive = false;
-                myVillage.NpcRemoved(gameObject);
             }   
         }
-        else {
+        else
+        {
+            myVillage.NpcRemoved(gameObject);
+            if (npcData != null && npcData.dataDisplay != null)
+                Destroy(npcData.dataDisplay.gameObject);
             Destroy(gameObject);
         }
     }
