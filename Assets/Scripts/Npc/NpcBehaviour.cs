@@ -188,7 +188,7 @@ public class NpcBehaviour : MonoBehaviour
 
     public void Move(int x, int z) {
         mapPosition = new Vector2Int(x, z);
-        moveOnWorldMap(x, z);
+        moveOnWorldMap();
         TextFileController.WriteMapData(localMapData,"localMap");
     }
     
@@ -283,7 +283,7 @@ public class NpcBehaviour : MonoBehaviour
                             up_counter++;
                         }
                         //if there isnt land that way maximize distance
-                        if (!foundUnexplored) up_counter = SimulationSettings.simSettings.mapColumns;
+                        if (!foundUnexplored) up_counter = 600;
                         foundUnexplored = false;
 
                         int down_counter = 0;
@@ -297,7 +297,7 @@ public class NpcBehaviour : MonoBehaviour
                             down_counter++;
                         }
                         //if there isnt land that way maximize distance
-                        if (!foundUnexplored) down_counter = SimulationSettings.simSettings.mapColumns;
+                        if (!foundUnexplored) down_counter = 600;
                         foundUnexplored = false;
 
                         int right_counter = 0;
@@ -311,7 +311,7 @@ public class NpcBehaviour : MonoBehaviour
                             right_counter++;
                         }
                         //if there isnt land that way maximize distance
-                        if (!foundUnexplored) right_counter = SimulationSettings.simSettings.mapRows;
+                        if (!foundUnexplored) right_counter = 600;
                         foundUnexplored = false;
 
                         int left_counter = 0;
@@ -324,12 +324,12 @@ public class NpcBehaviour : MonoBehaviour
                             }
                             left_counter++;
                         }
-                        if (!foundUnexplored) left_counter = SimulationSettings.simSettings.mapRows;
-                      
+                        if (!foundUnexplored) left_counter = 600;
                         foundUnexplored = false;
-                        int[] directionLenghts =new int[]{ up_counter, down_counter, left_counter, right_counter };
+
+                        int[] directionLenghts = new int[] { up_counter, down_counter, left_counter, right_counter };
                         Vector2Int newPosition = mapPosition + directions[indexOfMinNotZero(directionLenghts)];
-                        if (directionLenghts[indexOfMinNotZero(directionLenghts)] != 100){
+                        if (directionLenghts[indexOfMinNotZero(directionLenghts)] != 600){
                             for (int points = 0; points < 5; points++) {
                                 profitablePositions.Add(newPosition);
                             }
@@ -358,7 +358,8 @@ public class NpcBehaviour : MonoBehaviour
                             {
                                 if (!(i == 0 && j == 0))
                                 {
-                                    if (localMapData[mapPosition.x + i, mapPosition.y + j] != "e" && localMapData[mapPosition.x + i, mapPosition.y + j] != "V") localMapData[mapPosition.x + i, mapPosition.y + j] = map.mapData[mapPosition.x + i, mapPosition.y + j];
+                                    if (localMapData[mapPosition.x + i, mapPosition.y + j] != "e") 
+                                        localMapData[mapPosition.x + i, mapPosition.y + j] = map.mapData[mapPosition.x + i, mapPosition.y + j];
                                 }
                                 else
                                 {
@@ -431,12 +432,12 @@ public class NpcBehaviour : MonoBehaviour
         }
     }
 
-    public void moveOnWorldMap(int x , int z) {
+    public void moveOnWorldMap() {
         transform.position = grid.GetNearestWorldPoint(transform.position, new Vector3Int(mapPosition.x, 0, mapPosition.y));
     }
 
     private int indexOfMinNotZero(int[] array) {
-        int min = 100;
+        int min = 600;
         int arrayIndex = 0;
         for (int i = 0; i < array.Length; i++) {
             if (min > array[i] && array[i] != 0) {
