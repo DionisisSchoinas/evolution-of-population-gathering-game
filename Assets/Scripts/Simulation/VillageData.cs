@@ -8,45 +8,25 @@ public class VillageData : MonoBehaviour
     [Serializable]
     public class Storage
     {
-        public List<StorageItem> storedItems = new List<StorageItem>();
+        public Dictionary<Placeable.Type, int> storedItems = new Dictionary<Placeable.Type, int>();
+
         public int totalItems = 0;
 
         public void AddItem(Placeable.Type type)
         {
-            foreach (StorageItem sItem in storedItems)
-            {
-                if (sItem.type == type)
-                {
-                    sItem.count++;
-                    totalItems++;
-                    return;
-                }
-            }
-            storedItems.Add(new StorageItem(type, 1));
+            if (storedItems.ContainsKey(type))
+                storedItems[type] += 1;
+            else
+                storedItems.Add(type, 1);
+            
             totalItems++;
         }
 
         public int GetItemCount(Placeable.Type type)
         {
-            foreach (StorageItem storageItem in storedItems)
-            {
-                if (storageItem.type == type)
-                    return storageItem.count;
-            }
+            if (storedItems.ContainsKey(type))
+                return storedItems[type];
             return 0;
-        }
-    }
-
-    [Serializable]
-    public class StorageItem
-    {
-        public Placeable.Type type;
-        public int count = 0;
-
-        public StorageItem(Placeable.Type type, int count)
-        {
-            this.type = type;
-            this.count = count;
         }
     }
 
