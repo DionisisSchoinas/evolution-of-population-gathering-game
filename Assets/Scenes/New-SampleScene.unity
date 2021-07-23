@@ -2935,6 +2935,12 @@ MonoBehaviour:
   npcPrefab: {fileID: 3178576839495310285, guid: 6f45e577a5bb8a246841deea5d1031f4, type: 3}
   villageDisplayList: {fileID: 538247583}
   villageDataDisplayPrefab: {fileID: 956057789896195812, guid: 9b3677be38db13e41b4d49b6426d637b, type: 3}
+  villageColors:
+  - {r: 0.7490196, g: 0, b: 0.7490196, a: 1}
+  - {r: 0.26231146, g: 0, b: 0.7490196, a: 1}
+  - {r: 0, g: 0.34509805, b: 0.7490196, a: 1}
+  - {r: 0.08035842, g: 0, b: 0.3490566, a: 1}
+  - {r: 0, g: 0.7490196, b: 0.63529414, a: 1}
   villages: []
 --- !u!1 &445431113
 GameObject:
@@ -5562,7 +5568,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1177686909}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.5648454
+  m_Size: 0.50715065
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

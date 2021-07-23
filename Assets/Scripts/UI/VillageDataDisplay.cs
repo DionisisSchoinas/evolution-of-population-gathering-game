@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class VillageDataDisplay : MonoBehaviour
 {
     public Text villageName;
+    public Image villageColor;
     public Text npcCount;
     public Text goldCount;
     public Text stoneCount;

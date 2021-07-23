@@ -6,6 +6,8 @@ using UnityEngine.UI;
 
 public class SimulationSettings : MonoBehaviour
 {
+    public static int maxVillages = 5;
+
     private MapController mapController;
 
     [Serializable]
@@ -99,7 +101,7 @@ public class SimulationSettings : MonoBehaviour
         }
         SetSettingsToDisplay(simSettings);
 
-        mapController.RedrawMap();
+        mapController.RedrawMap(true);
 
         Debug.Log("Loaded from : " + Application.persistentDataPath);
     }
@@ -159,9 +161,9 @@ public class SimulationSettings : MonoBehaviour
         if (float.TryParse(maxDnaMutationChance.text, out f_val))
             new_settings.maxDnaMutationChance = Mathf.Clamp(f_val, 0, 100);
 
-        // Amount of villages [2, 1/1000 of max space] and integer
+        // Amount of villages [2, maxVillages] and integer
         if (int.TryParse(amountOfVillages.text, out i_val))
-            new_settings.amountOfVillages = Mathf.Clamp(i_val, 2, Mathf.FloorToInt((new_settings.mapRows * new_settings.mapColumns) / 1000f));
+            new_settings.amountOfVillages = Mathf.Clamp(i_val, 2, maxVillages);
 
         // Amount of gold [30, 1/50 of max space] and integer
         if (int.TryParse(amountOfGold.text, out i_val))
@@ -198,7 +200,7 @@ public class SimulationSettings : MonoBehaviour
         // Saves new settings
         SaveSettings();
         // Redraw map
-        mapController.RedrawMap();
+        mapController.RedrawMap(false);
         UIManager.SetCanvasState(canvasGroup, false);
     }
 

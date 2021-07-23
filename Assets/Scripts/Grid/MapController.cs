@@ -22,18 +22,13 @@ public class MapController : MonoBehaviour
 
     private GridSnapping gridSnapping;
     private SimulationData simulationData;
-
+    private MapRandomizer mapRandomizer;
 
     private void Awake()
     {
         gridSnapping = gameObject.GetComponent<GridSnapping>();
         simulationData = FindObjectOfType<SimulationData>();
-        //ClearMap();
-    }
-
-    private void Start()
-    {
-        //PlaceEntireMap();
+        mapRandomizer = gameObject.GetComponent<MapRandomizer>();
     }
 
     public bool hasSpace(Vector3Int index, Placeable placeable)
@@ -153,7 +148,7 @@ public class MapController : MonoBehaviour
         }
     }
 
-    public void RedrawMap()
+    public void RedrawMap(bool drawOldMap)
     {
         // Reset normilization vectors
         int i = Mathf.FloorToInt(SimulationSettings.simSettings.mapRows / 2f - 1);
@@ -171,8 +166,11 @@ public class MapController : MonoBehaviour
         // If dims don't match mapData will be null and it will do a full reset
         ClearMap();
 
-        // Place map
-        PlaceEntireMap();
+        // Place old map
+        if (drawOldMap)
+            PlaceEntireMap();
+        else
+            mapRandomizer.RandomizeMap();
     }
 
     public void ClearMap(bool resetAll)

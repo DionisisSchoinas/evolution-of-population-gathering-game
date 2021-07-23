@@ -31,6 +31,11 @@ public class NpcData : MonoBehaviour
         carryingResources = new List<string>();
         alive = true;
     }
+
+    public void SetColor(Color color)
+    {
+        gameObject.GetComponent<MeshRenderer>().material.SetColor("_Color", color);
+    }
    
     private void GenerateGenome()
     {

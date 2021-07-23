@@ -40,8 +40,7 @@ public class VillageData : MonoBehaviour
         set
         {
             _number = value;
-            if (villageDataDisplay != null)
-                villageDataDisplay.UpdateCount(storage);
+            ChangeColor();
         }
     }
 
@@ -72,6 +71,7 @@ public class VillageData : MonoBehaviour
         {
             gm = Instantiate(npcPrefab, gameObject.transform);
             npcs.Add(gm.GetComponent<NpcData>());
+            npcs[i].SetColor(SimulationData.villagesColors[number - 1]);
         }
         villageDataDisplay.npcCount.text = "Npcs : " + npcs.Count.ToString();
     }
@@ -91,6 +91,7 @@ public class VillageData : MonoBehaviour
         villageDataDisplay.villageName.text = "Village " + number;
         villageDataDisplay.UpdateCount(storage);
         villageDataDisplay.npcCount.text = "Npcs : " + npcs.Count.ToString();
+        villageDataDisplay.villageColor.color = SimulationData.villagesColors[number - 1];
     }
 
     public void NpcRemoved(GameObject npc)
@@ -101,5 +102,13 @@ public class VillageData : MonoBehaviour
 
         npcs.RemoveAt(index);
         villageDataDisplay.npcCount.text = "Npcs : " + npcs.Count.ToString();
+    }
+
+    public void ChangeColor() 
+    {
+        if (number <= 0 || number > 10)
+            return;
+
+        gameObject.GetComponent<MeshRenderer>().material.SetColor("_Color", SimulationData.villagesColors[number - 1]);
     }
 }
