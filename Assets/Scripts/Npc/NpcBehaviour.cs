@@ -12,8 +12,6 @@ public class NpcBehaviour : MonoBehaviour
     private GridSnapping grid;
     private MapController map;
     private NpcData npcData;
-    public Text displayText;
-    public GameObject statusDeathImage;
     private Vector2Int mapPosition = new Vector2Int(10,10);
     private Vector2Int homePosition = new Vector2Int(3, 3);
     [SerializeField]
@@ -64,124 +62,6 @@ public class NpcBehaviour : MonoBehaviour
         map= FindObjectOfType<MapController>();
         npcData = GetComponent<NpcData>();
     
-        if (npcData.genome.Length == 11) {
-            //First gene 
-         
-            if (npcData.genome.Substring(0, 1) == "0") {
-                displayText.text = "Μετακίνηση : 1 θέση \n";
-                npcData.moveLength = 1;
-            }
-            else if (npcData.genome.Substring(0, 1) == "1")
-            {
-                displayText.text = "Μετακίνηση : 2 θέσεις\n";
-                npcData.moveLength = 2;
-            }
-            //Second gene 
-            if (npcData.genome.Substring(1, 2) == "00")
-            {
-                displayText.text += "Εξειδικεύεται στην μεταφορά ξυλείας\n";
-                npcData.carryType = 0;
-            }
-            else if (npcData.genome.Substring(1, 2) == "01")
-            {
-                displayText.text += "Εξειδικεύεται στην μεταφορά πέτρας\n";
-                npcData.carryType = 1;
-            }
-            else if (npcData.genome.Substring(1, 2) == "10")
-            {
-                displayText.text += "Εξειδικεύεται στην μεταφορά χρυσού\n";
-                npcData.carryType = 2;
-            }
-            else if (npcData.genome.Substring(1, 2) == "11")
-            {
-                displayText.text += "Mεταφέρει όλους τους πόρους\n";
-                npcData.carryType = 3;
-            }
-            //Third gene 
-            if (npcData.genome.Substring(3, 2) == "00")
-            {
-                displayText.text += "Mια μονάδα πόρου κάθε στιγμή\n";
-                npcData.maxCaringCapacity = 1;
-            }
-            else if (npcData.genome.Substring(3, 2) == "01")
-            {
-                displayText.text += "Δυο μονάδες πόρου κάθε στιγμή\n";
-                npcData.maxCaringCapacity = 2;
-            }
-            else if (npcData.genome.Substring(3, 2) == "10")
-            {
-                displayText.text += "Τρεις μονάδες πόρου κάθε στιγμή\n";
-                npcData.maxCaringCapacity = 3;
-            }
-            else if (npcData.genome.Substring(3, 2) == "11")
-            {
-                displayText.text += "Τέσσερις μονάδες πόρου κάθε στιγμή\n";
-                npcData.maxCaringCapacity = 4;
-            }
-            //Forth gene 
-            if (npcData.genome.Substring(5, 2) == "00")
-            {
-                displayText.text += "Ξεκινά με 10 Gold\n";
-                npcData.gold = 10;
-            }
-            else if (npcData.genome.Substring(5, 2) == "01")
-            {
-                displayText.text += "Ξεκινά με 20Gold\n";
-                npcData.gold = 20;
-            }
-            else if (npcData.genome.Substring(5, 2) == "10")
-            {
-                displayText.text += "Ξεκινά με 40Gold\n";
-                npcData.gold = 40;
-            }
-            else if (npcData.genome.Substring(5, 2) == "11")
-            {
-                displayText.text += "Ξεκινά με 80Gold\n";
-                npcData.gold =80;
-            }
-            //Fifth gene 
-            if (npcData.genome.Substring(7, 2) == "00")
-            {
-                displayText.text += "Ξεκινά με 1 Energy pot\n";
-                npcData.energyPots = 1;
-            }
-            else if (npcData.genome.Substring(7, 2) == "01")
-            {
-                displayText.text += "Ξεκινά με 2 Energy pot\n";
-                npcData.energyPots = 2;
-            }
-            else if (npcData.genome.Substring(7, 2) == "10")
-            {
-                displayText.text += "Ξεκινά με 3 Energy pot\n";
-                npcData.energyPots = 3;
-            }
-            else if (npcData.genome.Substring(7, 2) == "11")
-            {
-                displayText.text += "Ξεκινά με 4 Energy pot\n";
-                npcData.energyPots = 4;
-            }
-            //Sixth gene 
-            if (npcData.genome.Substring(9, 2) == "00")
-            {
-                displayText.text += "Ξεκινά με 50 Energy points\n";
-                npcData.energy = 50;
-            }
-            else if (npcData.genome.Substring(9, 2) == "01")
-            {
-                displayText.text += "Ξεκινά με 100 Energy points\n";
-                npcData.energy = 100;
-            }
-            else if (npcData.genome.Substring(9, 2) == "10")
-            {
-                displayText.text += "Ξεκινά με 200 Energy points\n";
-                npcData.energy = 200;
-            }
-            else if (npcData.genome.Substring(9, 2) == "11")
-            {
-                displayText.text += "Ξεκινά με 400 Energy points\n";
-                npcData.energy = 400;
-            }
-        }
         //Move(mapPosition.x, mapPosition.y);
 
     }
@@ -207,13 +87,13 @@ public class NpcBehaviour : MonoBehaviour
                             if (!(i == 0 && j == 0)){
                                 if (localMapData[mapPosition.x + i, mapPosition.y + j] != "e") {
                                     localMapData[mapPosition.x + i, mapPosition.y + j] = map.mapData[mapPosition.x + i, mapPosition.y + j];
-                                    if (localMapData[mapPosition.x + i, mapPosition.y + j] == "W" && !knownWoodOres.Contains(new Vector2Int(mapPosition.x + i, mapPosition.y + j))) {
+                                    if (localMapData[mapPosition.x + i, mapPosition.y + j] == MapController.MapBuildingToString(Placeable.Type.Wood) && !knownWoodOres.Contains(new Vector2Int(mapPosition.x + i, mapPosition.y + j))) {
                                         knownWoodOres.Add(new Vector2Int(mapPosition.x + i, mapPosition.y + j));
                                     }
-                                    else if (localMapData[mapPosition.x + i, mapPosition.y + j] == "S" && !knownStoneOres.Contains(new Vector2Int(mapPosition.x + i, mapPosition.y + j))) {
+                                    else if (localMapData[mapPosition.x + i, mapPosition.y + j] == MapController.MapBuildingToString(Placeable.Type.Stone) && !knownStoneOres.Contains(new Vector2Int(mapPosition.x + i, mapPosition.y + j))) {
                                         knownStoneOres.Add(new Vector2Int(mapPosition.x + i, mapPosition.y + j));
                                     }
-                                    else if (localMapData[mapPosition.x + i, mapPosition.y + j] == "G" && !knownGoldOres.Contains(new Vector2Int(mapPosition.x + i, mapPosition.y + j))) {
+                                    else if (localMapData[mapPosition.x + i, mapPosition.y + j] == MapController.MapBuildingToString(Placeable.Type.Gold) && !knownGoldOres.Contains(new Vector2Int(mapPosition.x + i, mapPosition.y + j))) {
                                         knownGoldOres.Add(new Vector2Int(mapPosition.x + i, mapPosition.y + j));
                                     }
                                 }
@@ -424,7 +304,6 @@ public class NpcBehaviour : MonoBehaviour
             {
                 npcData.alive = false;
                 myVillage.NpcRemoved(gameObject);
-                statusDeathImage.SetActive(true);
             }   
         }
         else {
