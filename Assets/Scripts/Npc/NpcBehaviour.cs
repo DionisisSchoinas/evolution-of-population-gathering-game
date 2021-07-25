@@ -106,7 +106,7 @@ public class NpcBehaviour : MonoBehaviour
                 if (homePosition == mapPosition)
                 {
                     myVillage.AddResource(npcData.carryingResources);
-                    npcData.carryingResources.Clear();
+                    npcData.ClearInventory();
                     _returnHome = false;
                 }
                 else

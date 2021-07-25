@@ -68,6 +68,12 @@ public class NpcData : MonoBehaviour
 
         totalItems++;
     }
+
+    public void ClearInventory()
+    {
+        carryingResources.Clear();
+        totalItems = 0;
+    }
    
     private void GenerateGenome()
     {
