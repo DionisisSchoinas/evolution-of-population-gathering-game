@@ -10,7 +10,20 @@ public class NpcData : MonoBehaviour
     public int carryType;
     public int maxCaringCapacity;
     public int gold;
-    public int energyPots;
+    private int _energyPots;
+    public int energyPots
+    {
+        get
+        {
+            return _energyPots;
+        }
+        set
+        {
+            _energyPots = value;
+            if (dataDisplay != null)
+                dataDisplay.UpdateView();
+        }
+    }
     private int _energy;
     public int energy
     {

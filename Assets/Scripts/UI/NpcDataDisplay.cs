@@ -8,6 +8,7 @@ public class NpcDataDisplay : MonoBehaviour
     public Text genome;
     public Text energyCount;
     public Text coinsCount;
+    public Text potsCount;
     public Text goldCount;
     public Text stoneCount;
     public Text woodCount;
@@ -28,8 +29,9 @@ public class NpcDataDisplay : MonoBehaviour
     public void UpdateView()
     {
         genome.text = npcData.genome;
-        energyCount.text = "Energy : " + npcData.energy.ToString() + " / 0";
-        coinsCount.text = "Coins : " + npcData.gold.ToString() + " / 0";
+        energyCount.text = "Energy : " + npcData.energy.ToString();
+        coinsCount.text = "Coins : " + npcData.gold.ToString();
+        potsCount.text = "Potions : " + npcData.energyPots;
         goldCount.text = "Gold : " + GetItem(Placeable.Type.Gold);
         stoneCount.text = "Stone : " + GetItem(Placeable.Type.Stone);
         woodCount.text = "Wood : " + GetItem(Placeable.Type.Wood);
