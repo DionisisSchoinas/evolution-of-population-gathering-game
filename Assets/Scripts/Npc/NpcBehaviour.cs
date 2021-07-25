@@ -8,7 +8,6 @@ using UnityEngine.UI;
 public class NpcBehaviour : MonoBehaviour
 {
     public VillageData myVillage;
-
     private GridSnapping grid;
     private MapController map;
     private NpcData npcData;
@@ -43,12 +42,10 @@ public class NpcBehaviour : MonoBehaviour
             }
         }
     }
-
     private void OnDestroy()
     {
         SimulationLogic.current.onTick -= Tick;
     }
-
     // Start is called before the first frame update
     private void Start()
     {
@@ -67,30 +64,42 @@ public class NpcBehaviour : MonoBehaviour
         //Move(mapPosition.x, mapPosition.y);
 
     }
-
     public void Move(int x, int z) {
         mapPosition = new Vector2Int(x, z);
         moveOnWorldMap();
         TextFileController.WriteMapData(localMapData,"localMap");
     }
-    
     public void Tick(int ticks){
         if (npcData.alive) {
-            if (!_returnHome){
+            if (distance(mapPosition, homePosition) > npcData.energy && npcData.energyPots > 0) {
+                consumeEnergyPot();
+            }          
+            else if (!_returnHome) {
                 Vector2Int neiboringOre = findNeiboringOre();
-                if (neiboringOre!=mapPosition){
+                if (neiboringOre != mapPosition) {
 
-                    Debug.Log("Picking up resource :"+ neiboringOre+" genome "+npcData.genome);
                     map.PickUpResource(neiboringOre);
-                    npcData.AddResource(localMapData[neiboringOre.x, neiboringOre.y]);
-                    localMapData[neiboringOre.x , neiboringOre.y ] = "O";
+                    if (map.mapData[neiboringOre.x, neiboringOre.y] == "E")
+                    {
+                        npcData.energyPots += 1;
+                    }
+                    else
+                    {
+                        if (npcData.totalItems < npcData.maxCaringCapacity)
+                        {
+                            npcData.AddResource(localMapData[neiboringOre.x, neiboringOre.y]);
+                            localMapData[neiboringOre.x, neiboringOre.y] = "O";
 
-                    //remove from known ores
-                    knownGoldOres.Remove(neiboringOre);
-                    knownWoodOres.Remove(neiboringOre);
-                    knownStoneOres.Remove(neiboringOre);
-
-                    _returnHome = true;
+                            //remove from known ores
+                            knownGoldOres.Remove(neiboringOre);
+                            knownWoodOres.Remove(neiboringOre);
+                            knownStoneOres.Remove(neiboringOre);
+                        }
+                        else
+                        {
+                            _returnHome = true;
+                        }
+                    }
                 }
                 else if (returnClosestOre() != new Vector2Int(1200, 1200) && distance(mapPosition, returnClosestOre()) > 1)
                 {
@@ -106,6 +115,7 @@ public class NpcBehaviour : MonoBehaviour
                 {
                     myVillage.AddResource(npcData.carryingResources);
                     npcData.carryingResources.Clear();
+                    npcData.ClearInventory();
                     _returnHome = false;
                 }
                 else
@@ -130,11 +140,9 @@ public class NpcBehaviour : MonoBehaviour
             Destroy(gameObject);
         }
     }
-
     public void moveOnWorldMap() {
         transform.position = grid.GetNearestWorldPoint(transform.position, new Vector3Int(mapPosition.x, 0, mapPosition.y));
     }
-
     private int indexOfMinNotZero(int[] array) {
         int min = 600;
         int arrayIndex = 0;
@@ -146,7 +154,6 @@ public class NpcBehaviour : MonoBehaviour
         }
         return arrayIndex;
     }
-
     private Vector2Int returnClosestOre() {
         Vector2Int closestOreCoords = new Vector2Int(1200, 1200);
         
@@ -456,8 +463,8 @@ public class NpcBehaviour : MonoBehaviour
         for (int i = -1; i <= 1; i++){
             for (int j = -1; j <= 1; j++) {
                 if (!(i == 0 && j == 0)){
-                    if (npcData.resources[npcData.carryType].Contains(localMapData[mapPosition.x + i, mapPosition.y + j]))
-                    {
+                    if (npcData.resources[npcData.carryType].Contains(localMapData[mapPosition.x + i, mapPosition.y + j]) || map.mapData[mapPosition.x + i, mapPosition.y + j]=="E"){
+                        Debug.Log(map.mapData[mapPosition.x + i, mapPosition.y + j]);
                         return new Vector2Int(mapPosition.x + i, mapPosition.y + j);
                     }
                 }
@@ -465,9 +472,14 @@ public class NpcBehaviour : MonoBehaviour
         }
         return new Vector2Int(mapPosition.x , mapPosition.y );
     }
-
     public string[,] GetMap()
     {
         return localMapData;
+    }
+    public void consumeEnergyPot() {
+        if (npcData.energyPots > 0) { 
+        npcData.energyPots -= 1;
+        npcData.energy += 20;
+        }
     }
 }
