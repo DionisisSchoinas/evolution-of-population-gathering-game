@@ -78,19 +78,20 @@ public class NpcBehaviour : MonoBehaviour
         if (npcData.alive) {
             if (!_returnHome){
                 Vector2Int neiboringOre = findNeiboringOre();
-                if (neiboringOre!=mapPosition){
+                if (neiboringOre != mapPosition){
+                    // Try to pick up ore
+                    if (map.PickUpResource(neiboringOre))
+                    {
+                        npcData.AddResource(localMapData[neiboringOre.x, neiboringOre.y]);
 
-                    Debug.Log("Picking up resource :"+ neiboringOre+" genome "+npcData.genome);
-                    map.PickUpResource(neiboringOre);
-                    npcData.AddResource(localMapData[neiboringOre.x, neiboringOre.y]);
-                    localMapData[neiboringOre.x , neiboringOre.y ] = "O";
+                        //remove from known ores
+                        knownGoldOres.Remove(neiboringOre);
+                        knownWoodOres.Remove(neiboringOre);
+                        knownStoneOres.Remove(neiboringOre);
 
-                    //remove from known ores
-                    knownGoldOres.Remove(neiboringOre);
-                    knownWoodOres.Remove(neiboringOre);
-                    knownStoneOres.Remove(neiboringOre);
-
-                    _returnHome = true;
+                        _returnHome = true;
+                    }
+                    localMapData[neiboringOre.x, neiboringOre.y] = MapController.MapBuildingToString(Placeable.Type.Ground);
                 }
                 else if (returnClosestOre() != new Vector2Int(1200, 1200) && distance(mapPosition, returnClosestOre()) > 1)
                 {

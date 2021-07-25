@@ -72,8 +72,8 @@ public class NpcData : MonoBehaviour
     private void GenerateGenome()
     {
         genome = "";
-        for (int i = 0; i < 11; i++){
-
+        for (int i = 0; i < 11; i++)
+        {
             genome += Random.Range(0, 2);
         }
     }

@@ -222,20 +222,21 @@ public class MapController : MonoBehaviour
             Destroy(child.gameObject);
     }
 
-    public void PickUpResource(Vector2Int arrayPosition)
+    public bool PickUpResource(Vector2Int arrayPosition)
     {
         try
         {
-            // Remove from map data
-            mapData[arrayPosition.x, arrayPosition.y] = MapBuildingToString(Placeable.Type.Ground);
             // Remove from map display
             Destroy(gridSnapping.mapDataTransforms[arrayPosition.x, arrayPosition.y].gameObject);
+            // Remove from map data
+            mapData[arrayPosition.x, arrayPosition.y] = MapBuildingToString(Placeable.Type.Ground);
             // Remove from map display data
             gridSnapping.mapDataTransforms[arrayPosition.x, arrayPosition.y] = null;
+            return true;
         }
         catch
         {
-            Debug.Log("Tried to pickup ore at double time, position : " + arrayPosition);
+            return false;
         }
     }
 

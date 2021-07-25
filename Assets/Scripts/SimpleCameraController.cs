@@ -141,7 +141,8 @@ namespace UnityTemplateProjects
 
         private void SimulationStatus(bool running)
         {
-            m_TargetCameraState.SetFromVector3(originalPosition);
+            if (!running)
+                m_TargetCameraState.SetFromVector3(originalPosition);
         }
 
         void OnEnable()
