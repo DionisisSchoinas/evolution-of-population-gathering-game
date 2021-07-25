@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using System.IO;
+using System;
+
 public class MapController : MonoBehaviour
 {
     public string[,] mapData;
@@ -222,12 +224,19 @@ public class MapController : MonoBehaviour
 
     public void PickUpResource(Vector2Int arrayPosition)
     {
-        // Remove from map data
-        mapData[arrayPosition.x, arrayPosition.y] = MapBuildingToString(Placeable.Type.Ground);
-        // Remove from map display
-        Destroy(gridSnapping.mapDataTransforms[arrayPosition.x, arrayPosition.y].gameObject);
-        // Remove from map display data
-        gridSnapping.mapDataTransforms[arrayPosition.x, arrayPosition.y] = null;
+        try
+        {
+            // Remove from map data
+            mapData[arrayPosition.x, arrayPosition.y] = MapBuildingToString(Placeable.Type.Ground);
+            // Remove from map display
+            Destroy(gridSnapping.mapDataTransforms[arrayPosition.x, arrayPosition.y].gameObject);
+            // Remove from map display data
+            gridSnapping.mapDataTransforms[arrayPosition.x, arrayPosition.y] = null;
+        }
+        catch
+        {
+            Debug.Log("Tried to pickup ore at double time, position : " + arrayPosition);
+        }
     }
 
     private Vector3Int NormalizeIndex(Vector3Int index)
@@ -273,7 +282,6 @@ public class MapController : MonoBehaviour
                 return Placeable.Type.Ground;
         }
     }
-
     public static Placeable FindPlaceableFromType(Placeable.Type type)
     {
         foreach (Placeable placeable in SelectPlaceable.placeables)
