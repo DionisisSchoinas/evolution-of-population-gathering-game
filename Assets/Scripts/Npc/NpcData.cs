@@ -33,11 +33,9 @@ public class NpcData : MonoBehaviour
         MapController.MapBuildingToString(Placeable.Type.Gold),
         MapController.MapBuildingToString(Placeable.Type.Wood)+MapController.MapBuildingToString(Placeable.Type.Stone)+MapController.MapBuildingToString(Placeable.Type.Gold),
     };
-
     public Dictionary<Placeable.Type, int> carryingResources;
     public int totalItems;
     public string genomeString;
-
     public NpcDataDisplay dataDisplay;
     [HideInInspector]
     public NpcBehaviour npcBehaviour;
