@@ -58,25 +58,10 @@ public class VillageData : MonoBehaviour
         number = 0;
     }
 
-    private void Start()
-    {
-        SimulationLogic.current.onSimulationRunning += SimulationStatus;
-    }
-
     private void OnDestroy()
     {
-        SimulationLogic.current.onSimulationRunning -= SimulationStatus;
-
         if (villageDataDisplay != null)
             Destroy(villageDataDisplay.gameObject);
-    }
-
-    private void SimulationStatus(bool running)
-    {
-        if (!running)
-        {
-            ClearVillage();
-        }
     }
 
     public void SpawnNpcs(GameObject npcPrefab)
@@ -125,14 +110,5 @@ public class VillageData : MonoBehaviour
             return;
 
         gameObject.GetComponent<MeshRenderer>().material.SetColor("_Color", SimulationData.villagesColors[number - 1]);
-    }
-
-    private void ClearVillage()
-    {
-        foreach (NpcData npc in npcs)
-            Destroy(npc.gameObject);
-        npcs = new List<NpcData>();
-        storage = new Storage();
-        number = 0;
     }
 }

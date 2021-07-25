@@ -7,6 +7,7 @@ public class ExitWindow : MonoBehaviour
 {
     public Button exitSimulationButton;
     public Button detailsButton;
+    public CanvasGroup detailsPanel;
     public Button exitApplicationButton;
 
     private CanvasGroup canvasGroup;
@@ -34,11 +35,11 @@ public class ExitWindow : MonoBehaviour
 
     private void Update()
     {
-        if (canvasGroup.alpha == 0f && Input.GetKeyDown(KeyCode.Q)) // If hidden show menu
+        if (canvasGroup.alpha == 0f && Input.GetKeyDown(KeyCode.Escape)) // If hidden show menu
         {
             UIManager.SetCanvasState(canvasGroup, true);
         }
-        else if (canvasGroup.alpha == 1f && Input.GetKeyDown(KeyCode.Q)) // If showing hide menu
+        else if (canvasGroup.alpha == 1f && Input.GetKeyDown(KeyCode.Escape)) // If showing hide menu
         {
             UIManager.SetCanvasState(canvasGroup, false);
         }
@@ -57,7 +58,7 @@ public class ExitWindow : MonoBehaviour
 
     private void Details()
     {
-
+        UIManager.SetCanvasState(detailsPanel, true);
     }
 
     private void ExitApplication()

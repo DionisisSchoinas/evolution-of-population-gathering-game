@@ -27,6 +27,13 @@ namespace UnityTemplateProjects
                 z = t.position.z;
             }
 
+            public void SetFromVector3(Vector3 t)
+            {
+                x = t.x;
+                y = t.y;
+                z = t.z;
+            }
+
             public void Translate(Vector3 translation)
             {
                 Vector3 rotatedTranslation = Quaternion.Euler(pitch, yaw, roll) * translation;
@@ -115,6 +122,27 @@ namespace UnityTemplateProjects
             boostFactorAction.Enable();
         }
 #endif
+        private Vector3 originalPosition;
+
+        private void Awake()
+        {
+            originalPosition = transform.position;
+        }
+
+        private void Start()
+        {
+            SimulationLogic.current.onSimulationRunning += SimulationStatus;
+        }
+
+        private void OnDestroy()
+        {
+            SimulationLogic.current.onSimulationRunning -= SimulationStatus;
+        }
+
+        private void SimulationStatus(bool running)
+        {
+            m_TargetCameraState.SetFromVector3(originalPosition);
+        }
 
         void OnEnable()
         {
@@ -133,11 +161,11 @@ namespace UnityTemplateProjects
 #else
             if (Input.GetKey(KeyCode.W))
             {
-                direction += Vector3.forward;
+                direction += Vector3.up;
             }
             if (Input.GetKey(KeyCode.S))
             {
-                direction += Vector3.back;
+                direction += Vector3.down;
             }
             if (Input.GetKey(KeyCode.A))
             {
@@ -149,66 +177,26 @@ namespace UnityTemplateProjects
             }
             if (Input.GetKey(KeyCode.LeftControl))
             {
-                direction += Vector3.down;
+                direction += Vector3.forward;
             }
             if (Input.GetKey(KeyCode.Space))
             {
-                direction += Vector3.up;
+                direction += Vector3.back;
             }
 #endif
             return direction;
         }
         
         void Update()
-        {
-            // Exit Sample  
-
-            if (IsEscapePressed())
-            {
-                Application.Quit();
-				#if UNITY_EDITOR
-				UnityEditor.EditorApplication.isPlaying = false; 
-				#endif
-            }
-
-            // Hide and lock cursor when right mouse button pressed
-            if (IsRightMouseButtonDown())
-            {
-                Cursor.lockState = CursorLockMode.Locked;
-            }
-
-            // Unlock and show cursor when right mouse button released
-            if (IsRightMouseButtonUp())
-            {
-                Cursor.visible = true;
-                Cursor.lockState = CursorLockMode.None;
-            }
-
-            // Rotation
-            if (IsCameraRotationAllowed())
-            {
-                var mouseMovement = GetInputLookRotation() * Time.deltaTime * 5;
-                if (invertY)
-                    mouseMovement.y = -mouseMovement.y;
-                
-                var mouseSensitivityFactor = mouseSensitivityCurve.Evaluate(mouseMovement.magnitude);
-
-                m_TargetCameraState.yaw += mouseMovement.x * mouseSensitivityFactor;
-                m_TargetCameraState.pitch += mouseMovement.y * mouseSensitivityFactor;
-            }
-            
+        {            
             // Translation
-            var translation = GetInputTranslationDirection() * Time.deltaTime;
+            var translation = GetInputTranslationDirection() * Time.deltaTime * 10f;
 
             // Speed up movement when shift key held
             if (IsBoostPressed())
             {
                 translation *= 10.0f;
             }
-            
-            // Modify movement by a boost factor (defined in Inspector and modified in play mode through the mouse scroll wheel)
-            boost += GetBoostFactor();
-            translation *= Mathf.Pow(2.0f, boost);
 
             m_TargetCameraState.Translate(translation);
 
@@ -221,24 +209,6 @@ namespace UnityTemplateProjects
             m_InterpolatingCameraState.UpdateTransform(transform);
         }
 
-        float GetBoostFactor()
-        {
-#if ENABLE_INPUT_SYSTEM
-            return boostFactorAction.ReadValue<Vector2>().y * 0.01f;
-#else
-            return Input.mouseScrollDelta.y * 0.2f;
-#endif
-        }
-
-        Vector2 GetInputLookRotation()
-        {
-#if ENABLE_INPUT_SYSTEM
-            return lookAction.ReadValue<Vector2>();
-#else
-            return new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y")) * 10;
-#endif
-        }
-
         bool IsBoostPressed()
         {
 #if ENABLE_INPUT_SYSTEM
@@ -249,44 +219,6 @@ namespace UnityTemplateProjects
             return Input.GetKey(KeyCode.LeftShift);
 #endif
 
-        }
-
-        bool IsEscapePressed()
-        {
-#if ENABLE_INPUT_SYSTEM
-            return Keyboard.current != null ? Keyboard.current.escapeKey.isPressed : false; 
-#else
-            return Input.GetKey(KeyCode.Escape);
-#endif
-        }
-
-        bool IsCameraRotationAllowed()
-        {
-#if ENABLE_INPUT_SYSTEM
-            bool canRotate = Mouse.current != null ? Mouse.current.rightButton.isPressed : false;
-            canRotate |= Gamepad.current != null ? Gamepad.current.rightStick.ReadValue().magnitude > 0 : false;
-            return canRotate;
-#else
-            return Input.GetMouseButton(1);
-#endif
-        }
-
-        bool IsRightMouseButtonDown()
-        {
-#if ENABLE_INPUT_SYSTEM
-            return Mouse.current != null ? Mouse.current.rightButton.isPressed : false;
-#else
-            return Input.GetMouseButtonDown(1);
-#endif
-        }
-
-        bool IsRightMouseButtonUp()
-        {
-#if ENABLE_INPUT_SYSTEM
-            return Mouse.current != null ? !Mouse.current.rightButton.isPressed : false;
-#else
-            return Input.GetMouseButtonUp(1);
-#endif
         }
 
     }

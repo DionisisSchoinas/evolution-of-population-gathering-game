@@ -71,7 +71,7 @@ public class SimulationLogic : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        if (Input.GetKey(KeyCode.L) && simulationRunning)
+        if ((Input.GetKey(KeyCode.K) || Input.GetKeyDown(KeyCode.L)) && simulationRunning)
         {
             ticks += 1;
             current.Tick(ticks);
