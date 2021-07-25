@@ -17,7 +17,7 @@ public class NpcBehaviour : MonoBehaviour
     private Vector2Int mapPosition = new Vector2Int(10,10);
     private Vector2Int homePosition = new Vector2Int(3, 3);
     [SerializeField]
-    private bool returnHome;
+    private bool _returnHome;
     private string[,] localMapData;
     private Vector2Int[] directions = new Vector2Int[] { new Vector2Int(1, 0), new Vector2Int(-1, 0), new Vector2Int(0, -1), new Vector2Int(0, 1) };
 
@@ -27,6 +27,7 @@ public class NpcBehaviour : MonoBehaviour
 
     private void Awake()
     {
+
         localMapData = new string[SimulationSettings.simSettings.mapRows, SimulationSettings.simSettings.mapColumns];
  
         for (int i = 0; i < localMapData.GetLength(0); i++)
@@ -53,13 +54,14 @@ public class NpcBehaviour : MonoBehaviour
     // Start is called before the first frame update
     private void Start()
     {
+        
         SimulationLogic.current.onTick += Tick;
 
         myVillage = gameObject.GetComponentInParent<VillageData>();
         homePosition = myVillage.arrayPosition;
         mapPosition = myVillage.arrayPosition;
 
-        returnHome = false;
+        _returnHome = false;
         grid = FindObjectOfType<GridSnapping>();
         map= FindObjectOfType<MapController>();
         npcData = GetComponent<NpcData>();
@@ -194,231 +196,44 @@ public class NpcBehaviour : MonoBehaviour
     
     public void Tick(int ticks){
         if (npcData.alive) {
-            if (!returnHome){
-                //explore
-                for (int step = 0; step < npcData.moveLength; step++){
-                    //find all possible possitions for each step
-                    Vector2Int[] possiblePositions = new Vector2Int[8];
-                    int[] possiblePositionsWeights = new int[8];
-                    int counter = 0;
+            if (!_returnHome){
+                Vector2Int neiboringOre = findNeiboringOre();
+                if (neiboringOre!=mapPosition){
+                    Debug.Log("Picking up resource :"+ neiboringOre+" genome "+npcData.genome);
+                    map.PickUpResource(neiboringOre);
+                    //remove from known ores
+                    knownGoldOres.Remove(neiboringOre);
+                    knownWoodOres.Remove(neiboringOre);
+                    knownStoneOres.Remove(neiboringOre);
 
-                    for (int i = -1; i <= 1; i++){
-                        for (int j = -1; j <= 1; j++){
-                            if (!(i == 0 && j == 0)){
-                                if (localMapData[mapPosition.x + i, mapPosition.y + j] != "e") {
-                                    localMapData[mapPosition.x + i, mapPosition.y + j] = map.mapData[mapPosition.x + i, mapPosition.y + j];
-                                    if (localMapData[mapPosition.x + i, mapPosition.y + j] == "W" && !knownWoodOres.Contains(new Vector2Int(mapPosition.x + i, mapPosition.y + j))) {
-                                        knownWoodOres.Add(new Vector2Int(mapPosition.x + i, mapPosition.y + j));
-                                    }
-                                    else if (localMapData[mapPosition.x + i, mapPosition.y + j] == "S" && !knownStoneOres.Contains(new Vector2Int(mapPosition.x + i, mapPosition.y + j))) {
-                                        knownStoneOres.Add(new Vector2Int(mapPosition.x + i, mapPosition.y + j));
-                                    }
-                                    else if (localMapData[mapPosition.x + i, mapPosition.y + j] == "G" && !knownGoldOres.Contains(new Vector2Int(mapPosition.x + i, mapPosition.y + j))) {
-                                        knownGoldOres.Add(new Vector2Int(mapPosition.x + i, mapPosition.y + j));
-                                    }
-                                }
-                                if (npcData.resources[npcData.carryType].Contains(localMapData[mapPosition.x + i, mapPosition.y + j])) {
-                                    //Debug.Log("Resource: "+ npcData.resources[npcData.carryType] + " Found");
-
-                                    map.PickUpResource(new Vector2Int(mapPosition.x + i, mapPosition.y + j));
-                                    npcData.carryingResources.Add(localMapData[mapPosition.x + i, mapPosition.y + j]);
-                                    localMapData[mapPosition.x + i, mapPosition.y + j] = "O";
-                                    returnHome = true;
-                                } 
-                                possiblePositions[counter] = new Vector2Int(mapPosition.x + i, mapPosition.y + j);
-
-                                possiblePositionsWeights[counter] = 1;
-                                //calculate weight of each vertici 
-                                if (localMapData[possiblePositions[counter].x, possiblePositions[counter].y] == "e")
-                                {
-                                    possiblePositionsWeights[counter] = 0;
-                                }
-                                else
-                                {
-                                    for (int ii = -1; ii <= 1; ii++)
-                                    {
-                                        for (int jj = -1; jj <= 1; jj++)
-                                        {
-                                            if (!(ii == 0 && jj == 0))
-                                            {
-                                                if (localMapData[possiblePositions[counter].x + ii, possiblePositions[counter].y + jj] == "u")
-                                                {
-                                                    possiblePositionsWeights[counter] += 1;
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                                counter++;
-                            }
-                            else{
-                                localMapData[mapPosition.x + i, mapPosition.y + j] = "x";
-                            }
-                        }
-                    }
-                    List<Vector2Int> profitablePositions = new List<Vector2Int>();
-
-                    //find the most profitable possitions in the possible possitions
-
-                    //Add positions to list acording to acumulated points bassed on likelihood of discovery
-
-                    int pointTotal = 0;
-                    for (int position = 0; position < possiblePositions.Length; position++)
-                    {
-                        for (int positionPointsIndex = 0; positionPointsIndex < possiblePositionsWeights[position]; positionPointsIndex++)
-                        {
-                            profitablePositions.Add(possiblePositions[position]);
-                            pointTotal++;
-                        }
-                    }
-                    //if npc is lost
-                    bool foundUnexplored = false;
-                    if (pointTotal <= 8) {                                                                                                                            
-                        int up_counter = 0;
-                        for (int i = mapPosition.x + 1; i < localMapData.GetLength(0)-1; i++) {
-                            if (localMapData[i, mapPosition.y] == "u") {
-                                foundUnexplored = true;
-                                break;
-                            }
-                            up_counter++;
-                        }
-                        //if there isnt land that way maximize distance
-                        if (!foundUnexplored) up_counter = SimulationSettings.simSettings.mapColumns;
-                        foundUnexplored = false;
-
-                        int down_counter = 0;
-                        for (int i = mapPosition.x - 1; i > 1; i--)
-                        {
-                            if (localMapData[i, mapPosition.y] == "u")
-                            {
-                                foundUnexplored = true;
-                                break;
-                            }
-                            down_counter++;
-                        }
-                        //if there isnt land that way maximize distance
-                        if (!foundUnexplored) down_counter = SimulationSettings.simSettings.mapColumns;
-                        foundUnexplored = false;
-
-                        int right_counter = 0;
-                        for (int i = mapPosition.y + 1; i < localMapData.GetLength(1)-1; i++)
-                        {
-                            if (localMapData[mapPosition.x, i] == "u")
-                            {
-                                foundUnexplored = true;
-                                break;
-                            }
-                            right_counter++;
-                        }
-                        //if there isnt land that way maximize distance
-                        if (!foundUnexplored) right_counter = SimulationSettings.simSettings.mapRows;
-                        foundUnexplored = false;
-
-                        int left_counter = 0;
-                        for (int i = mapPosition.y - 1; i > 1; i--)
-                        {
-                            if (localMapData[mapPosition.x, i] == "u")
-                            {
-                                foundUnexplored = true;
-                                break;
-                            }
-                            left_counter++;
-                        }
-                        if (!foundUnexplored) left_counter = SimulationSettings.simSettings.mapRows;
-                      
-                        foundUnexplored = false;
-                        int[] directionLenghts =new int[]{ up_counter, down_counter, left_counter, right_counter };
-                        Vector2Int newPosition = mapPosition + directions[indexOfMinNotZero(directionLenghts)];
-                        if (directionLenghts[indexOfMinNotZero(directionLenghts)] != 100){
-                            for (int points = 0; points < 5; points++) {
-                                profitablePositions.Add(newPosition);
-                            }
-                        }
-                    }
-                    
-                    Vector2Int nextPosition = profitablePositions[UnityEngine.Random.Range(0, profitablePositions.Count)];
-                    
-                    Move(nextPosition.x, nextPosition.y);
+                    npcData.carryingResources.Add(localMapData[neiboringOre.x, neiboringOre.y]);
+                    localMapData[neiboringOre.x , neiboringOre.y ] = "O";
+                    _returnHome = true;
+                }
+                else if (returnClosestOre() != new Vector2Int(1200, 1200) && distance(mapPosition, returnClosestOre()) > 1)
+                {
+                    lookForOre();
+                }
+                else
+                {
+                    explore();
                 }
             }
             else {
                 if (homePosition == mapPosition)
                 {
                     myVillage.AddResource(npcData.carryingResources);
-                    returnHome = false;
+                    _returnHome = false;
                 }
                 else
                 {
-                    //return home
-                    for (int step = 0; step < npcData.moveLength; step++)
-                    {
-                        for (int i = -1; i <= 1; i++)
-                        {
-                            for (int j = -1; j <= 1; j++)
-                            {
-                                if (!(i == 0 && j == 0))
-                                {
-                                    if (localMapData[mapPosition.x + i, mapPosition.y + j] != "e" && localMapData[mapPosition.x + i, mapPosition.y + j] != "V") localMapData[mapPosition.x + i, mapPosition.y + j] = map.mapData[mapPosition.x + i, mapPosition.y + j];
-                                }
-                                else
-                                {
-                                    localMapData[mapPosition.x, mapPosition.y] = "x";
-                                }
-                            }
-                        }
-
-                        if (mapPosition.x < homePosition.x)
-                        {
-                            if (mapPosition.y == homePosition.y)
-                            {
-                                Move(mapPosition.x + 1, mapPosition.y);
-                            }
-                            else if (mapPosition.y < homePosition.y)
-                            {
-                                Move(mapPosition.x + 1, mapPosition.y + 1);
-                            }
-                            else if (mapPosition.y > homePosition.y)
-                            {
-                                Move(mapPosition.x + 1, mapPosition.y - 1);
-                            }
-                        }
-                        else if (mapPosition.x > homePosition.x)
-                        {
-
-                            if (mapPosition.y == homePosition.y)
-                            {
-                                Move(mapPosition.x - 1, mapPosition.y);
-                            }
-                            else if (mapPosition.y < homePosition.y)
-                            {
-                                Move(mapPosition.x - 1, mapPosition.y + 1);
-                            }
-                            else if (mapPosition.y > homePosition.y)
-                            {
-                                Move(mapPosition.x - 1, mapPosition.y - 1);
-                            }
-                        }
-                        else if (mapPosition.x == homePosition.x)
-                        {
-                            if (mapPosition.y == homePosition.y)
-                            {
-                                Move(mapPosition.x, mapPosition.y);
-                            }
-                            else if (mapPosition.y < homePosition.y)
-                            {
-                                Move(mapPosition.x, mapPosition.y + 1);
-                            }
-                            else if (mapPosition.y > homePosition.y)
-                            {
-                                Move(mapPosition.x, mapPosition.y - 1);
-                            }
-                        }
-                    }
+                    returnHome();
                 }
 
             }
           
             npcData.energy--;
+
             if (npcData.energy == 0)
             {
                 npcData.alive = false;
@@ -447,5 +262,322 @@ public class NpcBehaviour : MonoBehaviour
         return arrayIndex;
     }
 
-   
+    private Vector2Int returnClosestOre() {
+        Vector2Int closestOreCoords = new Vector2Int(1200, 1200);
+        
+        switch (npcData.carryType){
+            case 0:
+                foreach (Vector2Int coord in knownWoodOres) {
+                    if (distance(mapPosition, coord) < distance(mapPosition, closestOreCoords)) {
+                        closestOreCoords = coord;
+                    }
+                }
+                break;
+            case 1:
+                foreach (Vector2Int coord in knownStoneOres)
+                {
+                    if (distance(mapPosition, coord) < distance(mapPosition, closestOreCoords))
+                    {
+                        closestOreCoords = coord;
+                    }
+                }
+                break;
+            case 2:
+                foreach (Vector2Int coord in knownGoldOres)
+                {
+                    if (distance(mapPosition, coord) < distance(mapPosition, closestOreCoords))
+                    {
+                        closestOreCoords = coord;
+                    }
+                }
+                break;
+            case 3:
+                break;
+
+        }
+
+
+        return closestOreCoords;
+    }
+    private int distance(Vector2Int coord1,Vector2Int coord2) { 
+        return Math.Abs(coord1.x- coord2.x) + Math.Abs(coord1.y - coord2.y);
+    }
+    private void explore(){
+        //explore
+        for (int step = 0; step < npcData.moveLength; step++)
+        {
+            //find all possible possitions for each step
+            Vector2Int[] possiblePositions = new Vector2Int[8];
+            int[] possiblePositionsWeights = new int[8];
+            int counter = 0;
+
+            for (int i = -1; i <= 1; i++)
+            {
+                for (int j = -1; j <= 1; j++)
+                {
+                    if (!(i == 0 && j == 0))
+                    {
+                        if (localMapData[mapPosition.x + i, mapPosition.y + j] != "e")
+                        {
+                            localMapData[mapPosition.x + i, mapPosition.y + j] = map.mapData[mapPosition.x + i, mapPosition.y + j];
+                            if (localMapData[mapPosition.x + i, mapPosition.y + j] == "W" && !knownWoodOres.Contains(new Vector2Int(mapPosition.x + i, mapPosition.y + j)))
+                            {
+                                knownWoodOres.Add(new Vector2Int(mapPosition.x + i, mapPosition.y + j));
+                            }
+                            else if (localMapData[mapPosition.x + i, mapPosition.y + j] == "S" && !knownStoneOres.Contains(new Vector2Int(mapPosition.x + i, mapPosition.y + j)))
+                            {
+                                knownStoneOres.Add(new Vector2Int(mapPosition.x + i, mapPosition.y + j));
+                            }
+                            else if (localMapData[mapPosition.x + i, mapPosition.y + j] == "G" && !knownGoldOres.Contains(new Vector2Int(mapPosition.x + i, mapPosition.y + j)))
+                            {
+                                knownGoldOres.Add(new Vector2Int(mapPosition.x + i, mapPosition.y + j));
+                            }
+                        }
+                   
+                        possiblePositions[counter] = new Vector2Int(mapPosition.x + i, mapPosition.y + j);
+
+                        possiblePositionsWeights[counter] = 1;
+                        //calculate weight of each vertici 
+                        if (localMapData[possiblePositions[counter].x, possiblePositions[counter].y] == "e")
+                        {
+                            possiblePositionsWeights[counter] = 0;
+                        }
+                        else
+                        {
+                            for (int ii = -1; ii <= 1; ii++)
+                            {
+                                for (int jj = -1; jj <= 1; jj++)
+                                {
+                                    if (!(ii == 0 && jj == 0))
+                                    {
+                                        if (localMapData[possiblePositions[counter].x + ii, possiblePositions[counter].y + jj] == "u")
+                                        {
+                                            possiblePositionsWeights[counter] += 1;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        counter++;
+                    }
+                    else
+                    {
+                        localMapData[mapPosition.x + i, mapPosition.y + j] = "x";
+                    }
+                }
+            }
+            List<Vector2Int> profitablePositions = new List<Vector2Int>();
+
+            //find the most profitable possitions in the possible possitions
+
+            //Add positions to list acording to acumulated points bassed on likelihood of discovery
+
+            int pointTotal = 0;
+            for (int position = 0; position < possiblePositions.Length; position++)
+            {
+                for (int positionPointsIndex = 0; positionPointsIndex < possiblePositionsWeights[position]; positionPointsIndex++)
+                {
+                    profitablePositions.Add(possiblePositions[position]);
+                    pointTotal++;
+                }
+            }
+            //if npc is lost
+            bool foundUnexplored = false;
+            if (pointTotal <= 8)
+            {
+                int up_counter = 0;
+                for (int i = mapPosition.x + 1; i < localMapData.GetLength(0) - 1; i++)
+                {
+                    if (localMapData[i, mapPosition.y] == "u")
+                    {
+                        foundUnexplored = true;
+                        break;
+                    }
+                    up_counter++;
+                }
+                //if there isnt land that way maximize distance
+                if (!foundUnexplored) up_counter = 600;
+                foundUnexplored = false;
+
+                int down_counter = 0;
+                for (int i = mapPosition.x - 1; i > 1; i--)
+                {
+                    if (localMapData[i, mapPosition.y] == "u")
+                    {
+                        foundUnexplored = true;
+                        break;
+                    }
+                    down_counter++;
+                }
+                //if there isnt land that way maximize distance
+                if (!foundUnexplored) down_counter = 600;
+                foundUnexplored = false;
+
+                int right_counter = 0;
+                for (int i = mapPosition.y + 1; i < localMapData.GetLength(1) - 1; i++)
+                {
+                    if (localMapData[mapPosition.x, i] == "u")
+                    {
+                        foundUnexplored = true;
+                        break;
+                    }
+                    right_counter++;
+                }
+                //if there isnt land that way maximize distance
+                if (!foundUnexplored) right_counter = 600;
+                foundUnexplored = false;
+
+                int left_counter = 0;
+                for (int i = mapPosition.y - 1; i > 1; i--)
+                {
+                    if (localMapData[mapPosition.x, i] == "u")
+                    {
+                        foundUnexplored = true;
+                        break;
+                    }
+                    left_counter++;
+                }
+                if (!foundUnexplored) left_counter = SimulationSettings.simSettings.mapRows;
+
+                foundUnexplored = false;
+                int[] directionLenghts = new int[] { up_counter, down_counter, left_counter, right_counter };
+                Vector2Int newPosition = mapPosition + directions[indexOfMinNotZero(directionLenghts)];
+                if (directionLenghts[indexOfMinNotZero(directionLenghts)] != 600)
+                {
+                    for (int points = 0; points < 5; points++)
+                    {
+                        profitablePositions.Add(newPosition);
+                    }
+                }
+            }
+
+            Vector2Int nextPosition = profitablePositions[UnityEngine.Random.Range(0, profitablePositions.Count)];
+
+            Move(nextPosition.x, nextPosition.y);
+        }
+    }
+    private void lookForOre() {
+        for (int step = 0; step < npcData.moveLength; step++)
+        {
+
+            //if you agent is close to ore remove from known ores and pick it up
+            if (distance(mapPosition, returnClosestOre()) == 1)
+            {
+                if (map.mapData[returnClosestOre().x, returnClosestOre().y] == "-") { 
+                    //remove from known ores
+                    knownGoldOres.Remove(returnClosestOre());
+                    knownWoodOres.Remove(returnClosestOre());
+                    knownStoneOres.Remove(returnClosestOre());
+
+                }
+                break;
+            }
+            //if you agent is far to ore move him towords the general direction
+            else
+            {
+                List<Vector2Int> profitablePositions = new List<Vector2Int>();
+
+                Vector2Int oreDirection = new Vector2Int(mapPosition.x, mapPosition.y);
+
+                if (mapPosition.x < returnClosestOre().x)
+                {
+                    oreDirection += new Vector2Int(1, 0);
+                }
+                else if (mapPosition.x > returnClosestOre().x)
+                {
+                    oreDirection += new Vector2Int(-1, 0);
+                }
+                else if (mapPosition.y < returnClosestOre().y)
+                {
+                    oreDirection += new Vector2Int(0, 1);
+                }
+                else if (mapPosition.y > returnClosestOre().y)
+                {
+                    oreDirection += new Vector2Int(0, -1);
+                }
+
+                Move(oreDirection.x, oreDirection.y);
+            }
+        }
+    }
+    private void returnHome() {
+        //return home
+        for (int step = 0; step < npcData.moveLength; step++)
+        {
+            for (int i = -1; i <= 1; i++)
+            {
+                for (int j = -1; j <= 1; j++)
+                {
+                    if (!(i == 0 && j == 0))
+                    {
+                        if (localMapData[mapPosition.x + i, mapPosition.y + j] != "e") localMapData[mapPosition.x + i, mapPosition.y + j] = map.mapData[mapPosition.x + i, mapPosition.y + j];
+                    }
+                    else
+                    {
+                        localMapData[mapPosition.x, mapPosition.y] = "x";
+                    }
+                }
+            }
+
+            if (mapPosition.x < homePosition.x)
+            {
+                if (mapPosition.y == homePosition.y)
+                {
+                    Move(mapPosition.x + 1, mapPosition.y);
+                }
+                else if (mapPosition.y < homePosition.y)
+                {
+                    Move(mapPosition.x + 1, mapPosition.y + 1);
+                }
+                else if (mapPosition.y > homePosition.y)
+                {
+                    Move(mapPosition.x + 1, mapPosition.y - 1);
+                }
+            }
+            else if (mapPosition.x > homePosition.x)
+            {
+
+                if (mapPosition.y == homePosition.y)
+                {
+                    Move(mapPosition.x - 1, mapPosition.y);
+                }
+                else if (mapPosition.y < homePosition.y)
+                {
+                    Move(mapPosition.x - 1, mapPosition.y + 1);
+                }
+                else if (mapPosition.y > homePosition.y)
+                {
+                    Move(mapPosition.x - 1, mapPosition.y - 1);
+                }
+            }
+            else if (mapPosition.x == homePosition.x)
+            {
+                if (mapPosition.y == homePosition.y)
+                {
+                    Move(mapPosition.x, mapPosition.y);
+                }
+                else if (mapPosition.y < homePosition.y)
+                {
+                    Move(mapPosition.x, mapPosition.y + 1);
+                }
+                else if (mapPosition.y > homePosition.y)
+                {
+                    Move(mapPosition.x, mapPosition.y - 1);
+                }
+            }
+        }
+    }
+    private Vector2Int findNeiboringOre() {
+        for (int i = -1; i <= 1; i++){
+            for (int j = -1; j <= 1; j++) {
+                if (!(i == 0 && j == 0)){
+                    if (npcData.resources[npcData.carryType].Contains(localMapData[mapPosition.x + i, mapPosition.y + j]))
+                    {
+                        return new Vector2Int(mapPosition.x + i, mapPosition.y + j);
+                    }
+                }
+            }
+        }
+        return new Vector2Int(mapPosition.x , mapPosition.y );
+    }
 }
