@@ -19,20 +19,30 @@ public class UIManager : MonoBehaviour
         SetCanvasState(simulationVillageDetailsDisplay, false);
     }
 
+    private void Start()
+    {
+        SimulationLogic.current.onSimulationRunning += SimulationStatus;
+    }
+
+    private void OnDestroy()
+    {
+        SimulationLogic.current.onSimulationRunning -= SimulationStatus;
+    }
+
+    private void SimulationStatus(bool running)
+    {
+        SetCanvasState(buildingPanel, !running);
+        SetCanvasState(simSettingsPanel, !running);
+        SetCanvasState(simSettingsEditorPanel, false);
+
+        SetCanvasState(simulationStatusDisplay, running);
+        SetCanvasState(simulationVillageDetailsDisplay, running);
+    }
+
     public static void SetCanvasState(CanvasGroup canvasGroup, bool show)
     {
         canvasGroup.alpha = show ? 1f : 0f;
         canvasGroup.interactable = show;
         canvasGroup.blocksRaycasts = show;
-    }
-
-    public void StartSimulation()
-    {
-        SetCanvasState(buildingPanel, false);
-        SetCanvasState(simSettingsPanel, false);
-        SetCanvasState(simSettingsEditorPanel, false);
-
-        SetCanvasState(simulationStatusDisplay, true);
-        SetCanvasState(simulationVillageDetailsDisplay, true);
     }
 }

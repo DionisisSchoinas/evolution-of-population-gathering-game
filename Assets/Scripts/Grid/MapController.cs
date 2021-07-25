@@ -31,6 +31,24 @@ public class MapController : MonoBehaviour
         mapRandomizer = gameObject.GetComponent<MapRandomizer>();
     }
 
+    private void Start()
+    {
+        SimulationLogic.current.onSimulationRunning += SimulationStatus;
+    }
+
+    private void OnDestroy()
+    {
+        SimulationLogic.current.onSimulationRunning -= SimulationStatus;
+    }
+
+    private void SimulationStatus(bool running)
+    {
+        if (!running)
+        {
+            RedrawMap(true);
+        }
+    }
+
     public bool hasSpace(Vector3Int index, Placeable placeable)
     {
         index = NormalizeIndex(index);

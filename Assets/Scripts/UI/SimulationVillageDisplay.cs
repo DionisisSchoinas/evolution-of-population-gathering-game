@@ -23,6 +23,18 @@ public class SimulationVillageDisplay : MonoBehaviour
     private void Start()
     {
         villageName.text = "";
+        SimulationLogic.current.onSimulationRunning += SimulationStatus;
+    }
+
+    private void OnDestroy()
+    {
+        SimulationLogic.current.onSimulationRunning -= SimulationStatus;
+    }
+
+    private void SimulationStatus(bool running)
+    {
+        ClearNpcs();
+        HideOverlay();
     }
 
     public void ShowNpcs(VillageData villageData)

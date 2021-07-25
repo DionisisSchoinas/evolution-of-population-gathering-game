@@ -401,13 +401,7 @@ public class GridSnapping : MonoBehaviour
     {
         showingOverlay = false;
         simulationVillageDisplay.hideOverlay.enabled = false;
-        for (int i = 0; i < mapOverlay.GetLength(0); i++)
-        {
-            for (int j = 0; j < mapOverlay.GetLength(1); j++)
-            {
-                mapOverlay[i, j].SetAlpha(0f);
-            }
-        }
+        SimulationLogic.current.SetMapOverlayAlpha(0f);
     }
 
     private void Tick(int ticks)

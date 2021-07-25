@@ -8,12 +8,10 @@ public class SimulationCreateControls : MonoBehaviour
     public CanvasGroup simulationSettingsEditorPanel;
     public MapRandomizer mapRandomizer;
 
-    private UIManager uiManager;
     private SimulationSettings simulationSettings;
 
     private void Awake()
     {
-        uiManager = FindObjectOfType<UIManager>();
         simulationSettings = simulationSettingsEditorPanel.gameObject.GetComponent<SimulationSettings>();
 
         Button[] buttons = gameObject.GetComponentsInChildren<Button>();
@@ -35,7 +33,6 @@ public class SimulationCreateControls : MonoBehaviour
     private void StartSimClick()
     {
         simulationSettings.CloseButtonClick();
-        SimulationLogic.current.StartSimulation();
-        uiManager.StartSimulation();
+        SimulationLogic.current.SimulationRunning(true);
     }
 }
