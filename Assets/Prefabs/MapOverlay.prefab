@@ -11,10 +11,9 @@ GameObject:
   - component: {fileID: 3178576839495310283}
   - component: {fileID: 8039137215996987074}
   - component: {fileID: 5157894356227814795}
-  - component: {fileID: 3178576839495310280}
-  - component: {fileID: 3178576839495310282}
+  - component: {fileID: 3055910909818209199}
   m_Layer: 0
-  m_Name: Npc
+  m_Name: MapOverlay
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -29,7 +28,7 @@ Transform:
   m_GameObject: {fileID: 3178576839495310285}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.6, y: 2.5, z: 0.6}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -83,7 +82,7 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &3178576839495310280
+--- !u!114 &3055910909818209199
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -92,38 +91,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 3178576839495310285}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8df372207dde18940ad85a7817551be9, type: 3}
+  m_Script: {fileID: 11500000, guid: 27dc60123b1063041b80535a9098045b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  genome: 
-  moveLength: 0
-  carryType: 0
-  maxCaringCapacity: 0
-  gold: 0
-  energyPots: 0
-  energy: 0
-  alive: 0
-  resources:
-  - W
-  - S
-  - G
-  - WSG
-  carryingResources: []
-  genomeString: 
---- !u!114 &3178576839495310282
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3178576839495310285}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 96286c4f5e54e4142b8ab70ac2410492, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  myVillage: {fileID: 0}
-  returnHome: 0
-  knownWoodOres: []
-  knownStoneOres: []
-  knownGoldOres: []

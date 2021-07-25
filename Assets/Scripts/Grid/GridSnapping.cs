@@ -13,6 +13,9 @@ public class GridSnapping : MonoBehaviour
     public float blockSize;
 
     public Transform[,] mapDataTransforms;
+    public MapOverlay[,] mapOverlay;
+    public MapOverlay mapOverlayPrefab;
+    public bool showingOverlay;
 
     private bool placing;
     private Placeable placeable;
@@ -21,15 +24,19 @@ public class GridSnapping : MonoBehaviour
     private bool deleting;
     private Placeable currentDelete;
 
+    private SimulationVillageDisplay simulationVillageDisplay;
+
     private void Awake()
     {
         mapController = gameObject.GetComponent<MapController>();
         simulationData = FindObjectOfType<SimulationData>();
+        simulationVillageDisplay = FindObjectOfType<SimulationVillageDisplay>();
 
         blockSize = transform.localScale.x / gridSize.x;
         placing = false;
         overGrid = false;
         deleting = false;
+        showingOverlay = false;
     }
 
     private void Update()
@@ -43,6 +50,16 @@ public class GridSnapping : MonoBehaviour
         {
             MouseClicked(KeyCode.Mouse1);
         }
+    }
+
+    private void Start()
+    {
+        SimulationLogic.current.onTick += Tick;
+    }
+
+    private void OnDestroy()
+    {
+        SimulationLogic.current.onTick -= Tick;
     }
 
     private void MouseClicked(KeyCode key)
@@ -324,6 +341,7 @@ public class GridSnapping : MonoBehaviour
         // Reset grid
         gridSize = new Vector2(SimulationSettings.simSettings.mapRows, SimulationSettings.simSettings.mapColumns);
         mapDataTransforms = new Transform[SimulationSettings.simSettings.mapRows, SimulationSettings.simSettings.mapColumns];
+        ResetMapOverlay();
         // Rescale map
         transform.localScale = new Vector3(gridSize.x, transform.localScale.y, gridSize.y);
         blockSize = transform.localScale.x / gridSize.x;
@@ -339,5 +357,56 @@ public class GridSnapping : MonoBehaviour
             Vector3Int gridIndex = GetGetNearestGridPointIndex(vD.transform.position, blockSize);
             mapController.RenumberVillage(gridIndex, vD);
         }
+    }
+
+    private void ResetMapOverlay()
+    {
+        MapOverlay[] children = gameObject.GetComponentsInChildren<MapOverlay>();
+        foreach (MapOverlay child in children)
+            Destroy(child.gameObject);
+        mapOverlay = new MapOverlay[SimulationSettings.simSettings.mapRows, SimulationSettings.simSettings.mapColumns];
+
+        for (int i = 0; i < mapOverlay.GetLength(0); i++)
+        {
+            for (int j = 0; j < mapOverlay.GetLength(1); j++)
+            {
+                mapOverlay[i, j] = Instantiate(mapOverlayPrefab, GetNearestWorldPoint(Vector3.one, new Vector3Int(i, 0, j)), Quaternion.identity);
+                mapOverlay[i, j].transform.parent = transform;
+            }
+        }
+    }
+
+    public void ShowMapOverlay(NpcData npcData)
+    {
+        string[,] map = npcData.npcBehaviour.GetMap();
+        for (int i = 0; i < map.GetLength(0); i++)
+        {
+            for (int j = 0; j < map.GetLength(0); j++)
+            {
+                if (map[i, j].Equals("e") || map[i, j].Equals("u"))
+                {
+                    mapOverlay[i, j].SetAlpha(0f);
+                }
+                else
+                {
+                    mapOverlay[i, j].SetAlpha(0.7f);
+                }
+            }
+        }
+        showingOverlay = true;
+        simulationVillageDisplay.hideOverlay.enabled = true;
+    }
+
+    public void HideMapOverlay()
+    {
+        showingOverlay = false;
+        simulationVillageDisplay.hideOverlay.enabled = false;
+        SimulationLogic.current.SetMapOverlayAlpha(0f);
+    }
+
+    private void Tick(int ticks)
+    {
+        if (showingOverlay)
+            HideMapOverlay();
     }
 }

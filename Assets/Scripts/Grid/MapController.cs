@@ -24,18 +24,31 @@ public class MapController : MonoBehaviour
 
     private GridSnapping gridSnapping;
     private SimulationData simulationData;
-
+    private MapRandomizer mapRandomizer;
 
     private void Awake()
     {
         gridSnapping = gameObject.GetComponent<GridSnapping>();
         simulationData = FindObjectOfType<SimulationData>();
-        //ClearMap();
+        mapRandomizer = gameObject.GetComponent<MapRandomizer>();
     }
 
     private void Start()
     {
-        //PlaceEntireMap();
+        SimulationLogic.current.onSimulationRunning += SimulationStatus;
+    }
+
+    private void OnDestroy()
+    {
+        SimulationLogic.current.onSimulationRunning -= SimulationStatus;
+    }
+
+    private void SimulationStatus(bool running)
+    {
+        if (!running)
+        {
+            RedrawMap(true);
+        }
     }
 
     public bool hasSpace(Vector3Int index, Placeable placeable)
@@ -155,7 +168,7 @@ public class MapController : MonoBehaviour
         }
     }
 
-    public void RedrawMap()
+    public void RedrawMap(bool drawOldMap)
     {
         // Reset normilization vectors
         int i = Mathf.FloorToInt(SimulationSettings.simSettings.mapRows / 2f - 1);
@@ -173,8 +186,11 @@ public class MapController : MonoBehaviour
         // If dims don't match mapData will be null and it will do a full reset
         ClearMap();
 
-        // Place map
-        PlaceEntireMap();
+        // Place old map
+        if (drawOldMap)
+            PlaceEntireMap();
+        else
+            mapRandomizer.RandomizeMap();
     }
 
     public void ClearMap(bool resetAll)
@@ -217,9 +233,9 @@ public class MapController : MonoBehaviour
             // Remove from map display data
             gridSnapping.mapDataTransforms[arrayPosition.x, arrayPosition.y] = null;
         }
-        catch(NullReferenceException e)
+        catch
         {
-            Debug.Log(e);
+            Debug.Log("Tried to pickup ore at double time, position : " + arrayPosition);
         }
     }
 

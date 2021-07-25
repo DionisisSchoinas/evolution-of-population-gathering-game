@@ -6,17 +6,35 @@ using UnityEngine.UI;
 public class VillageDataDisplay : MonoBehaviour
 {
     public Text villageName;
+    public Image villageColor;
     public Text npcCount;
     public Text goldCount;
     public Text stoneCount;
     public Text woodCount;
     public Text totalCount;
 
-    public void UpdateCount(VillageData.Storage storage)
+    public VillageData villageData;
+
+    private Button detailsButton;
+    private SimulationVillageDisplay simulationVillageDisplay;
+
+    private void Awake()
     {
-        goldCount.text = "Gold : " + storage.GetItemCount(Placeable.Type.Gold);
-        stoneCount.text = "Stone : " + storage.GetItemCount(Placeable.Type.Stone);
-        woodCount.text = "Wood : " + storage.GetItemCount(Placeable.Type.Wood);
-        totalCount.text = "Total : " + storage.totalItems + " / 0";
+        simulationVillageDisplay = FindObjectOfType<SimulationVillageDisplay>();
+        detailsButton = gameObject.GetComponentInChildren<Button>();
+        detailsButton.onClick.AddListener(ShowDetails);
+    }
+
+    public void UpdateCount()
+    {
+        goldCount.text = "Gold : " + villageData.storage.GetItemCount(Placeable.Type.Gold);
+        stoneCount.text = "Stone : " + villageData.storage.GetItemCount(Placeable.Type.Stone);
+        woodCount.text = "Wood : " + villageData.storage.GetItemCount(Placeable.Type.Wood);
+        totalCount.text = "Total : " + villageData.storage.totalItems + " / 0";
+    }
+
+    private void ShowDetails()
+    {
+        simulationVillageDisplay.ShowNpcs(villageData);
     }
 }

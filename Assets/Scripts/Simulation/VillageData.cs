@@ -8,45 +8,25 @@ public class VillageData : MonoBehaviour
     [Serializable]
     public class Storage
     {
-        public List<StorageItem> storedItems = new List<StorageItem>();
+        public Dictionary<Placeable.Type, int> storedItems = new Dictionary<Placeable.Type, int>();
+
         public int totalItems = 0;
 
-        public void AddItem(Placeable.Type type)
+        public void AddItem(Placeable.Type type, int count)
         {
-            foreach (StorageItem sItem in storedItems)
-            {
-                if (sItem.type == type)
-                {
-                    sItem.count++;
-                    totalItems++;
-                    return;
-                }
-            }
-            storedItems.Add(new StorageItem(type, 1));
+            if (storedItems.ContainsKey(type))
+                storedItems[type] += count;
+            else
+                storedItems.Add(type, count);
+            
             totalItems++;
         }
 
         public int GetItemCount(Placeable.Type type)
         {
-            foreach (StorageItem storageItem in storedItems)
-            {
-                if (storageItem.type == type)
-                    return storageItem.count;
-            }
+            if (storedItems.ContainsKey(type))
+                return storedItems[type];
             return 0;
-        }
-    }
-
-    [Serializable]
-    public class StorageItem
-    {
-        public Placeable.Type type;
-        public int count = 0;
-
-        public StorageItem(Placeable.Type type, int count)
-        {
-            this.type = type;
-            this.count = count;
         }
     }
 
@@ -60,8 +40,7 @@ public class VillageData : MonoBehaviour
         set
         {
             _number = value;
-            if (villageDataDisplay != null)
-                villageDataDisplay.UpdateCount(storage);
+            ChangeColor();
         }
     }
 
@@ -92,25 +71,27 @@ public class VillageData : MonoBehaviour
         {
             gm = Instantiate(npcPrefab, gameObject.transform);
             npcs.Add(gm.GetComponent<NpcData>());
+            npcs[i].SetColor(SimulationData.villagesColors[number - 1]);
         }
         villageDataDisplay.npcCount.text = "Npcs : " + npcs.Count.ToString();
     }
 
-    public void AddResource(List<string> resources)
+    public void AddResource(Dictionary<Placeable.Type, int> resources)
     {
-        foreach (string res in resources)
+        foreach (KeyValuePair<Placeable.Type, int> resource in resources)
         {
-            storage.AddItem(MapController.MapBuildingToEnum(res));
+            storage.AddItem(resource.Key, resource.Value);
         }
         if (villageDataDisplay != null)
-            villageDataDisplay.UpdateCount(storage);
+            villageDataDisplay.UpdateCount();
     }
 
     public void UpdateView()
     {
         villageDataDisplay.villageName.text = "Village " + number;
-        villageDataDisplay.UpdateCount(storage);
+        villageDataDisplay.UpdateCount();
         villageDataDisplay.npcCount.text = "Npcs : " + npcs.Count.ToString();
+        villageDataDisplay.villageColor.color = SimulationData.villagesColors[number - 1];
     }
 
     public void NpcRemoved(GameObject npc)
@@ -121,5 +102,13 @@ public class VillageData : MonoBehaviour
 
         npcs.RemoveAt(index);
         villageDataDisplay.npcCount.text = "Npcs : " + npcs.Count.ToString();
+    }
+
+    public void ChangeColor() 
+    {
+        if (number <= 0 || number > 10)
+            return;
+
+        gameObject.GetComponent<MeshRenderer>().material.SetColor("_Color", SimulationData.villagesColors[number - 1]);
     }
 }

@@ -8,6 +8,7 @@ public class UIManager : MonoBehaviour
     public CanvasGroup simSettingsPanel;
     public CanvasGroup simSettingsEditorPanel;
     public CanvasGroup simulationStatusDisplay;
+    public CanvasGroup simulationVillageDetailsDisplay;
 
     private void Awake()
     {
@@ -15,6 +16,27 @@ public class UIManager : MonoBehaviour
         SetCanvasState(simSettingsPanel, true);
         SetCanvasState(simSettingsEditorPanel, false);
         SetCanvasState(simulationStatusDisplay, false);
+        SetCanvasState(simulationVillageDetailsDisplay, false);
+    }
+
+    private void Start()
+    {
+        SimulationLogic.current.onSimulationRunning += SimulationStatus;
+    }
+
+    private void OnDestroy()
+    {
+        SimulationLogic.current.onSimulationRunning -= SimulationStatus;
+    }
+
+    private void SimulationStatus(bool running)
+    {
+        SetCanvasState(buildingPanel, !running);
+        SetCanvasState(simSettingsPanel, !running);
+        SetCanvasState(simSettingsEditorPanel, false);
+
+        SetCanvasState(simulationStatusDisplay, running);
+        SetCanvasState(simulationVillageDetailsDisplay, running);
     }
 
     public static void SetCanvasState(CanvasGroup canvasGroup, bool show)
@@ -22,14 +44,5 @@ public class UIManager : MonoBehaviour
         canvasGroup.alpha = show ? 1f : 0f;
         canvasGroup.interactable = show;
         canvasGroup.blocksRaycasts = show;
-    }
-
-    public void StartSimulation()
-    {
-        SetCanvasState(buildingPanel, false);
-        SetCanvasState(simSettingsPanel, false);
-        SetCanvasState(simSettingsEditorPanel, false);
-
-        SetCanvasState(simulationStatusDisplay, true);
     }
 }

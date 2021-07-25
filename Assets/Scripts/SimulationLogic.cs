@@ -20,6 +20,16 @@ public class SimulationLogic : MonoBehaviour
         current = this;
     }
 
+    private void Start()
+    {
+        current.onSimulationRunning += SimulationStatus;
+    }
+
+    private void OnDestroy()
+    {
+        current.onSimulationRunning -= SimulationStatus;
+    }
+
     public Action<int> onTick;
     public void Tick(int ticks)
     {
@@ -29,16 +39,39 @@ public class SimulationLogic : MonoBehaviour
         }
     }
 
-    public void StartSimulation()
+    public Action<bool> onSimulationRunning;
+    public void SimulationRunning(bool running)
     {
-        simulationData.SpawnNpcs();
-        simulationRunning = true;
+        if (onSimulationRunning != null)
+        {
+            onSimulationRunning(running);
+        }
+    }
+
+    public Action<float> onSetMapOverlayAlpha;
+    public void SetMapOverlayAlpha(float alpha)
+    {
+        if (onSetMapOverlayAlpha != null)
+        {
+            onSetMapOverlayAlpha(alpha);
+        }
+    }
+
+    private void SimulationStatus(bool running)
+    {
+        if (running)
+        {
+            ticks = 0;
+            simulationData.SpawnNpcs();
+        }
+
+        simulationRunning = running;
     }
 
     // Update is called once per frame
     private void Update()
     {
-        if (Input.GetKey(KeyCode.L) && simulationRunning)
+        if ((Input.GetKey(KeyCode.K) || Input.GetKeyDown(KeyCode.L)) && simulationRunning)
         {
             ticks += 1;
             current.Tick(ticks);
