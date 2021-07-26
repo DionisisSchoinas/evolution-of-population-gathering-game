@@ -11,13 +11,11 @@ public class SimulationStatisticsDisplay : MonoBehaviour
 
     private CanvasGroup canvasGroup;
     private Dictionary<string, SimulationStatistics.Statistics> statistics;
-    public SimulationStatistics.Statistics bestStats;
-    public GenomeValueDisplay[] longestLife;
-    public GenomeValueDisplay[] bestGoldCarriers;
-    public GenomeValueDisplay[] bestStoneCarriers;
-    public GenomeValueDisplay[] bestWoodCarriers;
-
-    public List<SimulationStatistics.GenomeIntPair> g;
+    private SimulationStatistics.Statistics bestStats;
+    private GenomeValueDisplay[] longestLife;
+    private GenomeValueDisplay[] bestGoldCarriers;
+    private GenomeValueDisplay[] bestStoneCarriers;
+    private GenomeValueDisplay[] bestWoodCarriers;
 
     private void Awake()
     {
