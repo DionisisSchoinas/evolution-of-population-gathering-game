@@ -14,11 +14,14 @@ public class ExitWindow : MonoBehaviour
     public Button exitApplicationButton;
 
     private CanvasGroup canvasGroup;
+    private SimulationStatisticsDisplay statisticsDisplay;
 
     private void Awake()
     {
         canvasGroup = gameObject.GetComponent<CanvasGroup>();
         UIManager.SetCanvasState(canvasGroup, false);
+
+        statisticsDisplay = statsPanel.gameObject.GetComponent<SimulationStatisticsDisplay>();
 
         exitSimulationButton.onClick.AddListener(ExitSimulation);
         exitSimulationButton.gameObject.SetActive(false);
@@ -68,6 +71,7 @@ public class ExitWindow : MonoBehaviour
 
     private void Statistics()
     {
+        statisticsDisplay.LoadStatistics();
         UIManager.SetCanvasState(statsPanel, true);
     }
 

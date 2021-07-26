@@ -25,9 +25,9 @@ public class SimulationStatistics : MonoBehaviour
         private static int bestOf = 5;
 
         public GenomeIntPair[] longestLife = new GenomeIntPair[bestOf];
-        public GenomeIntPair[] bestGoldCarrier = new GenomeIntPair[bestOf];
-        public GenomeIntPair[] bestStoneCarrier = new GenomeIntPair[bestOf];
-        public GenomeIntPair[] bestWoodCarrier = new GenomeIntPair[bestOf];
+        public GenomeIntPair[] bestGoldCarriers = new GenomeIntPair[bestOf];
+        public GenomeIntPair[] bestStoneCarriers = new GenomeIntPair[bestOf];
+        public GenomeIntPair[] bestWoodCarriers = new GenomeIntPair[bestOf];
 
         public SimulationSettings.Settings settings = new SimulationSettings.Settings();
     }
@@ -79,34 +79,12 @@ public class SimulationStatistics : MonoBehaviour
 
     }
 
-    private void LoadStats()
-    {
-        try
-        {
-            var info = new DirectoryInfo(Application.persistentDataPath + "/SimulationStatistics");
-            var fileInfo = info.GetFiles();
-            Debug.Log(fileInfo);
-
-            string data = System.IO.File.ReadAllText(Application.persistentDataPath + "/SimulationStatistics.json");
-            simStatistics = JsonUtility.FromJson<Statistics>(data);
-
-            if (simStatistics == null)
-                simStatistics = new Statistics();
-        }
-        catch
-        {
-            simStatistics = new Statistics();
-        }
-
-        Debug.Log("Loaded from : " + Application.persistentDataPath + "/SimulationStatistics.json");
-    }
-
     public void NewData(NpcData npcData)
     {
         SortStat(simStatistics.longestLife, 0, simStatistics.longestLife.Length - 1, new GenomeIntPair(npcData.genome, npcData.totalLife));
-        SortStat(simStatistics.bestGoldCarrier, 0, simStatistics.bestGoldCarrier.Length - 1, new GenomeIntPair(npcData.genome, LookForType(npcData.resourcesCarried, Placeable.Type.Gold)));
-        SortStat(simStatistics.bestStoneCarrier, 0, simStatistics.bestStoneCarrier.Length - 1, new GenomeIntPair(npcData.genome, LookForType(npcData.resourcesCarried, Placeable.Type.Stone)));
-        SortStat(simStatistics.bestWoodCarrier, 0, simStatistics.bestWoodCarrier.Length - 1, new GenomeIntPair(npcData.genome, LookForType(npcData.resourcesCarried, Placeable.Type.Wood)));
+        SortStat(simStatistics.bestGoldCarriers, 0, simStatistics.bestGoldCarriers.Length - 1, new GenomeIntPair(npcData.genome, LookForType(npcData.resourcesCarried, Placeable.Type.Gold)));
+        SortStat(simStatistics.bestStoneCarriers, 0, simStatistics.bestStoneCarriers.Length - 1, new GenomeIntPair(npcData.genome, LookForType(npcData.resourcesCarried, Placeable.Type.Stone)));
+        SortStat(simStatistics.bestWoodCarriers, 0, simStatistics.bestWoodCarriers.Length - 1, new GenomeIntPair(npcData.genome, LookForType(npcData.resourcesCarried, Placeable.Type.Wood)));
     }
 
     // stats, wil be sorted in descending order based on stats[].value
