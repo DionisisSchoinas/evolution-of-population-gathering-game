@@ -11,20 +11,20 @@ public class NpcBehaviour : MonoBehaviour
     private GridSnapping grid;
     private MapController map;
     private NpcData npcData;
-    private Vector2Int mapPosition = new Vector2Int(10,10);
+    public Vector2Int mapPosition = new Vector2Int(10,10);
     private Vector2Int homePosition = new Vector2Int(3, 3);
     [SerializeField]
     private bool _returnHome;
     private string[,] localMapData;
     private Vector2Int[] directions = new Vector2Int[] { new Vector2Int(1, 0), new Vector2Int(-1, 0), new Vector2Int(0, -1), new Vector2Int(0, 1) };
-
+    private SimulationData simulationData;
     public List<Vector2Int> knownWoodOres = new List<Vector2Int>();
     public List<Vector2Int> knownStoneOres = new List<Vector2Int>();
     public List<Vector2Int> knownGoldOres = new List<Vector2Int>();
 
     private void Awake()
     {
-
+        simulationData = FindObjectOfType<SimulationData>();
         localMapData = new string[SimulationSettings.simSettings.mapRows, SimulationSettings.simSettings.mapColumns];
  
         for (int i = 0; i < localMapData.GetLength(0); i++)
@@ -45,6 +45,7 @@ public class NpcBehaviour : MonoBehaviour
     private void OnDestroy()
     {
         SimulationLogic.current.onTick -= Tick;
+        simulationData.agents.Remove(this);
     }
     // Start is called before the first frame update
     private void Start()
@@ -70,6 +71,7 @@ public class NpcBehaviour : MonoBehaviour
         TextFileController.WriteMapData(localMapData,"localMap");
     }
     public void Tick(int ticks){
+        simulationData.updateAgent(this);
         if (npcData.alive) {
             if (distance(mapPosition, homePosition) > npcData.energy && npcData.energyPots > 0) {
                 consumeEnergyPot();

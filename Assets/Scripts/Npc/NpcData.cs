@@ -42,6 +42,7 @@ public class NpcData : MonoBehaviour
 
     private void Awake()
     {
+
         GenerateGenome();
         ParseGenome();
         carryingResources = new Dictionary<Placeable.Type, int>();
@@ -204,4 +205,6 @@ public class NpcData : MonoBehaviour
         carryingResources.Clear();
         totalItems = 0;
     }
+
+
 }
