@@ -89,15 +89,22 @@ public class SimulationData : MonoBehaviour
                             agenstToMateNumber += 1;
                             agentsToMate.Add(new NpcBehaviour[] { agentPrime, agent });
                         }
-                        else {
-                            Debug.Log("Agents have mates");
-
-                        }
                     }
                 }
             }
         }
+        foreach (NpcBehaviour[] couple in agentsToMate)
+        {
+            if (UnityEngine.Random.Range(0, 100)<20) {
+                Debug.Log("Agents are mating");
+                couple[0].destroyAgent();
+                couple[1].destroyAgent();
+         
+            }
+
+        }
     }
+    //find a better solution
     private bool hasCouple(NpcBehaviour agent) {
         foreach (NpcBehaviour[] couple in agentsToMate) {
             if (couple[0] == agent || couple[1] == agent) {

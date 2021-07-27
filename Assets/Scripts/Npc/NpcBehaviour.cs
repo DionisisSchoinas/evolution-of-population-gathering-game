@@ -136,10 +136,7 @@ public class NpcBehaviour : MonoBehaviour
         }
         else
         {
-            myVillage.NpcRemoved(gameObject);
-            if (npcData != null && npcData.dataDisplay != null)
-                Destroy(npcData.dataDisplay.gameObject);
-            Destroy(gameObject);
+            destroyAgent();
         }
     }
     public void moveOnWorldMap() {
@@ -483,5 +480,12 @@ public class NpcBehaviour : MonoBehaviour
         npcData.energyPots -= 1;
         npcData.energy += 20;
         }
+    }
+
+    public void destroyAgent() {
+        myVillage.NpcRemoved(gameObject);
+        if (npcData != null && npcData.dataDisplay != null)
+            Destroy(npcData.dataDisplay.gameObject);
+        Destroy(gameObject);
     }
 }
