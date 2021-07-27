@@ -79,7 +79,7 @@ public class SimulationData : MonoBehaviour
         villages = new List<VillageData>();
     }
 
-    public void updateAgent(NpcBehaviour agent) 
+    public void updateAgent(NpcBehaviour agent)
     {
         if (!agents.Contains(agent))
         {
@@ -110,18 +110,19 @@ public class SimulationData : MonoBehaviour
                 }
             }
         }
-        foreach (NpcBehaviour[] couple in agentsToMate){
+        foreach (NpcBehaviour[] couple in agentsToMate) {
             if (UnityEngine.Random.Range(0, 100) < 20) {
+                int splitingIndex = UnityEngine.Random.Range(0, couple[0].getGenome().Length);
                 if (couple[0].myVillage.number == couple[1].myVillage.number) {
                     Debug.Log("Mating from the same village");
-                    villages[couple[0].myVillage.number - 1].createNpc(npcPrefab, crossGenome(couple[0].getGenome(), couple[1].getGenome()),couple[0].mapPosition);
-                    villages[couple[0].myVillage.number - 1].createNpc(npcPrefab, crossGenome(couple[0].getGenome(), couple[1].getGenome()), couple[1].mapPosition);
+                    villages[couple[0].myVillage.number - 1].createNpc(npcPrefab, crossGenome(couple[0].getGenome(), couple[1].getGenome(), splitingIndex), couple[0].mapPosition);
+                    villages[couple[0].myVillage.number - 1].createNpc(npcPrefab, crossGenome(couple[1].getGenome(), couple[0].getGenome(), splitingIndex), couple[1].mapPosition);
                 }
                 else
                 {
                     Debug.Log("Mating from different village");
-                    villages[couple[0].myVillage.number - 1].createNpc(npcPrefab, crossGenome(couple[0].getGenome(), couple[1].getGenome()), couple[0].mapPosition);
-                    villages[couple[1].myVillage.number - 1].createNpc(npcPrefab, crossGenome(couple[0].getGenome(), couple[1].getGenome()), couple[1].mapPosition);
+                    villages[couple[0].myVillage.number - 1].createNpc(npcPrefab, crossGenome(couple[0].getGenome(), couple[1].getGenome(), splitingIndex), couple[0].mapPosition);
+                    villages[couple[1].myVillage.number - 1].createNpc(npcPrefab, crossGenome(couple[1].getGenome(), couple[0].getGenome(), splitingIndex), couple[1].mapPosition);
                 }
                 couple[0].destroyAgent();
                 couple[1].destroyAgent();
@@ -129,9 +130,22 @@ public class SimulationData : MonoBehaviour
         }
     }
 
-    private string crossGenome(string genome1, string genome2)
+    private string crossGenome(string genome1, string genome2, int splitingIndex)
     {
-        int splitingIndex = UnityEngine.Random.Range(0, genome1.Length);
-        return genome1.Substring(0, splitingIndex) + genome2.Substring(splitingIndex , genome2.Length-splitingIndex);
+        string genome = genome1.Substring(0, splitingIndex) + genome2.Substring(splitingIndex, genome2.Length - splitingIndex);
+        if (UnityEngine.Random.Range(0, 100) < 20)
+        {
+            int randomIndex = UnityEngine.Random.Range(0, genome.Length);
+            if (genome[randomIndex] == '0')
+            {
+                genome = genome.Substring(0, randomIndex) + '1' + genome.Substring(randomIndex, genome.Length - randomIndex);
+            }
+            else {
+                genome = genome.Substring(0, randomIndex) + '0' + genome.Substring(randomIndex, genome.Length - randomIndex);
+            }
+        }
+        Debug.Log(genome1 + "," + genome2 + "," + genome);
+
+        return genome;
     }
 }
