@@ -85,7 +85,7 @@ public class SimulationData : MonoBehaviour
                     if (distance.x <= 1 && distance.y <= 1) {
                         if (!hasCouple(agentPrime))
                         {
-                            Debug.Log("Agents are close");
+                            
                             agenstToMateNumber += 1;
                             agentsToMate.Add(new NpcBehaviour[] { agentPrime, agent });
                         }
@@ -93,13 +93,23 @@ public class SimulationData : MonoBehaviour
                 }
             }
         }
-        foreach (NpcBehaviour[] couple in agentsToMate)
-        {
+        foreach (NpcBehaviour[] couple in agentsToMate){
             if (UnityEngine.Random.Range(0, 100)<20) {
-                Debug.Log("Agents are mating");
+                if (couple[0].myVillage.number == couple[1].myVillage.number) {
+                    Debug.Log("Mating from the same village");
+                    villages[couple[0].myVillage.number - 1].createNpc(npcPrefab, crossGenome(couple[0].getGenome(), couple[1].getGenome()),couple[0].mapPosition);
+                    villages[couple[0].myVillage.number - 1].createNpc(npcPrefab, crossGenome(couple[0].getGenome(), couple[1].getGenome()), couple[1].mapPosition);
+
+                }
+                else
+                {
+                    Debug.Log("Mating from different village");
+                    villages[couple[0].myVillage.number - 1].createNpc(npcPrefab, crossGenome(couple[0].getGenome(), couple[1].getGenome()), couple[0].mapPosition);
+                    villages[couple[1].myVillage.number - 1].createNpc(npcPrefab, crossGenome(couple[0].getGenome(), couple[1].getGenome()), couple[1].mapPosition);
+                     
+                }
                 couple[0].destroyAgent();
                 couple[1].destroyAgent();
-         
             }
 
         }
@@ -112,5 +122,11 @@ public class SimulationData : MonoBehaviour
             }        
         }
         return false;
+    }
+
+    private string crossGenome(string genome1, string genome2)
+    {
+        int splitingIndex = UnityEngine.Random.Range(0, genome1.Length);
+        return genome1.Substring(0, splitingIndex) + genome2.Substring(splitingIndex , genome2.Length-splitingIndex);
     }
 }

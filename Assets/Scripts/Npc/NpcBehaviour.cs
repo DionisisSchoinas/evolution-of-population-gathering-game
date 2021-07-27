@@ -488,4 +488,7 @@ public class NpcBehaviour : MonoBehaviour
             Destroy(npcData.dataDisplay.gameObject);
         Destroy(gameObject);
     }
+    public string getGenome() {
+        return npcData.genome;
+    }
 }

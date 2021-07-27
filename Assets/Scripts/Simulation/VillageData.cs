@@ -75,12 +75,20 @@ public class VillageData : MonoBehaviour
         }
         villageDataDisplay.npcCount.text = "Npcs : " + npcs.Count.ToString();
     }
-
+    public void createNpc(GameObject npcPrefab,string genome,Vector2Int position) {
+        GameObject gm;
+        gm = Instantiate(npcPrefab, gameObject.transform);
+        npcs.Add(gm.GetComponent<NpcData>());
+        npcs[npcs.Count-1].SetColor(SimulationData.villagesColors[number - 1]);
+        npcs[npcs.Count - 1].npcBehaviour.mapPosition = position;
+        villageDataDisplay.npcCount.text = "Npcs : " + npcs.Count.ToString();
+    }
     public void AddResource(Dictionary<Placeable.Type, int> resources)
     {
         foreach (KeyValuePair<Placeable.Type, int> resource in resources)
         {
             storage.AddItem(resource.Key, resource.Value);
+        
         }
         if (villageDataDisplay != null)
             villageDataDisplay.UpdateCount();
