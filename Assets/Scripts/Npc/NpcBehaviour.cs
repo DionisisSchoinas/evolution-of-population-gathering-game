@@ -46,11 +46,14 @@ public class NpcBehaviour : MonoBehaviour
 
         hasMate = false;
     }
+
     private void OnDestroy()
     {
         SimulationLogic.current.onTick -= Tick;
         simulationData.agents.Remove(this);
+        map.DropResources(mapPosition, npcData.carryingResources);
     }
+
     // Start is called before the first frame update
     private void Start()
     {

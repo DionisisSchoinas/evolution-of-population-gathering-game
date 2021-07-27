@@ -254,6 +254,81 @@ public class MapController : MonoBehaviour
         return index + SimulationSettings.indexNormalizeVector;
     }
 
+    public void DropResources(Vector2Int center, Dictionary<Placeable.Type, int> resources)
+    {
+        List<Placeable.Type> res = new List<Placeable.Type>();
+        // For each resource type
+        foreach (var type in resources.Keys)
+        {
+            // Add it to the list as many times as it exists
+            for (int i = 0; i < resources[type]; i++)
+            {
+                res.Add(type);
+            }
+        }
+
+        DropResources(center, res);
+    }
+
+    public void DropResources(Vector2Int center, List<Placeable.Type> resources)
+    {
+        int level = 0;
+        int min_i;
+        int max_i;
+        int min_j;
+        int max_j;
+        while (level < 5 && resources.Count != 0)
+        {
+            min_i = Mathf.Max(center.x - level, 1);
+            max_i = Mathf.Min(center.x + level, mapData.GetLength(0) - 2);
+            min_j = Mathf.Max(center.y - level, 1);
+            max_j = Mathf.Min(center.y + level, mapData.GetLength(1) - 2);
+
+            // Top side
+            for (int j = min_j; j <= max_j; j++)
+            {
+                // at min_i
+                PlaceResourceAt(min_i, j, resources);
+            }
+
+            // Right side, except corners
+            for (int i = min_i + 1; i <= max_i - 1; i++)
+            {
+                // at max_j
+                PlaceResourceAt(i, max_j, resources);
+            }
+
+            // Bottom side
+            for (int j = max_j; j >= min_j; j--)
+            {
+                // at max_i
+                PlaceResourceAt(max_i, j, resources);
+            }
+
+            // Left side, except corners
+            for (int i = max_i - 1; i >= min_i + 1; i--)
+            {
+                // at min_j
+                PlaceResourceAt(i, min_j, resources);
+            }
+
+            level++;
+        }
+    }
+
+    public void PlaceResourceAt(int i, int j, List<Placeable.Type> resources)
+    {
+        if (resources.Count == 0)
+            return;
+
+        if (mapData[i, j].Equals(MapBuildingToString(Placeable.Type.Ground)))
+        {
+            mapData[i, j] = MapBuildingToString(resources[0]);
+            gridSnapping.PlaceBuildingFromMapData(new Vector2Int(i, j), FindPlaceableFromType(resources[0]));
+            resources.RemoveAt(0);
+        }
+    }
+
     public static string MapBuildingToString(Placeable.Type placeable)
     {
         switch (placeable)
