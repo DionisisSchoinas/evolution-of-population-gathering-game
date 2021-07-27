@@ -126,9 +126,50 @@ public class SimulationData : MonoBehaviour
                     child1 = villages[couple[0].myVillage.number - 1].createNpc(npcPrefab, couple[0].mapPosition);
                     child2 = villages[couple[1].myVillage.number - 1].createNpc(npcPrefab, couple[1].mapPosition);
                 }
-
                 //Swap
+                int splitingIndex = UnityEngine.Random.Range(0, couple[0].getGenome().Length);
+                child1.updateGenome(crossGenome(couple[0].getGenome(), couple[1].getGenome(), splitingIndex));
+                child2.updateGenome(crossGenome(couple[1].getGenome(), couple[0].getGenome(), splitingIndex));
+             
+                //distribute energy pots
+                int totalEnergyPots = couple[0].npcData._energyPots + couple[1].npcData._energyPots;
+                child1.energyPots = totalEnergyPots/2;
+                child2.energyPots = totalEnergyPots - child1.energyPots;
+                
+                //distribute gold
+                int totalCoins = couple[0].npcData.gold + couple[1].npcData.gold;
+                child1.gold = totalCoins / 2;
+                child2.gold = totalCoins - child1.gold;
+               
+                //distribute resources
+                int totalGold = couple[0].npcData.GetItem(Placeable.Type.Gold) + couple[1].npcData.GetItem(Placeable.Type.Gold);
+                int totalWood = couple[0].npcData.GetItem(Placeable.Type.Wood) + couple[1].npcData.GetItem(Placeable.Type.Wood);
+                int totalStone = couple[0].npcData.GetItem(Placeable.Type.Stone) + couple[1].npcData.GetItem(Placeable.Type.Stone); 
 
+                child1.AddResource(Placeable.Type.Gold,totalGold/2);
+                child2.AddResource(Placeable.Type.Gold, totalGold - (totalGold / 2));
+
+                child1.AddResource(Placeable.Type.Wood, totalWood / 2);
+                child2.AddResource(Placeable.Type.Wood, totalWood - (totalWood / 2));
+
+                child1.AddResource(Placeable.Type.Stone, totalStone / 2);
+                child2.AddResource(Placeable.Type.Stone, totalStone - (totalStone / 2));
+                //trade knowledge 
+                List<Vector2Int> knownWoodOres = new List<Vector2Int>();
+                knownWoodOres.AddRange(couple[0].knownWoodOres);
+                knownWoodOres.AddRange(couple[1].knownWoodOres);
+               
+                List<Vector2Int> knownGoldOres = new List<Vector2Int>();
+                knownGoldOres.AddRange(couple[0].knownGoldOres);
+                knownGoldOres.AddRange(couple[1].knownGoldOres);
+
+                List<Vector2Int> knownStoneOres = new List<Vector2Int>();
+                knownStoneOres.AddRange(couple[0].knownStoneOres);
+                knownStoneOres.AddRange(couple[1].knownStoneOres);
+
+                string[,] crossReferencedMap = crossRefereceMap(couple[0].localMapData, couple[1].localMapData);
+                child1.npcBehaviour.localMapData = crossReferencedMap;
+                child2.npcBehaviour.localMapData = crossReferencedMap;
                 couple[0].destroyAgent();
                 couple[1].destroyAgent();
             }
@@ -152,5 +193,35 @@ public class SimulationData : MonoBehaviour
         Debug.Log(genome1 + "," + genome2 + "," + genome);
 
         return genome;
+    }
+
+    private string[,] crossRefereceMap(string[,] map1, string[,] map2)
+    {
+        string[,] mapData = new string[SimulationSettings.simSettings.mapRows, SimulationSettings.simSettings.mapColumns];
+        
+        for (int i = 0; i < mapData.GetLength(0); i++)
+        {
+            for (int j = 0; j < mapData.GetLength(1); j++)
+            {
+                if (j == 0 || i == 0 || i == mapData.GetLength(0) - 1 || j == mapData.GetLength(1) - 1)
+                {
+                    mapData[i, j] = "e";
+                }
+                else
+                {
+                    if (map1[i, j] != "u")
+                    {
+                        mapData[i, j] = map1[i, j];
+                    }
+                    else {
+                        mapData[i, j] = map2[i, j];
+                    }
+               
+                }
+            }
+        }
+        return mapData;
+
+
     }
 }

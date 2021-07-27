@@ -10,7 +10,7 @@ public class NpcData : MonoBehaviour
     public int carryType;
     public int maxCaringCapacity;
     public int gold;
-    private int _energyPots;
+    public int _energyPots;
     public int energyPots
     {
         get
@@ -59,7 +59,6 @@ public class NpcData : MonoBehaviour
 
     private void Awake()
     {
-
         GenerateGenome();
         ParseGenome();
         carryingResources = new Dictionary<Placeable.Type, int>();
@@ -82,22 +81,26 @@ public class NpcData : MonoBehaviour
 
     public void AddResource(string s)
     {
+
         Placeable.Type type = MapController.MapBuildingToEnum(s);
+        AddResource(type, 1);
+    }
+    public void AddResource(Placeable.Type type, int number)
+    {
 
         if (carryingResources.ContainsKey(type))
-            carryingResources[type] += 1;
+            carryingResources[type] += number;
         else
-            carryingResources.Add(type, 1);
+            carryingResources.Add(type, number);
 
         // Doesn't get cleared
         if (resourcesCarried.ContainsKey(type))
-            resourcesCarried[type] += 1;
+            resourcesCarried[type] += number;
         else
-            resourcesCarried.Add(type, 1);
+            resourcesCarried.Add(type, number);
 
         totalItems++;
     }
-
     public void ClearInventory()
     {
         carryingResources.Clear();
@@ -112,8 +115,13 @@ public class NpcData : MonoBehaviour
             genome += Random.Range(0, 2);
         }
     }
+    public void updateGenome(string genome)
+    {
+        this.genome = genome;
+        ParseGenome();
+    }
 
-    private void ParseGenome()
+    public void ParseGenome()
     {
         if (genome.Length == 11)
         {
@@ -234,5 +242,12 @@ public class NpcData : MonoBehaviour
                 energy = 400;
             }
         }
+    }
+    public int GetItem(Placeable.Type type)
+    {
+        int count = 0;
+        if (carryingResources.TryGetValue(type, out count))
+            return count;
+        return 0;
     }
 }

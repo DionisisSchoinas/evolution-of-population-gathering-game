@@ -10,12 +10,12 @@ public class NpcBehaviour : MonoBehaviour
     public VillageData myVillage;
     private GridSnapping grid;
     private MapController map;
-    private NpcData npcData;
+    public NpcData npcData;
     public Vector2Int mapPosition = new Vector2Int(10,10);
     private Vector2Int homePosition = new Vector2Int(3, 3);
     [SerializeField]
     private bool _returnHome;
-    private string[,] localMapData;
+    public string[,] localMapData;
     private Vector2Int[] directions = new Vector2Int[] { new Vector2Int(1, 0), new Vector2Int(-1, 0), new Vector2Int(0, -1), new Vector2Int(0, 1) };
     private SimulationData simulationData;
     public List<Vector2Int> knownWoodOres = new List<Vector2Int>();
@@ -72,13 +72,11 @@ public class NpcBehaviour : MonoBehaviour
         //Move(mapPosition.x, mapPosition.y);
 
     }
-
     public void Move(int x, int z) {
         mapPosition = new Vector2Int(x, z);
         moveOnWorldMap();
         TextFileController.WriteMapData(localMapData,"localMap");
     }
-
     public void Tick(int ticks){
         simulationData.updateAgent(this);
         if (npcData.alive) {
@@ -148,11 +146,9 @@ public class NpcBehaviour : MonoBehaviour
             destroyAgent();
         }
     }
-
     public void moveOnWorldMap() {
         transform.position = grid.GetNearestWorldPoint(transform.position, new Vector3Int(mapPosition.x, 0, mapPosition.y));
     }
-
     private int indexOfMinNotZero(int[] array) {
         int min = 600;
         int arrayIndex = 0;
@@ -164,7 +160,6 @@ public class NpcBehaviour : MonoBehaviour
         }
         return arrayIndex;
     }
-
     private Vector2Int returnClosestOre() {
         Vector2Int closestOreCoords = new Vector2Int(1200, 1200);
         
@@ -200,11 +195,9 @@ public class NpcBehaviour : MonoBehaviour
         }
         return closestOreCoords;
     }
-
     private int distance(Vector2Int coord1,Vector2Int coord2) { 
         return Math.Abs(coord1.x- coord2.x) + Math.Abs(coord1.y - coord2.y);
     }
-
     private void explore(){
         //explore
         for (int step = 0; step < npcData.moveLength; step++)
@@ -364,7 +357,6 @@ public class NpcBehaviour : MonoBehaviour
             Move(nextPosition.x, nextPosition.y);
         }
     }
-
     private void lookForOre() {
         for (int step = 0; step < npcData.moveLength; step++)
         {
@@ -406,7 +398,6 @@ public class NpcBehaviour : MonoBehaviour
             }
         }
     }
-
     private void returnHome() {
         //return home
         for (int step = 0; step < npcData.moveLength; step++)
@@ -471,7 +462,6 @@ public class NpcBehaviour : MonoBehaviour
             }
         }
     }
-
     private Vector2Int findNeiboringOre()
     {
         for (int i = -1; i <= 1; i++)
@@ -494,20 +484,17 @@ public class NpcBehaviour : MonoBehaviour
         }
         return new Vector2Int(mapPosition.x, mapPosition.y);
     }
-
     public string[,] GetMap()
     {
         return localMapData;
     }
-
     public void consumeEnergyPot() 
     {
         if (npcData.energyPots > 0) { 
         npcData.energyPots -= 1;
         npcData.energy += 20;
         }
-    }
-    
+    }   
     public void destroyAgent() 
     {
         myVillage.NpcRemoved(gameObject);
@@ -515,9 +502,9 @@ public class NpcBehaviour : MonoBehaviour
             Destroy(npcData.dataDisplay.gameObject);
         Destroy(gameObject);
     }
-
     public string getGenome() 
     {
         return npcData.genome;
     }
+   
 }
