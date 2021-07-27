@@ -218,12 +218,4 @@ public class NpcData : MonoBehaviour
             }
         }
     }
-
-    public void ClearInventory()
-    {
-        carryingResources.Clear();
-        totalItems = 0;
-    }
-
-
 }
