@@ -133,6 +133,7 @@ public class NpcBehaviour : MonoBehaviour
             }
           
             npcData.energy--;
+            npcData.totalLife++;
 
             if (npcData.energy == 0)
             {

@@ -9,18 +9,24 @@ public class ExitWindow : MonoBehaviour
     public Button exitSimulationButton;
     public Button detailsButton;
     public CanvasGroup detailsPanel;
+    public Button statsButton;
+    public CanvasGroup statsPanel;
     public Button exitApplicationButton;
 
     private CanvasGroup canvasGroup;
+    private SimulationStatisticsDisplay statisticsDisplay;
 
     private void Awake()
     {
         canvasGroup = gameObject.GetComponent<CanvasGroup>();
         UIManager.SetCanvasState(canvasGroup, false);
 
+        statisticsDisplay = statsPanel.gameObject.GetComponent<SimulationStatisticsDisplay>();
+
         exitSimulationButton.onClick.AddListener(ExitSimulation);
         exitSimulationButton.gameObject.SetActive(false);
         detailsButton.onClick.AddListener(Details);
+        statsButton.onClick.AddListener(Statistics);
         exitApplicationButton.onClick.AddListener(ExitApplication);
     }
 
@@ -49,6 +55,7 @@ public class ExitWindow : MonoBehaviour
     private void SimulationStatus(bool running)
     {
         exitSimulationButton.gameObject.SetActive(running);
+        statsButton.gameObject.SetActive(!running);
         UIManager.SetCanvasState(canvasGroup, false);
     }
 
@@ -60,6 +67,12 @@ public class ExitWindow : MonoBehaviour
     private void Details()
     {
         UIManager.SetCanvasState(detailsPanel, true);
+    }
+
+    private void Statistics()
+    {
+        statisticsDisplay.LoadStatistics();
+        UIManager.SetCanvasState(statsPanel, true);
     }
 
     private void ExitApplication()

@@ -53,15 +53,26 @@ public class NpcData : MonoBehaviour
     [HideInInspector]
     public NpcBehaviour npcBehaviour;
 
+    // Used for stats
+    public Dictionary<Placeable.Type, int> resourcesCarried;
+    public int totalLife;
+
     private void Awake()
     {
 
         GenerateGenome();
         ParseGenome();
         carryingResources = new Dictionary<Placeable.Type, int>();
+        resourcesCarried = new Dictionary<Placeable.Type, int>();
         totalItems = 0;
+        totalLife = 0;
         alive = true;
         npcBehaviour = GetComponent<NpcBehaviour>();
+    }
+
+    private void OnDestroy()
+    {
+        SimulationStatistics.current.NewData(this);
     }
 
     public void SetColor(Color color)
@@ -77,6 +88,12 @@ public class NpcData : MonoBehaviour
             carryingResources[type] += 1;
         else
             carryingResources.Add(type, 1);
+
+        // Doesn't get cleared
+        if (resourcesCarried.ContainsKey(type))
+            resourcesCarried[type] += 1;
+        else
+            resourcesCarried.Add(type, 1);
 
         totalItems++;
     }

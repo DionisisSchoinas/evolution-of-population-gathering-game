@@ -103,7 +103,7 @@ public class SimulationSettings : MonoBehaviour
 
         mapController.RedrawMap(true);
 
-        Debug.Log("Loaded from : " + Application.persistentDataPath);
+        Debug.Log("Loaded from : " + Application.persistentDataPath + "/SimulationSettings.json");
     }
 
     private void SetSettingsToDisplay(Settings settings)
