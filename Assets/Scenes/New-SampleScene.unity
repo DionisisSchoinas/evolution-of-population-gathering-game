@@ -2994,7 +2994,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1548816254}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.6256508
+  m_Size: 0.68215877
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -5941,6 +5941,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ticks: 0
   simulationRunning: 0
+  autoRun: 0
 --- !u!4 &445088195
 Transform:
   m_ObjectHideFlags: 0
@@ -5968,6 +5969,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   npcPrefab: {fileID: 3178576839495310285, guid: 6f45e577a5bb8a246841deea5d1031f4, type: 3}
+  agents: []
+  agentPositions: []
   villageDisplayList: {fileID: 538247583}
   villageDataDisplayPrefab: {fileID: 956057789896195812, guid: 9b3677be38db13e41b4d49b6426d637b, type: 3}
   villageColors:
@@ -5977,6 +5980,7 @@ MonoBehaviour:
   - {r: 0.08035842, g: 0, b: 0.3490566, a: 1}
   - {r: 0, g: 0.7490196, b: 0.63529414, a: 1}
   villages: []
+  agenstToMateNumber: 0
 --- !u!114 &445088197
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11356,7 +11360,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1177686909}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.49932775
+  m_Size: 0.5531109
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -21970,7 +21974,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Close Programm
+  m_Text: Close Program
 --- !u!222 &1701252971
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -25045,7 +25049,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1147017837}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.3583273
+  m_Size: 0.39069092
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
