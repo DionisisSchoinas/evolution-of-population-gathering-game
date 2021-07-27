@@ -76,7 +76,7 @@ public class VillageData : MonoBehaviour
         villageDataDisplay.npcCount.text = "Npcs : " + npcs.Count.ToString();
     }
 
-    public NpcData createNpc(GameObject npcPrefab, string genome, Vector2Int position) 
+    public NpcData createNpc(GameObject npcPrefab, Vector2Int position) 
     {
         GameObject gm;
         gm = Instantiate(npcPrefab, gameObject.transform);
