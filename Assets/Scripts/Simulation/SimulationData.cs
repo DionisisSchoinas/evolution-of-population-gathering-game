@@ -115,14 +115,13 @@ public class SimulationData : MonoBehaviour
 
                 NpcData child1;
                 NpcData child2;
-                if (couple[0].myVillage.number == couple[1].myVillage.number) {
-                    Debug.Log("Mating from the same village");
+                if (couple[0].myVillage.number == couple[1].myVillage.number) 
+                {
                     child1 = villages[couple[0].myVillage.number - 1].createNpc(npcPrefab, couple[0].mapPosition);
                     child2 = villages[couple[0].myVillage.number - 1].createNpc(npcPrefab, couple[1].mapPosition);
                 }
                 else
                 {
-                    Debug.Log("Mating from different village");
                     child1 = villages[couple[0].myVillage.number - 1].createNpc(npcPrefab, couple[0].mapPosition);
                     child2 = villages[couple[1].myVillage.number - 1].createNpc(npcPrefab, couple[1].mapPosition);
                 }
@@ -154,6 +153,7 @@ public class SimulationData : MonoBehaviour
 
                 child1.AddResource(Placeable.Type.Stone, totalStone / 2);
                 child2.AddResource(Placeable.Type.Stone, totalStone - (totalStone / 2));
+
                 //trade knowledge 
                 List<Vector2Int> knownWoodOres = new List<Vector2Int>();
                 knownWoodOres.AddRange(couple[0].knownWoodOres);
@@ -190,8 +190,6 @@ public class SimulationData : MonoBehaviour
                 genome = genome.Substring(0, randomIndex) + '0' + genome.Substring(randomIndex, genome.Length - randomIndex);
             }
         }
-        Debug.Log(genome1 + "," + genome2 + "," + genome);
-
         return genome;
     }
 

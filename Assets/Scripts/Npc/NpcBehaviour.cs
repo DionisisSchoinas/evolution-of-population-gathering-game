@@ -9,7 +9,8 @@ public class NpcBehaviour : MonoBehaviour
 {
     public VillageData myVillage;
     private GridSnapping grid;
-    private MapController map;
+    [HideInInspector]
+    public MapController map;
     public NpcData npcData;
     public Vector2Int mapPosition = new Vector2Int(10,10);
     private Vector2Int homePosition = new Vector2Int(3, 3);
@@ -45,6 +46,15 @@ public class NpcBehaviour : MonoBehaviour
         }
 
         hasMate = false;
+
+        myVillage = gameObject.GetComponentInParent<VillageData>();
+        homePosition = myVillage.arrayPosition;
+        mapPosition = myVillage.arrayPosition;
+
+        _returnHome = false;
+        grid = FindObjectOfType<GridSnapping>();
+        map = FindObjectOfType<MapController>();
+        npcData = GetComponent<NpcData>();
     }
 
     private void OnDestroy()
@@ -57,26 +67,17 @@ public class NpcBehaviour : MonoBehaviour
     // Start is called before the first frame update
     private void Start()
     {
-        
-        SimulationLogic.current.onTick += Tick;
-
-        myVillage = gameObject.GetComponentInParent<VillageData>();
-        homePosition = myVillage.arrayPosition;
-        mapPosition = myVillage.arrayPosition;
-
-        _returnHome = false;
-        grid = FindObjectOfType<GridSnapping>();
-        map= FindObjectOfType<MapController>();
-        npcData = GetComponent<NpcData>();
-    
         //Move(mapPosition.x, mapPosition.y);
 
+        SimulationLogic.current.onTick += Tick;
     }
+
     public void Move(int x, int z) {
         mapPosition = new Vector2Int(x, z);
         moveOnWorldMap();
         TextFileController.WriteMapData(localMapData,"localMap");
     }
+
     public void Tick(int ticks){
         simulationData.updateAgent(this);
         if (npcData.alive) {
@@ -88,9 +89,10 @@ public class NpcBehaviour : MonoBehaviour
                 if (neiboringOre != mapPosition) {
 
                     map.PickUpResource(neiboringOre);
-                    if (map.mapData[neiboringOre.x, neiboringOre.y] == "E")
+                    if (map.mapData[neiboringOre.x, neiboringOre.y] == MapController.MapBuildingToString(Placeable.Type.Energy))
                     {
                         npcData.energyPots += 1;
+                        localMapData[neiboringOre.x, neiboringOre.y] = "O";
                     }
                     else
                     {

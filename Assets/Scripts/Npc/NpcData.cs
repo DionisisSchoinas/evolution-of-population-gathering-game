@@ -81,17 +81,53 @@ public class NpcData : MonoBehaviour
 
     public void AddResource(string s)
     {
-
         Placeable.Type type = MapController.MapBuildingToEnum(s);
         AddResource(type, 1);
     }
+
     public void AddResource(Placeable.Type type, int number)
     {
+        if (type == Placeable.Type.Energy)
+            return;
+
+        if (totalItems == maxCaringCapacity)
+        {
+            DropResource(type, number);
+            return;
+        }
 
         if (carryingResources.ContainsKey(type))
+        {
+            if (number + totalItems > maxCaringCapacity)
+            {
+                DropResource(type, number - (maxCaringCapacity - totalItems));
+
+                carryingResources[type] += (maxCaringCapacity - totalItems);
+                totalItems = maxCaringCapacity;
+                return;
+            }
+
             carryingResources[type] += number;
+        }
         else
+        {
+            if (!resources[carryType].Contains(MapController.MapBuildingToString(type)))
+            {
+                DropResource(type, number);
+                return;
+            }
+
+            if (number + totalItems > maxCaringCapacity)
+            {
+                DropResource(type, number - (maxCaringCapacity - totalItems));
+
+                carryingResources.Add(type, maxCaringCapacity - totalItems);
+                totalItems = maxCaringCapacity;
+                return;
+            }
+
             carryingResources.Add(type, number);
+        }
 
         // Doesn't get cleared
         if (resourcesCarried.ContainsKey(type))
@@ -99,8 +135,18 @@ public class NpcData : MonoBehaviour
         else
             resourcesCarried.Add(type, number);
 
-        totalItems++;
+        totalItems += number;
     }
+
+    private void DropResource(Placeable.Type type, int number)
+    {
+        List<Placeable.Type> res = new List<Placeable.Type>();
+        for (int i = 0; i < number; i++)
+            res.Add(type);
+
+        npcBehaviour.map.DropResources(npcBehaviour.mapPosition, res);
+    }
+
     public void ClearInventory()
     {
         carryingResources.Clear();
