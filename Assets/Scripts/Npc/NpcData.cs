@@ -59,6 +59,7 @@ public class NpcData : MonoBehaviour
 
     private void Awake()
     {
+
         GenerateGenome();
         ParseGenome();
         carryingResources = new Dictionary<Placeable.Type, int>();
