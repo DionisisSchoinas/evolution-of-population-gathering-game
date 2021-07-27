@@ -46,13 +46,11 @@ public class NpcBehaviour : MonoBehaviour
 
         hasMate = false;
     }
-
     private void OnDestroy()
     {
         SimulationLogic.current.onTick -= Tick;
         simulationData.agents.Remove(this);
     }
-
     // Start is called before the first frame update
     private void Start()
     {
@@ -124,7 +122,6 @@ public class NpcBehaviour : MonoBehaviour
                 if (homePosition == mapPosition)
                 {
                     myVillage.AddResource(npcData.carryingResources);
-                    npcData.carryingResources.Clear();
                     npcData.ClearInventory();
                     _returnHome = false;
                 }
@@ -197,8 +194,6 @@ public class NpcBehaviour : MonoBehaviour
                 break;
 
         }
-
-
         return closestOreCoords;
     }
 
@@ -224,15 +219,15 @@ public class NpcBehaviour : MonoBehaviour
                         if (localMapData[mapPosition.x + i, mapPosition.y + j] != "e")
                         {
                             localMapData[mapPosition.x + i, mapPosition.y + j] = map.mapData[mapPosition.x + i, mapPosition.y + j];
-                            if (localMapData[mapPosition.x + i, mapPosition.y + j] == "W" && !knownWoodOres.Contains(new Vector2Int(mapPosition.x + i, mapPosition.y + j)))
+                            if (localMapData[mapPosition.x + i, mapPosition.y + j] == MapController.MapBuildingToString(Placeable.Type.Wood) && !knownWoodOres.Contains(new Vector2Int(mapPosition.x + i, mapPosition.y + j)))
                             {
                                 knownWoodOres.Add(new Vector2Int(mapPosition.x + i, mapPosition.y + j));
                             }
-                            else if (localMapData[mapPosition.x + i, mapPosition.y + j] == "S" && !knownStoneOres.Contains(new Vector2Int(mapPosition.x + i, mapPosition.y + j)))
+                            else if (localMapData[mapPosition.x + i, mapPosition.y + j] == MapController.MapBuildingToString(Placeable.Type.Stone) && !knownStoneOres.Contains(new Vector2Int(mapPosition.x + i, mapPosition.y + j)))
                             {
                                 knownStoneOres.Add(new Vector2Int(mapPosition.x + i, mapPosition.y + j));
                             }
-                            else if (localMapData[mapPosition.x + i, mapPosition.y + j] == "G" && !knownGoldOres.Contains(new Vector2Int(mapPosition.x + i, mapPosition.y + j)))
+                            else if (localMapData[mapPosition.x + i, mapPosition.y + j] == MapController.MapBuildingToString(Placeable.Type.Gold) && !knownGoldOres.Contains(new Vector2Int(mapPosition.x + i, mapPosition.y + j)))
                             {
                                 knownGoldOres.Add(new Vector2Int(mapPosition.x + i, mapPosition.y + j));
                             }
@@ -254,19 +249,24 @@ public class NpcBehaviour : MonoBehaviour
                                 {
                                     if (!(ii == 0 && jj == 0))
                                     {
-                                        if (localMapData[possiblePositions[counter].x + ii, possiblePositions[counter].y + jj] == "u")
+                                        try
                                         {
-                                            possiblePositionsWeights[counter] += 1;
+                                            if (localMapData[possiblePositions[counter].x + ii, possiblePositions[counter].y + jj] == "u")
+                                            {
+                                                possiblePositionsWeights[counter] += 1;
+                                            }
+                                        }
+                                        catch
+                                        {
+                                            // Tested a few times, never crashed, left this here just in case
+                                            Debug.Log(possiblePositions[counter]);
+                                            Debug.Log("Crashed here : " + (possiblePositions[counter].x + ii) + ", " + (possiblePositions[counter].y + jj));
                                         }
                                     }
                                 }
                             }
                         }
                         counter++;
-                    }
-                    else
-                    {
-                        localMapData[mapPosition.x + i, mapPosition.y + j] = "x";
                     }
                 }
             }
@@ -364,39 +364,36 @@ public class NpcBehaviour : MonoBehaviour
     private void lookForOre() {
         for (int step = 0; step < npcData.moveLength; step++)
         {
-
-            //if you agent is close to ore remove from known ores and pick it up
-            if (distance(mapPosition, returnClosestOre()) == 1)
+            Vector2Int closestOre = returnClosestOre();
+            //if the agent is close to ore remove from known ores and pick it up
+            if (distance(mapPosition, closestOre) == 1)
             {
-                if (map.mapData[returnClosestOre().x, returnClosestOre().y] == "-") { 
+                if (map.mapData[closestOre.x, closestOre.y] == MapController.MapBuildingToString(Placeable.Type.Ground)) { 
                     //remove from known ores
-                    knownGoldOres.Remove(returnClosestOre());
-                    knownWoodOres.Remove(returnClosestOre());
-                    knownStoneOres.Remove(returnClosestOre());
-
+                    knownGoldOres.Remove(closestOre);
+                    knownWoodOres.Remove(closestOre);
+                    knownStoneOres.Remove(closestOre);
                 }
                 break;
             }
             //if you agent is far to ore move him towords the general direction
             else
             {
-                List<Vector2Int> profitablePositions = new List<Vector2Int>();
-
                 Vector2Int oreDirection = new Vector2Int(mapPosition.x, mapPosition.y);
 
-                if (mapPosition.x < returnClosestOre().x)
+                if (mapPosition.x < closestOre.x)
                 {
                     oreDirection += new Vector2Int(1, 0);
                 }
-                else if (mapPosition.x > returnClosestOre().x)
+                else if (mapPosition.x > closestOre.x)
                 {
                     oreDirection += new Vector2Int(-1, 0);
                 }
-                else if (mapPosition.y < returnClosestOre().y)
+                else if (mapPosition.y < closestOre.y)
                 {
                     oreDirection += new Vector2Int(0, 1);
                 }
-                else if (mapPosition.y > returnClosestOre().y)
+                else if (mapPosition.y > closestOre.y)
                 {
                     oreDirection += new Vector2Int(0, -1);
                 }
@@ -416,11 +413,8 @@ public class NpcBehaviour : MonoBehaviour
                 {
                     if (!(i == 0 && j == 0))
                     {
-                        if (localMapData[mapPosition.x + i, mapPosition.y + j] != "e") localMapData[mapPosition.x + i, mapPosition.y + j] = map.mapData[mapPosition.x + i, mapPosition.y + j];
-                    }
-                    else
-                    {
-                        localMapData[mapPosition.x, mapPosition.y] = "x";
+                        if (localMapData[mapPosition.x + i, mapPosition.y + j] != "e") 
+                            localMapData[mapPosition.x + i, mapPosition.y + j] = map.mapData[mapPosition.x + i, mapPosition.y + j];
                     }
                 }
             }
@@ -502,21 +496,24 @@ public class NpcBehaviour : MonoBehaviour
         return localMapData;
     }
 
-    public void consumeEnergyPot() {
+    public void consumeEnergyPot() 
+    {
         if (npcData.energyPots > 0) { 
         npcData.energyPots -= 1;
         npcData.energy += 20;
         }
     }
-
-    public void destroyAgent() {
+    
+    public void destroyAgent() 
+    {
         myVillage.NpcRemoved(gameObject);
         if (npcData != null && npcData.dataDisplay != null)
             Destroy(npcData.dataDisplay.gameObject);
         Destroy(gameObject);
     }
 
-    public string getGenome() {
+    public string getGenome() 
+    {
         return npcData.genome;
     }
 }

@@ -7,6 +7,7 @@ public class SimulationLogic : MonoBehaviour
 {
     public int ticks = 0;
     public bool simulationRunning;
+    public bool autoRun;
 
     private SimulationData simulationData;
 
@@ -16,6 +17,7 @@ public class SimulationLogic : MonoBehaviour
     {
         simulationData = gameObject.GetComponent<SimulationData>();
         simulationRunning = false;
+        autoRun = false;
 
         current = this;
     }
@@ -71,7 +73,12 @@ public class SimulationLogic : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        if ((Input.GetKey(KeyCode.K) || Input.GetKeyDown(KeyCode.L)) && simulationRunning)
+        if (Input.GetKeyDown(KeyCode.J) && simulationRunning)
+        {
+            autoRun = !autoRun;
+        }
+
+        if ((Input.GetKey(KeyCode.K) || Input.GetKeyDown(KeyCode.L) || autoRun) && simulationRunning)
         {
             ticks += 1;
             current.Tick(ticks);

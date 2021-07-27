@@ -47,7 +47,7 @@ public class MapController : MonoBehaviour
     {
         if (!running)
         {
-            RedrawMap(true);
+            RedrawMap(true, false);
         }
     }
 
@@ -168,7 +168,7 @@ public class MapController : MonoBehaviour
         }
     }
 
-    public void RedrawMap(bool drawOldMap)
+    public void RedrawMap(bool drawOldMap, bool redrawGrid)
     {
         // Reset normilization vectors
         int i = Mathf.FloorToInt(SimulationSettings.simSettings.mapRows / 2f - 1);
@@ -178,7 +178,10 @@ public class MapController : MonoBehaviour
         SimulationSettings.gridColumnsIndexLimits = new Vector2Int(-j, Mathf.CeilToInt(SimulationSettings.simSettings.mapColumns / 2f));
 
         // Redraw grid
-        gridSnapping.RedrawGrid();
+        if (redrawGrid)
+            gridSnapping.RedrawGrid();
+        else
+            gridSnapping.HideMapOverlay();
 
         // Get map data if dimensions match
         mapData = TextFileController.ReadMapData();
@@ -191,6 +194,12 @@ public class MapController : MonoBehaviour
             PlaceEntireMap();
         else
             mapRandomizer.RandomizeMap();
+    }
+
+    public void RedrawMap(bool drawOldMap)
+    {
+        RedrawMap(drawOldMap, true);
+
     }
 
     public void ClearMap(bool resetAll)
@@ -222,20 +231,21 @@ public class MapController : MonoBehaviour
             Destroy(child.gameObject);
     }
 
-    public void PickUpResource(Vector2Int arrayPosition)
+    public bool PickUpResource(Vector2Int arrayPosition)
     {
         try
         {
-            // Remove from map data
-            mapData[arrayPosition.x, arrayPosition.y] = MapBuildingToString(Placeable.Type.Ground);
             // Remove from map display
             Destroy(gridSnapping.mapDataTransforms[arrayPosition.x, arrayPosition.y].gameObject);
+            // Remove from map data
+            mapData[arrayPosition.x, arrayPosition.y] = MapBuildingToString(Placeable.Type.Ground);
             // Remove from map display data
             gridSnapping.mapDataTransforms[arrayPosition.x, arrayPosition.y] = null;
+            return true;
         }
         catch
         {
-            Debug.Log("Tried to pickup ore at double time, position : " + arrayPosition);
+            return false;
         }
     }
 

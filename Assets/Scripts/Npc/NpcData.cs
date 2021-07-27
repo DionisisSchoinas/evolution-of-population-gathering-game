@@ -10,7 +10,20 @@ public class NpcData : MonoBehaviour
     public int carryType;
     public int maxCaringCapacity;
     public int gold;
-    public int energyPots;
+    private int _energyPots;
+    public int energyPots
+    {
+        get
+        {
+            return _energyPots;
+        }
+        set
+        {
+            _energyPots = value;
+            if (dataDisplay != null)
+                dataDisplay.UpdateView();
+        }
+    }
     private int _energy;
     public int energy
     {
@@ -67,12 +80,18 @@ public class NpcData : MonoBehaviour
 
         totalItems++;
     }
+
+    public void ClearInventory()
+    {
+        carryingResources.Clear();
+        totalItems = 0;
+    }
    
     private void GenerateGenome()
     {
         genome = "";
-        for (int i = 0; i < 11; i++){
-
+        for (int i = 0; i < 11; i++)
+        {
             genome += Random.Range(0, 2);
         }
     }

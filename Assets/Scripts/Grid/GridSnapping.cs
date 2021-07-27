@@ -26,6 +26,13 @@ public class GridSnapping : MonoBehaviour
 
     private SimulationVillageDisplay simulationVillageDisplay;
 
+    public GameObject npcHighlighterPrefab;
+    [ColorUsageAttribute(true, true)]
+    public Color highlighterColor;
+
+    private GameObject highlighter;
+    private Material highlightMaterial;
+
     private void Awake()
     {
         mapController = gameObject.GetComponent<MapController>();
@@ -370,10 +377,20 @@ public class GridSnapping : MonoBehaviour
         {
             for (int j = 0; j < mapOverlay.GetLength(1); j++)
             {
-                mapOverlay[i, j] = Instantiate(mapOverlayPrefab, GetNearestWorldPoint(Vector3.one, new Vector3Int(i, 0, j)), Quaternion.identity);
+                mapOverlay[i, j] = Instantiate(mapOverlayPrefab, GetNearestWorldPoint(Vector3.one * 0.5f, new Vector3Int(i, 0, j)), Quaternion.identity);
                 mapOverlay[i, j].transform.parent = transform;
             }
         }
+
+        if (highlighter != null)
+            Destroy(highlighter);
+
+        highlighter = Instantiate(npcHighlighterPrefab);
+        highlighter.transform.localScale += Vector3.one * 0.4f;
+        highlighter.transform.parent = transform;
+        highlightMaterial = highlighter.GetComponent<MeshRenderer>().material;
+        highlightMaterial.SetColor("_Color", highlighterColor);
+        highlightMaterial.SetFloat("_Alpha", 0f);
     }
 
     public void ShowMapOverlay(NpcData npcData)
@@ -389,12 +406,14 @@ public class GridSnapping : MonoBehaviour
                 }
                 else
                 {
-                    mapOverlay[i, j].SetAlpha(0.7f);
+                    mapOverlay[i, j].SetAlpha(0.3f);
                 }
             }
         }
         showingOverlay = true;
         simulationVillageDisplay.hideOverlay.enabled = true;
+        UnHighlightNpc();
+        HighlightNpc(npcData);
     }
 
     public void HideMapOverlay()
@@ -402,6 +421,18 @@ public class GridSnapping : MonoBehaviour
         showingOverlay = false;
         simulationVillageDisplay.hideOverlay.enabled = false;
         SimulationLogic.current.SetMapOverlayAlpha(0f);
+        UnHighlightNpc();
+    }
+
+    private void HighlightNpc(NpcData npcData)
+    {
+        highlighter.transform.position = npcData.transform.position;
+        highlightMaterial.SetFloat("_Alpha", 0.4f);
+    }
+
+    private void UnHighlightNpc()
+    {
+        highlightMaterial.SetFloat("_Alpha", 0f);
     }
 
     private void Tick(int ticks)

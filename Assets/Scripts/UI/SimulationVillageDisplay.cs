@@ -12,6 +12,8 @@ public class SimulationVillageDisplay : MonoBehaviour
     public Button hideOverlay;
     private GridSnapping gridSnapping;
 
+    public int activeVillage;
+
     private void Awake()
     {
         gridSnapping = FindObjectOfType<GridSnapping>();
@@ -40,6 +42,7 @@ public class SimulationVillageDisplay : MonoBehaviour
     public void ShowNpcs(VillageData villageData)
     {
         ClearNpcs();
+        activeVillage = villageData.number;
         villageName.text = "Village " + villageData.number.ToString();
         NpcDataDisplay npcDataDisplay;
         foreach (NpcData npc in villageData.npcs)
