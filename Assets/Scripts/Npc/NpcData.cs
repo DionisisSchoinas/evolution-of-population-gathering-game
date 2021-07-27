@@ -55,6 +55,7 @@ public class NpcData : MonoBehaviour
 
     private void Awake()
     {
+
         GenerateGenome();
         ParseGenome();
         carryingResources = new Dictionary<Placeable.Type, int>();
@@ -217,4 +218,12 @@ public class NpcData : MonoBehaviour
             }
         }
     }
+
+    public void ClearInventory()
+    {
+        carryingResources.Clear();
+        totalItems = 0;
+    }
+
+
 }
