@@ -22,15 +22,16 @@ public class VillageDataDisplay : MonoBehaviour
     {
         simulationVillageDisplay = FindObjectOfType<SimulationVillageDisplay>();
         detailsButton = gameObject.GetComponentInChildren<Button>();
-        detailsButton.onClick.AddListener(ShowDetails);
+        if (detailsButton != null)
+            detailsButton.onClick.AddListener(ShowDetails);
     }
 
     public void UpdateCount()
     {
-        goldCount.text = "Gold : " + villageData.storage.GetItemCount(Placeable.Type.Gold);
-        stoneCount.text = "Stone : " + villageData.storage.GetItemCount(Placeable.Type.Stone);
-        woodCount.text = "Wood : " + villageData.storage.GetItemCount(Placeable.Type.Wood);
-        totalCount.text = "Total : " + villageData.storage.totalItems + " / 0";
+        goldCount.text = "Gold : " + villageData.storage.GetItemCount(Placeable.Type.Gold) + " / " + villageData.reqResources[Placeable.Type.Gold];
+        stoneCount.text = "Stone : " + villageData.storage.GetItemCount(Placeable.Type.Stone) + " / " + villageData.reqResources[Placeable.Type.Stone];
+        woodCount.text = "Wood : " + villageData.storage.GetItemCount(Placeable.Type.Wood) + " / " + villageData.reqResources[Placeable.Type.Wood];
+        totalCount.text = "Total : " + villageData.storage.totalItems + " / " + villageData.reqTotal;
     }
 
     private void ShowDetails()

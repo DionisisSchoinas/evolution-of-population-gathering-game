@@ -19,23 +19,36 @@ public class SimulationData : MonoBehaviour
     private void Awake()
     {
         ClearVillages();
-        agents = new List<NpcBehaviour>();
         villagesColors = villageColors;
     }
 
     private void Start()
     {
         SimulationLogic.current.onTick += Tick;
+        SimulationLogic.current.onSimulationRunning += SimulationStatus;
     }
 
     private void OnDestroy()
     {
         SimulationLogic.current.onTick -= Tick;
+        SimulationLogic.current.onSimulationRunning -= SimulationStatus;
     }
 
     private void Tick(int ticks)
     {
         mateAgents();
+    }
+
+    private void SimulationStatus(bool running)
+    {
+        if (running)
+        {
+            SpawnNpcs();
+        }
+        else
+        {
+            ClearVillages();
+        }
     }
 
     private void OnValidate()
@@ -77,6 +90,7 @@ public class SimulationData : MonoBehaviour
     public void ClearVillages()
     {
         villages = new List<VillageData>();
+        agents = new List<NpcBehaviour>();
     }
 
     public void updateAgent(NpcBehaviour agent)

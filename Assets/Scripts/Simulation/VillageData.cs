@@ -9,17 +9,24 @@ public class VillageData : MonoBehaviour
     public class Storage
     {
         public Dictionary<Placeable.Type, int> storedItems = new Dictionary<Placeable.Type, int>();
-
         public int totalItems = 0;
 
-        public void AddItem(Placeable.Type type, int count)
+        public bool AddItem(Placeable.Type type, int count, int maxType, int maxTotal)
         {
+            int totalAdd = Mathf.Clamp(count, 0, Mathf.Max(0, maxType - GetItemCount(type)));
+            //Debug.Log("Type : " + type.ToString() + " count : " + count + " -> " + Mathf.Clamp(count, 0, Mathf.Max(0, maxType - GetItemCount(type))) + " with " + maxType + " - " + GetItemCount(type));
+
             if (storedItems.ContainsKey(type))
                 storedItems[type] += count;
             else
                 storedItems.Add(type, count);
-            
-            totalItems++;
+
+            totalItems += totalAdd;
+
+            if (totalItems >= maxTotal)
+                return true;
+
+            return false;
         }
 
         public int GetItemCount(Placeable.Type type)
@@ -51,21 +58,61 @@ public class VillageData : MonoBehaviour
 
     public VillageDataDisplay villageDataDisplay;
 
+    private System.Random rand;
+
+    public Dictionary<Placeable.Type, int> reqResources;
+    public int reqTotal;
+
     private void Awake()
     {
         npcs = new List<NpcData>();
-        storage = new Storage();
         number = 0;
+
+        rand = new System.Random();
+    }
+
+    private void Start()
+    {
+        SimulationLogic.current.onSimulationRunning += SimulationStatus;
     }
 
     private void OnDestroy()
     {
+        SimulationLogic.current.onSimulationRunning -= SimulationStatus;
+
         if (villageDataDisplay != null)
             Destroy(villageDataDisplay.gameObject);
     }
 
+    private void SimulationStatus(bool running)
+    {
+        if (running)
+        {
+            storage = new Storage();
+            CreateResourceRequirements();
+        }
+    }
+
+    private void CreateResourceRequirements()
+    {
+        reqResources = new Dictionary<Placeable.Type, int>();
+        reqResources.Add(Placeable.Type.Gold, 0);
+        reqResources.Add(Placeable.Type.Stone, 0);
+        reqResources.Add(Placeable.Type.Wood, 0);
+        reqTotal = 0;
+
+        reqTotal = SimulationSettings.simSettings.totalResourcesRequired;
+
+        reqResources[Placeable.Type.Gold] = rand.Next(1, Mathf.CeilToInt(reqTotal * 0.4f) + 1);
+        reqResources[Placeable.Type.Stone] = rand.Next(1, Mathf.CeilToInt(reqTotal * 0.4f) + 1);
+        reqResources[Placeable.Type.Wood] = reqTotal - reqResources[Placeable.Type.Gold] - reqResources[Placeable.Type.Stone];
+
+        villageDataDisplay.UpdateCount();
+    }
+
     public void SpawnNpcs(GameObject npcPrefab)
     {
+        npcs.Clear();
         GameObject gm;
         for (int i = 0; i < SimulationSettings.simSettings.agentsPerVillage; i++)
         {
@@ -92,8 +139,10 @@ public class VillageData : MonoBehaviour
     {
         foreach (KeyValuePair<Placeable.Type, int> resource in resources)
         {
-            storage.AddItem(resource.Key, resource.Value);
-        
+            if (storage.AddItem(resource.Key, resource.Value, reqResources[resource.Key], reqTotal))
+            {
+                SimulationLogic.current.VillageWon(this);
+            }
         }
         if (villageDataDisplay != null)
             villageDataDisplay.UpdateCount();
@@ -102,7 +151,7 @@ public class VillageData : MonoBehaviour
     public void UpdateView()
     {
         villageDataDisplay.villageName.text = "Village " + number;
-        villageDataDisplay.UpdateCount();
+        //villageDataDisplay.UpdateCount();
         villageDataDisplay.npcCount.text = "Npcs : " + npcs.Count.ToString();
         villageDataDisplay.villageColor.color = SimulationData.villagesColors[number - 1];
     }
