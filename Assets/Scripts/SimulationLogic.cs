@@ -36,8 +36,6 @@ public class SimulationLogic : MonoBehaviour
         if (onTick != null)
         {
             onTick(ticks);
-            simulationData.mateAgents();
-
         }
     }
 

@@ -14,7 +14,8 @@ public class SimulationData : MonoBehaviour
     public static Color[] villagesColors;
     public List<VillageData> villages;
     private List<NpcBehaviour[]> agentsToMate = new List<NpcBehaviour[]>();
-    public int agenstToMateNumber=0;
+    public int agenstToMateNumber = 0;
+
     private void Awake()
     {
         ClearVillages();
@@ -22,6 +23,20 @@ public class SimulationData : MonoBehaviour
         villagesColors = villageColors;
     }
 
+    private void Start()
+    {
+        SimulationLogic.current.onTick += Tick;
+    }
+
+    private void OnDestroy()
+    {
+        SimulationLogic.current.onTick -= Tick;
+    }
+
+    private void Tick(int ticks)
+    {
+        mateAgents();
+    }
 
     private void OnValidate()
     {
@@ -64,13 +79,14 @@ public class SimulationData : MonoBehaviour
         villages = new List<VillageData>();
     }
 
-    public void updateAgent(NpcBehaviour agent) {
+    public void updateAgent(NpcBehaviour agent) 
+    {
         if (!agents.Contains(agent))
         {
             agents.Add(agent);
         }
-      
     }
+
     public void mateAgents()
     {
         agentsToMate.Clear();
@@ -83,45 +99,34 @@ public class SimulationData : MonoBehaviour
                 {
                     Vector2Int distance = new Vector2Int(Math.Abs(agentPrime.mapPosition.x - agent.mapPosition.x), Math.Abs(agentPrime.mapPosition.y - agent.mapPosition.y));
                     if (distance.x <= 1 && distance.y <= 1) {
-                        if (!hasCouple(agentPrime))
+                        if (!agentPrime.hasMate && !agent.hasMate)
                         {
-                            
                             agenstToMateNumber += 1;
                             agentsToMate.Add(new NpcBehaviour[] { agentPrime, agent });
+                            agentPrime.hasMate = true;
+                            agent.hasMate = true;
                         }
                     }
                 }
             }
         }
         foreach (NpcBehaviour[] couple in agentsToMate){
-            if (UnityEngine.Random.Range(0, 100)<20) {
+            if (UnityEngine.Random.Range(0, 100) < 20) {
                 if (couple[0].myVillage.number == couple[1].myVillage.number) {
                     Debug.Log("Mating from the same village");
                     villages[couple[0].myVillage.number - 1].createNpc(npcPrefab, crossGenome(couple[0].getGenome(), couple[1].getGenome()),couple[0].mapPosition);
                     villages[couple[0].myVillage.number - 1].createNpc(npcPrefab, crossGenome(couple[0].getGenome(), couple[1].getGenome()), couple[1].mapPosition);
-
                 }
                 else
                 {
                     Debug.Log("Mating from different village");
                     villages[couple[0].myVillage.number - 1].createNpc(npcPrefab, crossGenome(couple[0].getGenome(), couple[1].getGenome()), couple[0].mapPosition);
                     villages[couple[1].myVillage.number - 1].createNpc(npcPrefab, crossGenome(couple[0].getGenome(), couple[1].getGenome()), couple[1].mapPosition);
-                     
                 }
                 couple[0].destroyAgent();
                 couple[1].destroyAgent();
             }
-
         }
-    }
-    //find a better solution
-    private bool hasCouple(NpcBehaviour agent) {
-        foreach (NpcBehaviour[] couple in agentsToMate) {
-            if (couple[0] == agent || couple[1] == agent) {
-                return true;
-            }        
-        }
-        return false;
     }
 
     private string crossGenome(string genome1, string genome2)
