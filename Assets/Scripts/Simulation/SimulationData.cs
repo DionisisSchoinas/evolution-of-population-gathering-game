@@ -201,8 +201,7 @@ public class SimulationData : MonoBehaviour
     }
     public bool tradeAgentsEnergyPots(NpcBehaviour agent1, NpcBehaviour agent2)
     {
-     
-        Debug.Log("Asking to trade for energy pots");
+       // Debug.Log("Asking to trade for energy pots");
         int energyPotAskingPrice = 1;
      
         //agent one asked agent two to trade
@@ -210,7 +209,7 @@ public class SimulationData : MonoBehaviour
             //ask for trade
             if (agent2.npcData._energyPots > 1)
             {
-                Debug.Log("Accepted trade of energy pots");
+                //Debug.Log("Accepted trade of energy pots");
                 agent2.npcData.gold += energyPotAskingPrice;
                 agent1.npcData.gold -= energyPotAskingPrice;
 
@@ -219,7 +218,7 @@ public class SimulationData : MonoBehaviour
                 return true;
             }
             else {
-                Debug.Log("Refused trade of energy pots");
+                //Debug.Log("Refused trade of energy pots");
             }
         }
         //agent two asked agent one to trade
@@ -228,7 +227,7 @@ public class SimulationData : MonoBehaviour
             //ask for trade
             if (agent1.npcData._energyPots > 1)
             {
-                Debug.Log("Accepted trade of energy pots");
+                //Debug.Log("Accepted trade of energy pots");
                 agent1.npcData.gold += energyPotAskingPrice;
                 agent2.npcData.gold -= energyPotAskingPrice;
 
@@ -239,40 +238,40 @@ public class SimulationData : MonoBehaviour
             }
             else
             {
-                Debug.Log("Refused trade of energy pots");
+                //Debug.Log("Refused trade of energy pots");
             }
         }
         return false;
     }
     public bool tradeAgentsMapKnowledge(NpcBehaviour agent1, NpcBehaviour agent2){
         int mapExcangeAskingPrice = 1;
-        Debug.Log("Asking to trade for ores");
+        //Debug.Log("Asking to trade for ores");
         if (agent1.npcData.gold >= mapExcangeAskingPrice)
         {
             if (agent1.npcData.carryType == 0 && agent2.knownWoodOres.Count > 0)
             {
-                Debug.Log("Trade for wood knowledge");
+                //Debug.Log("Trade for wood knowledge");
                 agent1.knownWoodOres.AddRange(agent2.knownWoodOres);
                 agent1.knownStoneOres.AddRange(agent2.knownStoneOres);
                 agent1.knownGoldOres.AddRange(agent2.knownGoldOres);
             }
             else if (agent1.npcData.carryType == 1 && agent2.knownStoneOres.Count > 0)
             {
-                Debug.Log("Trade for stone knowledge");
+                //Debug.Log("Trade for stone knowledge");
                 agent1.knownWoodOres.AddRange(agent2.knownWoodOres);
                 agent1.knownStoneOres.AddRange(agent2.knownStoneOres);
                 agent1.knownGoldOres.AddRange(agent2.knownGoldOres);
             }
             else if (agent1.npcData.carryType == 2 && agent2.knownGoldOres.Count > 0)
             {
-                Debug.Log("Trade for gold knowledge");
+                //Debug.Log("Trade for gold knowledge");
                 agent1.knownWoodOres.AddRange(agent2.knownWoodOres);
                 agent1.knownStoneOres.AddRange(agent2.knownStoneOres);
                 agent1.knownGoldOres.AddRange(agent2.knownGoldOres);
             }
             else if (agent1.npcData.carryType == 3 && agent2.knownWoodOres.Count + agent2.knownStoneOres.Count + agent2.knownGoldOres.Count > 0)
             {
-                Debug.Log("Trade for any knowledge");
+                //Debug.Log("Trade for any knowledge");
                 agent1.knownWoodOres.AddRange(agent2.knownWoodOres);
                 agent1.knownStoneOres.AddRange(agent2.knownStoneOres);
                 agent1.knownGoldOres.AddRange(agent2.knownGoldOres);
