@@ -344,7 +344,7 @@ public class MapController : MonoBehaviour
             case Placeable.Type.Village:
                 return villages.ToString();
             default:
-                return "-";
+                return " ";
         }
     }
 
