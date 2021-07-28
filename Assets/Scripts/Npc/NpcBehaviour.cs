@@ -23,7 +23,7 @@ public class NpcBehaviour : MonoBehaviour
     public List<Vector2Int> knownStoneOres = new List<Vector2Int>();
     public List<Vector2Int> knownGoldOres = new List<Vector2Int>();
 
-    public bool hasMate;
+    public bool isInteracting;
 
     private void Awake()
     {
@@ -45,7 +45,7 @@ public class NpcBehaviour : MonoBehaviour
             }
         }
 
-        hasMate = false;
+        isInteracting = false;
 
         myVillage = gameObject.GetComponentInParent<VillageData>();
         homePosition = myVillage.arrayPosition;
@@ -77,13 +77,18 @@ public class NpcBehaviour : MonoBehaviour
         moveOnWorldMap();
         //TextFileController.WriteMapData(localMapData,"localMap");
     }
-
     public void Tick(int ticks){
         simulationData.updateAgent(this);
         if (npcData.alive) {
-            if (distance(mapPosition, homePosition) > npcData.energy && npcData.energyPots > 0) {
+            if (distance(mapPosition, homePosition) + 10 > npcData.energy && npcData.energyPots > 0) {
                 consumeEnergyPot();
-            }          
+            }
+            else if (distance(mapPosition, homePosition) + 10 > npcData.energy && npcData.energyPots == 0 && npcData.totalItems!=0 && !_returnHome)
+            {
+                Debug.Log("Agent returning Home");
+                _returnHome = true;
+               
+            }
             else if (!_returnHome) {
                 Vector2Int neiboringOre = findNeiboringOre();
                 if (neiboringOre != mapPosition) {
@@ -508,5 +513,5 @@ public class NpcBehaviour : MonoBehaviour
     {
         return npcData.genome;
     }
-   
+
 }

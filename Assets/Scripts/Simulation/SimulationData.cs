@@ -15,30 +15,25 @@ public class SimulationData : MonoBehaviour
     public List<VillageData> villages;
     private List<NpcBehaviour[]> agentsToInteract = new List<NpcBehaviour[]>();
     public int agentsToInteractNumber = 0;
-
     private void Awake()
     {
         ClearVillages();
         villagesColors = villageColors;
     }
-
     private void Start()
     {
         SimulationLogic.current.onTick += Tick;
         SimulationLogic.current.onSimulationRunning += SimulationStatus;
     }
-
     private void OnDestroy()
     {
         SimulationLogic.current.onTick -= Tick;
         SimulationLogic.current.onSimulationRunning -= SimulationStatus;
     }
-
     private void Tick(int ticks)
     {
         agentInteraction();
     }
-
     private void SimulationStatus(bool running)
     {
         if (running)
@@ -50,7 +45,6 @@ public class SimulationData : MonoBehaviour
             ClearVillages();
         }
     }
-
     private void OnValidate()
     {
         if (villageColors.Length != SimulationSettings.maxVillages)
@@ -59,7 +53,6 @@ public class SimulationData : MonoBehaviour
             Array.Resize(ref villageColors, SimulationSettings.maxVillages);
         }
     }
-
     public void SpawnNpcs()
     {
         foreach (VillageData villageData in villages)
@@ -67,7 +60,6 @@ public class SimulationData : MonoBehaviour
             villageData.SpawnNpcs(npcPrefab);
         }
     }
-
     public void AddVillage(VillageData villageData)
     {
         VillageDataDisplay dataDisplay = Instantiate(villageDataDisplayPrefab, villageDisplayList.transform);
@@ -77,7 +69,6 @@ public class SimulationData : MonoBehaviour
 
         villages.Add(villageData);
     }
-
     public void RemoveVillage(VillageData villageData)
     {
         villages.Remove(villageData);
@@ -86,13 +77,11 @@ public class SimulationData : MonoBehaviour
             villages[i].number = i + 1;
         }
     }
-
     public void ClearVillages()
     {
         villages = new List<VillageData>();
         agents = new List<NpcBehaviour>();
     }
-
     public void updateAgent(NpcBehaviour agent)
     {
         if (!agents.Contains(agent))
@@ -100,7 +89,6 @@ public class SimulationData : MonoBehaviour
             agents.Add(agent);
         }
     }
-
     public void agentInteraction()
     {
         agentsToInteract.Clear();
@@ -114,12 +102,12 @@ public class SimulationData : MonoBehaviour
                     Vector2Int distance = new Vector2Int(Math.Abs(agentPrime.mapPosition.x - agent.mapPosition.x), Math.Abs(agentPrime.mapPosition.y - agent.mapPosition.y));
                     if (distance.x <= 1 && distance.y <= 1)
                     {
-                        if (!agentPrime.hasMate && !agent.hasMate)
+                        if (!agentPrime.isInteracting && !agent.isInteracting)
                         {
                             agentsToInteractNumber += 1;
                             agentsToInteract.Add(new NpcBehaviour[] { agentPrime, agent });
-                            agentPrime.hasMate = true;
-                            agent.hasMate = true;
+                            agentPrime.isInteracting = true;
+                            agent.isInteracting = true;
                         }
                     }
                 }
@@ -201,7 +189,13 @@ public class SimulationData : MonoBehaviour
     }
     public bool tradeAgentsEnergyPots(NpcBehaviour agent1, NpcBehaviour agent2)
     {
+<<<<<<< Updated upstream
        // Debug.Log("Asking to trade for energy pots");
+=======
+        agent1.isInteracting = false;
+        agent2.isInteracting = false;
+        Debug.Log("Asking to trade for energy pots");
+>>>>>>> Stashed changes
         int energyPotAskingPrice = 1;
      
         //agent one asked agent two to trade
@@ -244,6 +238,8 @@ public class SimulationData : MonoBehaviour
         return false;
     }
     public bool tradeAgentsMapKnowledge(NpcBehaviour agent1, NpcBehaviour agent2){
+        agent1.isInteracting = false;
+        agent2.isInteracting = false;
         int mapExcangeAskingPrice = 1;
         //Debug.Log("Asking to trade for ores");
         if (agent1.npcData.gold >= mapExcangeAskingPrice)
@@ -295,7 +291,6 @@ public class SimulationData : MonoBehaviour
         }
         return genome;
     }
-
     private string[,] crossRefereceMap(string[,] map1, string[,] map2)
     {
         string[,] mapData = new string[SimulationSettings.simSettings.mapRows, SimulationSettings.simSettings.mapColumns];
