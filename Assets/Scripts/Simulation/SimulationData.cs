@@ -15,6 +15,9 @@ public class SimulationData : MonoBehaviour
     public List<VillageData> villages;
     private List<NpcBehaviour[]> agentsToInteract = new List<NpcBehaviour[]>();
     public int agentsToInteractNumber = 0;
+
+    private int emptyVillages;
+
     private void Awake()
     {
         ClearVillages();
@@ -24,11 +27,13 @@ public class SimulationData : MonoBehaviour
     {
         SimulationLogic.current.onTick += Tick;
         SimulationLogic.current.onSimulationRunning += SimulationStatus;
+        SimulationLogic.current.onVillageEmpty += VillageEmpty;
     }
     private void OnDestroy()
     {
         SimulationLogic.current.onTick -= Tick;
         SimulationLogic.current.onSimulationRunning -= SimulationStatus;
+        SimulationLogic.current.onVillageEmpty -= VillageEmpty;
     }
     private void Tick(int ticks)
     {
@@ -39,10 +44,21 @@ public class SimulationData : MonoBehaviour
         if (running)
         {
             SpawnNpcs();
+            emptyVillages = 0;
         }
         else
         {
             ClearVillages();
+        }
+    }
+    private void VillageEmpty()
+    {
+        emptyVillages++;
+        if (emptyVillages == villages.Count)
+        {
+            VillageData vD = new VillageData();
+            vD.number = -1;
+            SimulationLogic.current.VillageWon(vD);
         }
     }
     private void OnValidate()

@@ -34,6 +34,23 @@ public class VillageDataDisplay : MonoBehaviour
         totalCount.text = "Total : " + villageData.storage.totalItems + " / " + villageData.reqTotal;
     }
 
+
+    public void ShowStats()
+    {
+        goldCount.gameObject.SetActive(true);
+        stoneCount.gameObject.SetActive(true);
+        woodCount.gameObject.SetActive(true);
+        totalCount.gameObject.SetActive(true);
+    }
+
+    public void HideStats()
+    {
+        goldCount.gameObject.SetActive(false);
+        stoneCount.gameObject.SetActive(false);
+        woodCount.gameObject.SetActive(false);
+        totalCount.gameObject.SetActive(false);
+    }
+
     private void ShowDetails()
     {
         simulationVillageDisplay.ShowNpcs(villageData);

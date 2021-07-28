@@ -164,6 +164,9 @@ public class VillageData : MonoBehaviour
 
         npcs.RemoveAt(index);
         villageDataDisplay.npcCount.text = "Npcs : " + npcs.Count.ToString();
+
+        if (npcs.Count == 0)
+            SimulationLogic.current.VillageEmpty();
     }
 
     public void ChangeColor() 

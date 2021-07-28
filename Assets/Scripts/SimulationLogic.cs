@@ -69,6 +69,15 @@ public class SimulationLogic : MonoBehaviour
         }
     }
 
+    public Action onVillageEmpty;
+    public void VillageEmpty()
+    {
+        if (onVillageEmpty != null)
+        {
+            onVillageEmpty();
+        }
+    }
+
     private void SimulationStatus(bool running)
     {
         if (running)

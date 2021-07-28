@@ -37,10 +37,20 @@ public class VictoryScreen : MonoBehaviour
 
     private void VillageWon(VillageData villageData)
     {
+        if (villageData.number == -1)
+        {
+            villageDataDisplay.HideStats();
+            villageDataDisplay.villageName.text = "All Villages Died";
+        }
+        else
+        {
+            villageDataDisplay.ShowStats();
+            villageDataDisplay.villageData = villageData;
+            villageDataDisplay.UpdateCount();
+            villageDataDisplay.villageName.text = "Village " + villageData.number + " Won";
+        }
+
         UIManager.SetCanvasState(canvasGroup, true);
-        villageDataDisplay.villageData = villageData;
-        villageDataDisplay.UpdateCount();
-        villageDataDisplay.villageName.text = "Village " + villageData.number + " Won";
     }
 
     private void ExitSim()
