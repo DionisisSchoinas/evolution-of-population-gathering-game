@@ -44,10 +44,13 @@ public class MapRandomizer : MonoBehaviour
             index = indexes[rndIndex];
             // Turn index of 1d to 2d idnex
             ind = ChangeTo2dIndex(index);
-            // Place value to map
-            mapController.AddBuilding(ind, placeable, true);
             // Delete index from indexes list based on rndIndex
             indexes.RemoveAt(rndIndex);
+            // Don't place on the edge
+            if (ind.x == 0 || ind.x == settings.mapRows - 1 || ind.y == 0 || ind.y == settings.mapColumns - 1)
+                continue;
+            // Place value to map
+            mapController.AddBuilding(ind, placeable, true);
         }
     }
 

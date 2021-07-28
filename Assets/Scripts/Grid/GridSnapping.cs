@@ -33,11 +33,17 @@ public class GridSnapping : MonoBehaviour
     private GameObject highlighter;
     private Material highlightMaterial;
 
+    public GameObject mapOverlayObject;
+    private Material mapOverlayMaterial;
+    private Texture2D mapOverlayTexture;
+
     private void Awake()
     {
         mapController = gameObject.GetComponent<MapController>();
         simulationData = FindObjectOfType<SimulationData>();
         simulationVillageDisplay = FindObjectOfType<SimulationVillageDisplay>();
+
+        mapOverlayMaterial = mapOverlayObject.gameObject.GetComponent<MeshRenderer>().material;
 
         blockSize = transform.localScale.x / gridSize.x;
         placing = false;
@@ -348,13 +354,16 @@ public class GridSnapping : MonoBehaviour
         // Reset grid
         gridSize = new Vector2(SimulationSettings.simSettings.mapRows, SimulationSettings.simSettings.mapColumns);
         mapDataTransforms = new Transform[SimulationSettings.simSettings.mapRows, SimulationSettings.simSettings.mapColumns];
-        ResetMapOverlay();
         // Rescale map
         transform.localScale = new Vector3(gridSize.x, transform.localScale.y, gridSize.y);
         blockSize = transform.localScale.x / gridSize.x;
         // Reset checkerboard display
         Material material = gameObject.GetComponent<MeshRenderer>().material;
         material.SetVector("_GroundScale", new Vector4(gridSize.x, gridSize.y, 0, 0));
+        // Rescale grid
+        mapOverlayObject.transform.localScale = transform.localScale;
+        mapOverlayMaterial.SetVector("_GroundScale", new Vector4(gridSize.x, gridSize.y, 0, 0));
+        ResetMapOverlay();
     }
 
     private void RenumberVillages()
@@ -368,19 +377,17 @@ public class GridSnapping : MonoBehaviour
 
     private void ResetMapOverlay()
     {
-        MapOverlay[] children = gameObject.GetComponentsInChildren<MapOverlay>();
-        foreach (MapOverlay child in children)
-            Destroy(child.gameObject);
-        mapOverlay = new MapOverlay[SimulationSettings.simSettings.mapRows, SimulationSettings.simSettings.mapColumns];
+        mapOverlayTexture = new Texture2D((int)gridSize.x, (int)gridSize.y, TextureFormat.RGBA32, false);
 
-        for (int i = 0; i < mapOverlay.GetLength(0); i++)
+        for (int i = 0; i < mapOverlayTexture.width; i++)
         {
-            for (int j = 0; j < mapOverlay.GetLength(1); j++)
+            for (int j = 0; j < mapOverlayTexture.height; j++)
             {
-                mapOverlay[i, j] = Instantiate(mapOverlayPrefab, GetNearestWorldPoint(Vector3.one * 0.5f, new Vector3Int(i, 0, j)), Quaternion.identity);
-                mapOverlay[i, j].transform.parent = transform;
+                mapOverlayTexture.SetPixel(i, j, Color.black);
             }
         }
+        mapOverlayTexture.Apply();
+        mapOverlayMaterial.SetTexture("_OverlayTexture", mapOverlayTexture);
 
         if (highlighter != null)
             Destroy(highlighter);
@@ -402,14 +409,17 @@ public class GridSnapping : MonoBehaviour
             {
                 if (map[i, j].Equals("e") || map[i, j].Equals("u"))
                 {
-                    mapOverlay[i, j].SetAlpha(0f);
+                    mapOverlayTexture.SetPixel(i, j, Color.black);
                 }
                 else
                 {
-                    mapOverlay[i, j].SetAlpha(0.3f);
+                    mapOverlayTexture.SetPixel(i, j, Color.white);
                 }
             }
         }
+        mapOverlayTexture.Apply();
+        mapOverlayMaterial.SetTexture("_OverlayTexture", mapOverlayTexture);
+
         showingOverlay = true;
         simulationVillageDisplay.hideOverlay.enabled = true;
         UnHighlightNpc();
@@ -420,7 +430,17 @@ public class GridSnapping : MonoBehaviour
     {
         showingOverlay = false;
         simulationVillageDisplay.hideOverlay.enabled = false;
-        SimulationLogic.current.SetMapOverlayAlpha(0f);
+
+
+        for (int i = 0; i < mapOverlayTexture.width; i++)
+        {
+            for (int j = 0; j < mapOverlayTexture.height; j++)
+            {
+                mapOverlayTexture.SetPixel(i, j, Color.black);
+            }
+        }
+        mapOverlayTexture.Apply();
+        mapOverlayMaterial.SetTexture("_OverlayTexture", mapOverlayTexture);
         UnHighlightNpc();
     }
 

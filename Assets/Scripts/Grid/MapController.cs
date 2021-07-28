@@ -54,6 +54,13 @@ public class MapController : MonoBehaviour
     public bool hasSpace(Vector3Int index, Placeable placeable)
     {
         index = NormalizeIndex(index);
+
+
+        if (index.x == 0 || index.x == SimulationSettings.simSettings.mapRows - 1 || index.z == 0 || index.z == SimulationSettings.simSettings.mapColumns - 1)
+        {
+            return false;
+        }
+
         int blockSize = Mathf.FloorToInt(placeable.gridSpace / 2f); // Always 0
         for (int i = (index.x - blockSize); i <= (index.x + blockSize); i++)
         {
