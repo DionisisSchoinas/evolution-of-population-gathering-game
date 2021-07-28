@@ -125,7 +125,7 @@ public class SimulationData : MonoBehaviour
             }
         }
         foreach (NpcBehaviour[] couple in agentsToMate) {
-            if (UnityEngine.Random.Range(0, 100) < 20) {
+            if (UnityEngine.Random.Range(0, 100) < SimulationSettings.simSettings.maxBirthChance) {
 
                 NpcData child1;
                 NpcData child2;
