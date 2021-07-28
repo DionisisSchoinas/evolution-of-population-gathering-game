@@ -118,7 +118,7 @@ public class VillageData : MonoBehaviour
         {
             gm = Instantiate(npcPrefab, gameObject.transform);
             npcs.Add(gm.GetComponent<NpcData>());
-            npcs[i].SetColor(SimulationData.villagesColors[number - 1]);
+            npcs[i].SetColor(SimulationData.GetVillageColor(number));
         }
         villageDataDisplay.npcCount.text = "Npcs : " + npcs.Count.ToString();
     }
@@ -128,7 +128,7 @@ public class VillageData : MonoBehaviour
         GameObject gm;
         gm = Instantiate(npcPrefab, gameObject.transform);
         npcs.Add(gm.GetComponent<NpcData>());
-        npcs[npcs.Count - 1].SetColor(SimulationData.villagesColors[number - 1]);
+        npcs[npcs.Count - 1].SetColor(SimulationData.GetVillageColor(number));
         npcs[npcs.Count - 1].npcBehaviour.mapPosition = position;
         villageDataDisplay.npcCount.text = "Npcs : " + npcs.Count.ToString();
 
@@ -153,7 +153,7 @@ public class VillageData : MonoBehaviour
         villageDataDisplay.villageName.text = "Village " + number;
         //villageDataDisplay.UpdateCount();
         villageDataDisplay.npcCount.text = "Npcs : " + npcs.Count.ToString();
-        villageDataDisplay.villageColor.color = SimulationData.villagesColors[number - 1];
+        villageDataDisplay.villageColor.color = SimulationData.GetVillageColor(number);
     }
 
     public void NpcRemoved(GameObject npc)
@@ -171,6 +171,6 @@ public class VillageData : MonoBehaviour
         if (number <= 0 || number > 10)
             return;
 
-        gameObject.GetComponent<MeshRenderer>().material.SetColor("_Color", SimulationData.villagesColors[number - 1]);
+        gameObject.GetComponent<MeshRenderer>().material.SetColor("_Color", SimulationData.GetVillageColor(number));
     }
 }

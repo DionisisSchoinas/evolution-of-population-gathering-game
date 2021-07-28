@@ -85,7 +85,7 @@ public class NpcBehaviour : MonoBehaviour
             }
             else if (distance(mapPosition, homePosition) + 10 > npcData.energy && npcData.energyPots == 0 && npcData.totalItems!=0 && !_returnHome)
             {
-                Debug.Log("Agent returning Home");
+                //Debug.Log("Agent returning Home");
                 _returnHome = true;
                
             }

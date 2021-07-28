@@ -192,7 +192,7 @@ public class SimulationData : MonoBehaviour
 
         agent1.isInteracting = false;
         agent2.isInteracting = false;
-        Debug.Log("Asking to trade for energy pots");
+        //Debug.Log("Asking to trade for energy pots");
 
         int energyPotAskingPrice = SimulationSettings.simSettings.energyPotCost;
      
@@ -315,7 +315,10 @@ public class SimulationData : MonoBehaviour
             }
         }
         return mapData;
+    }
 
-
+    public static Color GetVillageColor(int number)
+    {
+        return villagesColors[(number - 1) % villagesColors.Length];
     }
 }
