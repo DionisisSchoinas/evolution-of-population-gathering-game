@@ -189,13 +189,11 @@ public class SimulationData : MonoBehaviour
     }
     public bool tradeAgentsEnergyPots(NpcBehaviour agent1, NpcBehaviour agent2)
     {
-<<<<<<< Updated upstream
-       // Debug.Log("Asking to trade for energy pots");
-=======
+
         agent1.isInteracting = false;
         agent2.isInteracting = false;
         Debug.Log("Asking to trade for energy pots");
->>>>>>> Stashed changes
+
         int energyPotAskingPrice = 1;
      
         //agent one asked agent two to trade
