@@ -75,7 +75,7 @@ public class NpcBehaviour : MonoBehaviour
     public void Move(int x, int z) {
         mapPosition = new Vector2Int(x, z);
         moveOnWorldMap();
-        TextFileController.WriteMapData(localMapData,"localMap");
+        //TextFileController.WriteMapData(localMapData,"localMap");
     }
 
     public void Tick(int ticks){
