@@ -64,6 +64,6 @@ public class SimulationVillageDisplay : MonoBehaviour
     private void HideOverlay()
     {
         if (gridSnapping.showingOverlay)
-            gridSnapping.HideMapOverlay();
+            SimulationLogic.current.ShowMapOverlay(null);
     }
 }

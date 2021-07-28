@@ -33,7 +33,10 @@ public class NpcPicker : MonoBehaviour
                 if (npcData.npcBehaviour.myVillage.number != simulationVillageDisplay.activeVillage)
                     simulationVillageDisplay.ShowNpcs(npcData.npcBehaviour.myVillage);
 
-                gridSnapping.ShowMapOverlay(npcData);
+
+                SimulationLogic.current.ShowMapOverlay(npcData);
+
+                //gridSnapping.ShowMapOverlay(npcData);
             }
         }
     }

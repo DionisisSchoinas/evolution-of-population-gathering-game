@@ -57,6 +57,8 @@ public class NpcData : MonoBehaviour
     public Dictionary<Placeable.Type, int> resourcesCarried;
     public int totalLife;
 
+    public bool showingPath;
+
     private void Awake()
     {
         GenerateGenome();
@@ -67,11 +69,28 @@ public class NpcData : MonoBehaviour
         totalLife = 0;
         alive = true;
         npcBehaviour = GetComponent<NpcBehaviour>();
+        showingPath = false;
+    }
+
+    private void Start()
+    {
+        SimulationLogic.current.onShowMapOverlay += ShowingPath;
     }
 
     private void OnDestroy()
     {
         SimulationStatistics.current.NewData(this);
+        SimulationLogic.current.onShowMapOverlay -= ShowingPath;
+        if (showingPath)
+            SimulationLogic.current.ShowMapOverlay(null);
+    }
+
+    private void ShowingPath(NpcData npcData)
+    {
+        if (npcData != null && npcData.gameObject.GetInstanceID() == gameObject.GetInstanceID())
+            showingPath = true;
+        else
+            showingPath = false;
     }
 
     public void SetColor(Color color)

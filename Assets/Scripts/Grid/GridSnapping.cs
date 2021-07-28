@@ -13,8 +13,6 @@ public class GridSnapping : MonoBehaviour
     public float blockSize;
 
     public Transform[,] mapDataTransforms;
-    public MapOverlay[,] mapOverlay;
-    public MapOverlay mapOverlayPrefab;
     public bool showingOverlay;
 
     private bool placing;
@@ -67,12 +65,12 @@ public class GridSnapping : MonoBehaviour
 
     private void Start()
     {
-        SimulationLogic.current.onTick += Tick;
+        SimulationLogic.current.onShowMapOverlay += ShowMapOverlay;
     }
 
     private void OnDestroy()
     {
-        SimulationLogic.current.onTick -= Tick;
+        SimulationLogic.current.onShowMapOverlay -= ShowMapOverlay;
     }
 
     private void MouseClicked(KeyCode key)
@@ -402,6 +400,12 @@ public class GridSnapping : MonoBehaviour
 
     public void ShowMapOverlay(NpcData npcData)
     {
+        if (npcData == null)
+        {
+            HideMapOverlay();
+            return;
+        }
+
         string[,] map = npcData.npcBehaviour.GetMap();
         for (int i = 0; i < map.GetLength(0); i++)
         {
@@ -426,11 +430,10 @@ public class GridSnapping : MonoBehaviour
         HighlightNpc(npcData);
     }
 
-    public void HideMapOverlay()
+    private void HideMapOverlay()
     {
         showingOverlay = false;
         simulationVillageDisplay.hideOverlay.enabled = false;
-
 
         for (int i = 0; i < mapOverlayTexture.width; i++)
         {
@@ -453,11 +456,5 @@ public class GridSnapping : MonoBehaviour
     private void UnHighlightNpc()
     {
         highlightMaterial.SetFloat("_Alpha", 0f);
-    }
-
-    private void Tick(int ticks)
-    {
-        if (showingOverlay)
-            HideMapOverlay();
     }
 }

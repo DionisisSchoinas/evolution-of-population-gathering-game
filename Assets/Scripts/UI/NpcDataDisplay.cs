@@ -46,6 +46,7 @@ public class NpcDataDisplay : MonoBehaviour
 
     private void ShowMap()
     {
-        gridSnapping.ShowMapOverlay(npcData);
+        SimulationLogic.current.ShowMapOverlay(npcData);
+        //gridSnapping.ShowMapOverlay(npcData);
     }
 }

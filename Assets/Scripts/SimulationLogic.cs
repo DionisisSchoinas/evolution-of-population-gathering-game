@@ -51,12 +51,12 @@ public class SimulationLogic : MonoBehaviour
         }
     }
 
-    public Action<float> onSetMapOverlayAlpha;
-    public void SetMapOverlayAlpha(float alpha)
+    public Action<NpcData> onShowMapOverlay;
+    public void ShowMapOverlay(NpcData npcData)
     {
-        if (onSetMapOverlayAlpha != null)
+        if (onShowMapOverlay != null)
         {
-            onSetMapOverlayAlpha(alpha);
+            onShowMapOverlay(npcData);
         }
     }
 

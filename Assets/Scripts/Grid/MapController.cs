@@ -188,7 +188,7 @@ public class MapController : MonoBehaviour
         if (redrawGrid)
             gridSnapping.RedrawGrid();
         else
-            gridSnapping.HideMapOverlay();
+            SimulationLogic.current.ShowMapOverlay(null);
 
         // Get map data if dimensions match
         mapData = TextFileController.ReadMapData();

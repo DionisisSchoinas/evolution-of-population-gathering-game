@@ -77,7 +77,7 @@ public class NpcBehaviour : MonoBehaviour
         moveOnWorldMap();
         //TextFileController.WriteMapData(localMapData,"localMap");
     }
-    public void Tick(int ticks){
+    public void Tick(int ticks) {
         simulationData.updateAgent(this);
         if (npcData.alive) {
             if (distance(mapPosition, homePosition) + 10 > npcData.energy && npcData.energyPots > 0) {
@@ -152,6 +152,10 @@ public class NpcBehaviour : MonoBehaviour
         {
             destroyAgent();
         }
+
+        // Show map overlay constantly
+        if (npcData.showingPath)
+            SimulationLogic.current.ShowMapOverlay(npcData);
     }
     public void moveOnWorldMap() {
         transform.position = grid.GetNearestWorldPoint(transform.position, new Vector3Int(mapPosition.x, 0, mapPosition.y));
