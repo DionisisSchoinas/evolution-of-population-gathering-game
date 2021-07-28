@@ -22,7 +22,6 @@ public class NpcDataDisplay : MonoBehaviour
     {
         showMapButton = gameObject.GetComponentInChildren<Button>();
         showMapButton.onClick.AddListener(ShowMap);
-
         gridSnapping = FindObjectOfType<GridSnapping>();
     }
 
