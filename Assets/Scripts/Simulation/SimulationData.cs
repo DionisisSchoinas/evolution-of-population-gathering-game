@@ -194,7 +194,7 @@ public class SimulationData : MonoBehaviour
         agent2.isInteracting = false;
         Debug.Log("Asking to trade for energy pots");
 
-        int energyPotAskingPrice = 1;
+        int energyPotAskingPrice = SimulationSettings.simSettings.energyPotCost;
      
         //agent one asked agent two to trade
         if (agent1.npcData._energyPots <= 1 && agent1.npcData.gold >= energyPotAskingPrice) {
@@ -238,7 +238,7 @@ public class SimulationData : MonoBehaviour
     public bool tradeAgentsMapKnowledge(NpcBehaviour agent1, NpcBehaviour agent2){
         agent1.isInteracting = false;
         agent2.isInteracting = false;
-        int mapExcangeAskingPrice = 1;
+        int mapExcangeAskingPrice = SimulationSettings.simSettings.mapCost;
         //Debug.Log("Asking to trade for ores");
         if (agent1.npcData.gold >= mapExcangeAskingPrice)
         {
