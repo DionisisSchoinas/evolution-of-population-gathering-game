@@ -199,7 +199,6 @@ public class MapController : MonoBehaviour
     public void RedrawMap(bool drawOldMap)
     {
         RedrawMap(drawOldMap, true);
-
     }
 
     public void ClearMap(bool resetAll)

@@ -99,15 +99,17 @@ public class SimulationSettings : MonoBehaviour
         {
             simSettings = new Settings();
         }
-        SetSettingsToDisplay(simSettings);
+        SetSettingsToDisplay();
 
         mapController.RedrawMap(true);
 
         Debug.Log("Loaded from : " + Application.persistentDataPath + "/SimulationSettings.json");
     }
 
-    private void SetSettingsToDisplay(Settings settings)
+    private void SetSettingsToDisplay()
     {
+        Settings settings = simSettings;
+
         mapRows.text = settings.mapRows.ToString();
         mapColumns.text = settings.mapColumns.ToString();
         agentsPerVillage.text = settings.agentsPerVillage.ToString();
@@ -123,8 +125,10 @@ public class SimulationSettings : MonoBehaviour
         mapCost.text = settings.mapCost.ToString();
     }
 
-    private Settings GetSettingsFromDisplay()
+    private bool GetSettingsFromDisplay()
     {
+        int mapRs = simSettings.mapRows;
+        int mapCs = simSettings.mapColumns;
         Settings new_settings = simSettings;
 
         int i_val;
@@ -189,25 +193,35 @@ public class SimulationSettings : MonoBehaviour
         if (int.TryParse(mapCost.text, out i_val))
             new_settings.mapCost = Mathf.Clamp(i_val, 0, Mathf.FloorToInt(new_settings.amountOfGold / 10f));
 
+        bool redraw = true;
+        if (mapRs == new_settings.mapRows && mapCs == new_settings.mapColumns)
+            redraw = false;
+
         simSettings = new_settings;
-        return new_settings;
+
+        return redraw;
     }
 
     private void SaveButtonClick()
     {
+        bool redraw = GetSettingsFromDisplay();
+
         // Gets settings and updates settings display with possible clamped values
-        SetSettingsToDisplay(GetSettingsFromDisplay());
+        SetSettingsToDisplay();
+
         // Saves new settings
         SaveSettings();
+
         // Redraw map
-        mapController.RedrawMap(false);
+        mapController.RedrawMap(false, redraw);
+
         UIManager.SetCanvasState(canvasGroup, false);
     }
 
     public void CloseButtonClick()
     {
         // Reset display to current settings
-        SetSettingsToDisplay(simSettings);
+        SetSettingsToDisplay();
         UIManager.SetCanvasState(canvasGroup, false);
     }
 }
